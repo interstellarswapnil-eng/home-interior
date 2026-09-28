@@ -81,3 +81,36 @@ ul.checks li { padding: 2px 0; }
   .view-split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
   aside { max-height: 40vh; border-left: none; border-top: 1px solid var(--line); }
 }
+
+/* ---- immersive HUD ---- */
+.seg.mode { margin-right: 8px; padding-right: 8px; border-right: 1px solid var(--line); }
+.hud { position: absolute; inset: 0; pointer-events: none; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+.hud > * { pointer-events: auto; }
+.hud-fade { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.hud-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 60px 32px 70px; color: #fff; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(20,18,15,0), rgba(20,18,15,0.45)); opacity: 0; }
+.hud-title .t { font-size: 32px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,0.35); }
+.hud-title .c { font-size: 15px; opacity: 0.92; margin-top: 2px; text-shadow: 0 1px 6px rgba(0,0,0,0.35); }
+.hud-bar { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; gap: 8px; align-items: center;
+  background: rgba(255,255,255,0.88); backdrop-filter: blur(6px); border-radius: 10px; padding: 6px 8px; }
+.hud-bar button:disabled { opacity: 0.45; cursor: default; }
+.hud-progress { flex: 1; height: 6px; background: #e6e1d8; border-radius: 3px; cursor: pointer; overflow: hidden; }
+.hud-progress div { height: 100%; width: 0; background: var(--accent); }
+.hud-time { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); min-width: 78px; text-align: right; }
+button.rec { color: #b3261e; border-color: #e7c2bd; }
+button.rec.on { background: #b3261e; color: #fff; border-color: #b3261e; }
+.hud-rec { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; font-weight: 600;
+  padding: 4px 10px; border-radius: 99px; display: flex; gap: 6px; align-items: center; pointer-events: none; }
+.hud-rec .dot { width: 8px; height: 8px; border-radius: 50%; background: #ff4d3f; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.2; } }
+.hud-room { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.88); padding: 4px 10px; border-radius: 99px;
+  font-size: 12.5px; font-weight: 600; pointer-events: none; }
+.hud-lock { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;
+  background: rgba(30,28,25,0.28); color: #fff; text-align: center; padding: 16px; }
+.hud-lock #walk-lock { font-size: 16px; padding: 10px 22px; border-radius: 99px; background: #fff; color: var(--ink); border: none; }
+.hud-lock .small { text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+.muted-light { opacity: 0.8; }
+.hud-cross { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: rgba(255,255,255,0.9); box-shadow: 0 0 0 1px rgba(0,0,0,0.3); pointer-events: none; }
+.hud-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #fff;
+  background: rgba(0,0,0,0.45); padding: 3px 10px; border-radius: 99px; pointer-events: none; }

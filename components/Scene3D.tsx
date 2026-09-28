@@ -21,6 +21,10 @@ import {
 import { palette, roomFloorMaterial } from "../plan/materials";
 import { hostWall, wallBoxes } from "../plan/geometry";
 import { FurnitureMesh } from "./Furniture3D";
+import { WalkControls } from "./WalkControls";
+import { TourController } from "./TourController";
+import { RecorderBridge } from "./VideoRecorder";
+import type { ImmersiveMode } from "./immersiveStore";
 
 export type CameraId = "overview" | "living" | "kitchen" | "master" | "kids" | "foyer" | "southBalcony";
 
@@ -341,15 +345,37 @@ function Lights() {
   );
 }
 
+/** Ceilings for eye-level modes; hidden whenever the camera is above them (tour drone intro). */
+function Ceilings() {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({ camera }) => {
+    if (ref.current) ref.current.visible = camera.position.y < CEILING_M - 0.01;
+  });
+  return (
+    <group ref={ref}>
+      {rooms
+        .filter((r) => r.id !== "lift")
+        .map((r) => (
+          <mesh key={r.id} position={W(r.x + r.w / 2, r.y + r.h / 2, CEILING_M)} rotation={[Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[r.w + 0.2, r.h + 0.2]} />
+            <meshStandardMaterial color="#FBFAF7" roughness={0.95} />
+          </mesh>
+        ))}
+    </group>
+  );
+}
+
 export type Scene3DProps = {
   camera: CameraId;
+  mode?: ImmersiveMode;
   wallMode: "auto" | "full" | "cut";
   highlight?: Set<string>;
   showFurniture?: boolean;
 };
 
-export function Scene3D({ camera, wallMode, highlight, showFurniture = true }: Scene3DProps) {
-  const cut = wallMode === "cut" || (wallMode === "auto" && camera === "overview");
+export function Scene3D({ camera, mode = "orbit", wallMode, highlight, showFurniture = true }: Scene3DProps) {
+  const immersiveMode = mode !== "orbit";
+  const cut = !immersiveMode && (wallMode === "cut" || (wallMode === "auto" && camera === "overview"));
   const cap = cut ? 1.2 : CEILING_M;
   const b = planBounds();
   return (
@@ -364,6 +390,7 @@ export function Scene3D({ camera, wallMode, highlight, showFurniture = true }: S
         <Floors />
         <Walls cap={cap} />
         <Stair />
+        {immersiveMode && <Ceilings />}
         {openings.map((o) => (
           <OpeningMesh key={o.id} o={o} cap={cap} />
         ))}
@@ -372,8 +399,15 @@ export function Scene3D({ camera, wallMode, highlight, showFurniture = true }: S
             .filter((f) => !(cut && (f.kind === "chimney" || f.kind === "wallUnit" || f.kind === "curtain")))
             .map((f) => <FurnitureMesh key={f.id} f={f} highlighted={highlight?.has(f.id) ?? false} />)}
       </group>
-      <OrbitControls makeDefault enableDamping dampingFactor={0.12} maxPolarAngle={Math.PI * 0.495} />
-      <CameraRig id={camera} />
+      {mode === "orbit" && (
+        <>
+          <OrbitControls makeDefault enableDamping dampingFactor={0.12} maxPolarAngle={Math.PI * 0.495} />
+          <CameraRig id={camera} />
+        </>
+      )}
+      {mode === "walk" && <WalkControls />}
+      {mode === "tour" && <TourController />}
+      <RecorderBridge />
       <ReadyFlag />
     </Canvas>
   );

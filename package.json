@@ -10,7 +10,8 @@
     "check": "tsx scripts/check.ts",
     "test": "vitest run",
     "screenshots": "tsx scripts/screenshots.ts",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "immersive": "tsx scripts/immersive.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

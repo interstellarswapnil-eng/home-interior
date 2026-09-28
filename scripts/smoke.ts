@@ -67,6 +67,12 @@ try {
   if (downloads < 2) errors.push("2D export did not download both files");
   for (const p of ["Materials", "Checks", "Budget", "Hide panel", "Budget"]) await clickText(p);
   for (const v of ["2D", "3D", "2D + 3D"]) await clickText(v);
+  // immersive modes: Walk → Tour (autoplay) → Orbit, then camera switching still works
+  for (const m of ["Walk", "Tour", "Orbit", "Tour", "Walk", "Orbit"]) {
+    await clickText(m);
+    await new Promise((r) => setTimeout(r, 600));
+  }
+  for (const c of ["Kitchen", "Overview"]) await clickText(c);
   // double-click a room in 2D jumps the 3D camera
   const rect = await page.$("svg.plan2d rect");
   if (rect) await rect.click({ count: 2 });
