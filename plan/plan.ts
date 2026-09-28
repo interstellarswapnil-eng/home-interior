@@ -84,6 +84,8 @@ export type Furniture = {
   rotationDeg?: number;
   /** Which way the front of the piece faces (for 3D orientation). */
   faces?: Facing;
+  /** Curtains: fraction of the opening left clear (sheers gathered to the sides). */
+  open?: number;
   note?: string;
 };
 
@@ -614,7 +616,8 @@ export const furniture: Furniture[] = [
     w: ft(6) + 0.6,
     h: 0.08,
     faces: "S",
-    note: "Sheer + light blackout",
+    open: 0.55,
+    note: "Sheer + light blackout (gathered at the balcony doors)",
   },
   {
     id: "living-curtain-e",

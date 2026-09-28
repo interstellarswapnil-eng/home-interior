@@ -6,7 +6,7 @@
 import { mkdirSync } from "node:fs";
 import { createServer } from "vite";
 import puppeteer from "puppeteer-core";
-import { executablePath } from "./browser";
+import { executablePath, glArgs } from "./browser";
 
 const outDir = "docs/screenshots";
 mkdirSync(outDir, { recursive: true });
@@ -29,7 +29,7 @@ await server.listen();
 const browser = await puppeteer.launch({
   executablePath,
   headless: true,
-  args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"],
+  args: glArgs,
   defaultViewport: { width: 1600, height: 1000, deviceScaleFactor: 1 },
 });
 const errors: string[] = [];
@@ -39,8 +39,8 @@ try {
     const page = await browser.newPage();
     page.on("pageerror", (e) => errors.push(`${s.file}: ${e}`));
     page.on("console", (m) => m.type() === "error" && errors.push(`${s.file}: ${m.text()}`));
-    await page.goto(`http://localhost:5199/?${s.query}`, { waitUntil: "networkidle0" });
-    if (s.kind === "3d") await page.waitForFunction("window.__sceneReady === true", { timeout: 60_000 });
+    await page.goto(`http://localhost:5199/?${s.query}`, { waitUntil: "load", timeout: 90_000 });
+    if (s.kind === "3d") await page.waitForFunction("window.__sceneReady === true", { timeout: 120_000 });
     await new Promise((r) => setTimeout(r, 800));
     await page.screenshot({ path: `${outDir}/${s.file}` });
     console.log(`saved ${outDir}/${s.file}`);

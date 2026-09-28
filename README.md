@@ -22,9 +22,11 @@ Other scripts:
 | `npm run build` | Type-check and production build |
 | `npm run smoke` | Headless Chrome/Edge clicks every camera (all wall modes), layer, panel and export; fails on any page error |
 | `npm run screenshots` | Regenerates `docs/screenshots/` (2D plan + 3D views) |
+| `npm run perf` | fps for High vs Performance at four eye-level tour stops on this machine's GPU |
+| `npm run fetch-assets` | Re-downloads and recolours the CC0 textures / HDRI / model into `public/` (already committed) |
 | `npm run immersive` | Walk / Tour / Record end-to-end: saves tour stills, walks with real key presses, records the full tour and checks the video (add `-- --no-record` to skip the ~70 s recording) |
 
-`smoke`, `screenshots` and `immersive` use `puppeteer-core` with your installed Chrome or Edge, so nothing extra is downloaded. Set `CHROME_PATH` if detection fails.
+`smoke`, `screenshots`, `immersive` and `perf` use `puppeteer-core` with your installed Chrome or Edge on the real GPU, so nothing extra is downloaded. Set `CHROME_PATH` if detection fails, or `SOFTWARE_GL=1` on a machine without a usable GPU.
 
 ## Controls
 
@@ -33,7 +35,87 @@ Other scripts:
 - **3D:** drag to orbit, right-drag to pan, scroll to zoom. The camera buttons are Overview, Living, Kitchen, Master, Kids, Foyer / hall and South balcony. **Walls: auto** shows a 1.2 m cutaway (dollhouse view) in the overview and full 10′ walls in room views. You can force either one.
 - **Budget panel:** hover a line to highlight the objects it pays for in both the 2D and 3D views.
 - **3D mode toggle:** `Orbit` (above) | `Walk` | `Tour` — see [Immersive walkthrough + video](#immersive-walkthrough--video).
-- **URL params** (used by the scripts): `?view=2d|3d|split&cam=living&walls=full&panel=none&dims=0&mode=orbit|walk|tour&tourT=12`.
+- **Quality:** `High` | `Performance` in the 3D toolbar — see [Realism layer](#realism-layer).
+- **URL params** (used by the scripts): `?view=2d|3d|split&cam=living&walls=full&panel=none&dims=0&mode=orbit|walk|tour&tourT=12&quality=high|performance`. For debugging, `&cp=x,y,h&ct=x,y,h&fov=60` places the orbit camera at a plan position (metres).
+
+## Realism layer
+
+Brief: `REALISM_CLAUDE_PROMPT.md`. Geometry, room roles and budget are unchanged, and the 2D plan and budget panel are untouched. Orbit, Walk, Tour and Record all use the upgraded look.
+
+![Living — High quality](docs/screenshots/3d-living.png)
+
+- **Lighting.** A soft neutral daylight HDRI (`small_empty_room_1`) provides environment light only; the background is not replaced, so rooms keep their walls. ACES Filmic tone mapping.
+- **Sun.** Comes from the east (the living/kitchen window side) with soft shadows. An invisible roof slab casts shadow, so sunlight only enters through windows and doors.
+- **Window light.**
+  - North living balcony: cool, bright area light.
+  - South kitchen balcony: warm door light, plus a low afternoon-sun wash on the balcony floor under the greige roller shade.
+  - Other windows: soft sky area lights.
+- **PBR materials.** `plan/materials.ts` → `materialLibrary`, built by `components/materials3d.tsx`. Every texture repeats at real-world scale:
+  - 600×600 vitrified tile in dry rooms (UVs in metres)
+  - 300 mm anti-skid tile in wet areas
+  - pale speckled artificial granite with a faint vein
+  - light-oak and matte-white laminate
+  - greige performance fabric, linen, sheers
+  - brushed nickel and matte-black metal, black glass, porcelain, mirror
+  - glass: the shower screen uses true transmission; windows and balcony doors use reflective transparent glass
+- **Furniture** (`components/Furniture3D.tsx`), built to the `plan.ts` footprints:
+  - sofa and lounge chairs with separate crowned seat cushions, reclined back cushions, rounded arms, throw pillows and tapered oak legs
+  - queen bed with a channel-tufted headboard, rounded mattress, duvet with fold-over and side drape, pillows and throw
+  - single bed in oak with rounded corners; kids desk with drawer pedestal and rounded top; kids chair
+  - wardrobes with 3 mm shutter gaps, a loft line, recessed plinth and black profile handles; the kids wardrobe has open oak book/toy shelves
+  - kitchen: separate matte shutters, profile handles, 40 mm granite top, 600 mm granite splash, oak wall units with under-cabinet LED, black-glass hob with pan supports and knobs, steel sink with drainer grooves and a black gooseneck mixer, T-hood chimney, steel fridge with housing
+  - bathrooms: vessel basin on an oak vanity, LED mirror, WC, rain shower
+  - master bedside tables: the Poly Haven CC0 `side_table_01` model, re-skinned in the project oak
+- **Design details** (`plan/details.ts`, derived from the plan):
+  - 90 mm skirting on every wall face of dry rooms, skipping door gaps (about 49 m)
+  - false-ceiling trays with LED cove in living and master
+  - 30 downlights
+  - door frames and oak architraves, solid flush leaves with black levers
+  - pleated sheers with light-blackout side panels (gathered at the balcony doors)
+  - granite window sills
+  - louvred full-height storage shutters
+  - black MS rail on the balcony parapets
+- **Budget.** Nothing new was added to the budget. Skirting falls under paint; trays, cove and downlights under the false-ceiling + LED line; frames and architraves under doors. There's no marble, gold hardware or extra decor.
+
+### Quality toggle: High vs Performance
+
+| | High (default) | Performance |
+|---|---|---|
+| HDRI environment | ✓ | ✓ |
+| Colour (albedo) textures | ✓ | ✓ |
+| Normal + roughness maps | ✓ | — |
+| Soft shadows (east sun) | ✓ | — |
+| Ambient occlusion (N8AO, half-res) + SMAA | ✓ | — |
+| Shower glass transmission | ✓ when you're in or at the ensuite* | fallback transparent glass |
+| Fill light | HDRI + window area lights | + warm hemisphere light |
+| Pixel ratio | up to 2 | up to 1.25 |
+
+\*True transmission costs a full extra render pass whenever the glass is on screen, so it only switches on in or at the door of the ensuite, at half resolution.
+
+**fps** (`npm run perf`, headless Chrome on an **AMD Radeon 740M integrated GPU**, 1600×900, DPR 1, at the living / kitchen / master / kids tour stops). Numbers vary between runs because of thermals, so these are ranges over repeated runs:
+
+| Quality | Average fps | Slowest stop |
+|---|---|---|
+| High | 37–54 | ~33 (master) |
+| Performance | 63–69 | ~33+ |
+| High, inside the ensuite (glass transmission on) | ~29 | |
+
+Both modes meet the ≥30 fps walk target on this mid-range laptop GPU. On software-only rendering (no GPU), use Performance. Re-record the tour video after changing quality: the recording captures whatever is on screen.
+
+Asset sources and licences are in [`docs/ASSET_CREDITS.md`](docs/ASSET_CREDITS.md). Everything is CC0 from Poly Haven, or generated in this project.
+
+### Realism acceptance checklist
+
+| Item | Status | Evidence |
+|---|---|---|
+| Walls / floors / granite / laminate / fabric read as distinct real materials under environment lighting | PASS | `docs/screenshots/3d-*.png`, tour stills |
+| Sofa, beds, tables are detailed models (not boxes), scaled to plan anchors | PASS | parametric models at the `plan.ts` footprints + CC0 glTF side table |
+| Kitchen shows granite vein, chimney, splash, matte shutters, visible handles | PASS | `3d-kitchen.png`, `04-tour-kitchen.png` |
+| Skirting, sheers, ceiling lights, door frames in main rooms | PASS | `plan/details.ts`; tour stills show trays, downlights, frames |
+| South balcony heat/shade still readable; north living balcony brighter | PASS | `05-tour-south-balcony.png` (warm floor wash under the shade), `03-tour-living-balcony.png` |
+| Walk / Tour still work; Record captures the richer look | PASS | `npm run immersive`: walls stop the player; 1280×720 H.264 MP4, 66.8 s |
+| ASSET_CREDITS.md lists texture/model sources + licences | PASS | `docs/ASSET_CREDITS.md` |
+| High vs Performance toggle documented | PASS | this section |
 
 ## Immersive walkthrough + video
 
@@ -77,7 +159,7 @@ How the capture works:
 - While recording, the render pixel ratio is raised so the 3D canvas is at least 1280 px wide, which keeps the capture sharp and the same size whatever your window size is.
 - Codec: **H.264 MP4** where `MediaRecorder` supports it (current Chrome/Edge). Otherwise **VP9/VP8 WebM**. **Chrome or Edge work best.** Firefox records WebM. Safari support varies.
 - The tour clock follows real time while recording. A slow GPU drops frames rather than producing slow motion.
-- Verified headless: one click → 1280×720 H.264 MP4, 65.7 s for the 66.4 s tour, 3.7 MB (`npm run immersive`).
+- Verified headless on the GPU: one click → 1280×720 H.264 MP4, 66.8 s for the 66.4 s tour, about 49 MB at 8 Mbps (`npm run immersive`). To shrink it for WhatsApp: `ffmpeg -i ahilyanagar-2bhk-walkthrough.mp4 -c:v libx264 -crf 28 -preset slow -pix_fmt yuv420p walkthrough-small.mp4`.
 
 Convert WebM → MP4 (e.g. for WhatsApp) with ffmpeg:
 
@@ -122,6 +204,9 @@ components/Plan2D.tsx      SVG plan (pan/zoom, layers, dimensions, export)
 components/Scene3D.tsx     R3F scene: walls extruded from plan walls/openings, floors, lights, cameras
 components/Furniture3D.tsx box-modelled furniture proxies at true proportions
 components/BudgetPanel.tsx, Legend.tsx, ChecksPanel.tsx
+plan/details.ts             skirting runs, false-ceiling trays, downlight points
+components/materials3d.tsx  PBR material library → three.js (real-world texture scale, quality modes)
+components/Architecture3D.tsx walls, floors, doors/frames, windows/sills, stair, ceilings, skirting
 plan/collision.ts           walk colliders from plan walls/openings/furniture + sliding movement
 plan/tour.ts                tour waypoints, walkSpawn, pure tourState(t)
 components/WalkControls.tsx    PointerLockControls + WASD + collision

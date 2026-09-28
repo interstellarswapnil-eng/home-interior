@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { TOUR_SECONDS, tourState } from "../plan/tour";
 import { immersive, setImmersive } from "./immersiveStore";
+import { EXPOSURE } from "./materials3d";
 
 /**
  * Cinematic tour: advances the single tour clock (`immersive.tourT`) while playing and poses
@@ -17,7 +18,7 @@ export function TourController() {
     camera.near = 0.05;
     camera.updateProjectionMatrix();
     return () => {
-      gl.toneMappingExposure = 1;
+      gl.toneMappingExposure = EXPOSURE;
     };
   }, [camera, gl]);
 
@@ -30,7 +31,7 @@ export function TourController() {
     immersive.tourFrame = f;
     camera.position.set(...f.position);
     camera.lookAt(...f.lookAt);
-    gl.toneMappingExposure = 1 + f.exposure;
+    gl.toneMappingExposure = EXPOSURE * (1 + f.exposure);
     (window as unknown as { __tour?: unknown }).__tour = { t: immersive.tourT, done: f.done, title: f.title };
     if (immersive.tourPlaying && immersive.tourT >= TOUR_SECONDS) setImmersive({ tourPlaying: false });
   });

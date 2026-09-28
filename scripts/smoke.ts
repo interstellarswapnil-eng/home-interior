@@ -7,14 +7,14 @@ import { mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 import { createServer } from "vite";
 import puppeteer from "puppeteer-core";
-import { executablePath } from "./browser";
+import { executablePath, glArgs } from "./browser";
 
 const server = await createServer({ server: { port: 5198, strictPort: true }, logLevel: "error" });
 await server.listen();
 const browser = await puppeteer.launch({
   executablePath,
   headless: true,
-  args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"],
+  args: glArgs,
   defaultViewport: { width: 1500, height: 950 },
 });
 const errors: string[] = [];
@@ -23,8 +23,8 @@ try {
   const page = await browser.newPage();
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-  await page.goto("http://localhost:5198/?view=split&panel=budget", { waitUntil: "networkidle0" });
-  await page.waitForFunction("window.__sceneReady === true", { timeout: 60_000 });
+  await page.goto("http://localhost:5198/?view=split&panel=budget", { waitUntil: "load", timeout: 90_000 });
+  await page.waitForFunction("window.__sceneReady === true", { timeout: 120_000 });
 
   const clickText = async (text: string) => {
     const ok = await page.evaluate((t) => {

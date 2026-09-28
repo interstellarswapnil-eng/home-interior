@@ -7,6 +7,7 @@ import { ChecksPanel } from "../components/ChecksPanel";
 import { ImmersiveHUD } from "../components/ImmersiveHUD";
 import { immersive, setImmersive, tour, type ImmersiveMode } from "../components/immersiveStore";
 import { stopRecording } from "../components/VideoRecorder";
+import type { Quality } from "../components/materials3d";
 import { meta, type RoomId } from "../plan/plan";
 
 type View = "2d" | "3d" | "split";
@@ -37,6 +38,7 @@ export function App() {
   const [camera, setCamera] = useState<CameraId>(pick<CameraId>("cam", cameraIds, "overview"));
   const [wallMode, setWallMode] = useState<WallMode>(pick<WallMode>("walls", ["auto", "full", "cut"], "auto"));
   const [mode, setMode] = useState<ImmersiveMode>(pick<ImmersiveMode>("mode", ["orbit", "walk", "tour"], "orbit"));
+  const [quality, setQuality] = useState<Quality>(pick<Quality>("quality", ["high", "performance"], "high"));
   const [layers, setLayers] = useState<Layers>({ walls: true, furniture: true, dims: params.get("dims") !== "0", labels: true });
   const [print, setPrint] = useState(false);
   const [hover, setHover] = useState<string[] | null>(null);
@@ -131,6 +133,14 @@ export function App() {
                   </button>
                 ))}
               <span className="spacer" />
+              <select
+                value={quality}
+                onChange={(e) => setQuality(e.target.value as Quality)}
+                title="High: HDRI + soft shadows + ambient occlusion + glass transmission + normal maps. Performance: no shadows/AO/normal maps."
+              >
+                <option value="high">Quality: High</option>
+                <option value="performance">Quality: Performance</option>
+              </select>
               {mode === "orbit" && (
                 <select value={wallMode} onChange={(e) => setWallMode(e.target.value as WallMode)} title="Wall height">
                   <option value="auto">Walls: auto</option>
@@ -140,7 +150,7 @@ export function App() {
               )}
             </div>
             <div className="canvas-wrap">
-              <Scene3D camera={camera} mode={mode} wallMode={wallMode} highlight={highlight} />
+              <Scene3D camera={camera} mode={mode} wallMode={wallMode} quality={quality} highlight={highlight} />
               <ImmersiveHUD />
             </div>
             <div className="hint muted small">

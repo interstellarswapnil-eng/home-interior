@@ -9,7 +9,7 @@ import { mkdirSync, readdirSync, renameSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 import { createServer } from "vite";
 import puppeteer, { type Page } from "puppeteer-core";
-import { executablePath } from "./browser";
+import { executablePath, glArgs } from "./browser";
 import { TOUR_SECONDS, tourStops } from "../plan/tour";
 
 const outDir = "docs/screenshots/immersive";
@@ -22,7 +22,7 @@ await server.listen();
 const browser = await puppeteer.launch({
   executablePath,
   headless: true,
-  args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--autoplay-policy=no-user-gesture-required"],
+  args: [...glArgs, "--autoplay-policy=no-user-gesture-required"],
   defaultViewport: { width: 1600, height: 1000 },
 });
 const errors: string[] = [];
@@ -31,8 +31,8 @@ const open = async (query: string) => {
   const page = await browser.newPage();
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-  await page.goto(`http://localhost:5197/?view=3d&panel=none&${query}`, { waitUntil: "networkidle0" });
-  await page.waitForFunction("window.__sceneReady === true", { timeout: 60_000 });
+  await page.goto(`http://localhost:5197/?view=3d&panel=none&${query}`, { waitUntil: "load", timeout: 90_000 });
+  await page.waitForFunction("window.__sceneReady === true", { timeout: 120_000 });
   return page;
 };
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -66,20 +66,27 @@ try {
     const page = await open("mode=walk");
     await wait(500);
     await page.screenshot({ path: `${outDir}/walk-spawn.png` });
-    const start = await page.evaluate(() => (window as any).__walk);
-    await page.keyboard.down("KeyW");
-    await wait(3000);
-    await page.keyboard.up("KeyW");
-    const moved = await page.evaluate(() => (window as any).__walk);
-    const dist = Math.hypot(moved.x - start.x, moved.y - start.y);
-    results.push(["Walk: W moves forward (toward the living room)", dist > 0.3 && moved.x > start.x, `${dist.toFixed(2)} m, (${start.x.toFixed(2)}, ${start.y.toFixed(2)}) → (${moved.x.toFixed(2)}, ${moved.y.toFixed(2)})`]);
-    // strafe left (north-west) into the storage-room shutters: must stop 0.2 m short of them
-    await page.keyboard.down("KeyA");
-    await wait(6000);
-    await page.keyboard.up("KeyA");
-    const pinned = await page.evaluate(() => (window as any).__walk);
+    const start = await page.evaluate("window.__walk") as { x: number; y: number };
+    // strafe left (north-west) from the spawn into the storage-room shutters: must stop 0.2 m short
+    // short bursts until northward progress stops (contact), so sliding can't carry us to a door
+    let pinned = start;
+    for (let i = 0; i < 20; i++) {
+      await page.keyboard.down("KeyA");
+      await wait(250);
+      await page.keyboard.up("KeyA");
+      const p = (await page.evaluate("window.__walk")) as { x: number; y: number };
+      const stuck = Math.abs(p.y - pinned.y) < 0.005 && p.y > start.y;
+      pinned = p;
+      if (stuck) break;
+    }
     const limit = 4.519 - 0.2 + 0.01; // storage front face minus player radius
-    results.push(["Walk: walls stop the player (no clipping)", pinned.y <= limit && pinned.y > moved.y, `stopped at y=${pinned.y.toFixed(3)} (wall limit ${limit.toFixed(3)})`]);
+    results.push(["Walk: walls stop the player (no clipping)", pinned.y <= limit && pinned.y > start.y && pinned.x > 4.0, `stopped at (${pinned.x.toFixed(2)}, ${pinned.y.toFixed(3)}) against the storage shutters (limit y ${limit.toFixed(3)})`]);
+    await page.keyboard.down("KeyW");
+    await wait(2000);
+    await page.keyboard.up("KeyW");
+    const moved = await page.evaluate("window.__walk") as { x: number; y: number };
+    const dist = Math.hypot(moved.x - pinned.x, moved.y - pinned.y);
+    results.push(["Walk: W moves forward (toward the living room)", dist > 0.3 && moved.x > pinned.x, `${dist.toFixed(2)} m → (${moved.x.toFixed(2)}, ${moved.y.toFixed(2)})`]);
     await page.screenshot({ path: `${outDir}/walk-living.png` });
     const lockBtn = await page.$("#walk-lock");
     results.push(["Walk: 'Click to explore' pointer-lock overlay", !!lockBtn, lockBtn ? "present" : "missing"]);

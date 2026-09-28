@@ -11,11 +11,15 @@
     "test": "vitest run",
     "screenshots": "tsx scripts/screenshots.ts",
     "smoke": "tsx scripts/smoke.ts",
-    "immersive": "tsx scripts/immersive.ts"
+    "immersive": "tsx scripts/immersive.ts",
+    "fetch-assets": "tsx scripts/fetch-assets.ts",
+    "perf": "tsx scripts/perf.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
+    "@react-three/postprocessing": "^2.19.1",
+    "postprocessing": "^6.39.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "^0.186.1"
@@ -27,6 +31,7 @@
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
     "puppeteer-core": "^25.12.0",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
