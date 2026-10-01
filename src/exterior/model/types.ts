@@ -28,6 +28,9 @@ export const SURFACE_ROLES = [
   "canopy",
   "planter",
   "greenery",
+  "treeTrunk",
+  "solar",
+  "lightGlow",
   "compoundWall",
   "gate",
   "paving",
@@ -62,14 +65,21 @@ export type BoxPart = PartBase & { kind: "box"; box: Box };
  * A 2D profile in a vertical plane, extruded horizontally.
  * axis "x": profile u runs along plan x, plane spans plan y = at .. at + thickness.
  * axis "y": profile u runs along plan y, plane spans plan x = at .. at + thickness.
+ * axis "z": profile is (plan x, plan y), extruded from z = at to at + thickness.
  */
 export type PrismPart = PartBase & {
   kind: "prism";
   profile: [number, number][];
-  axis: "x" | "y";
+  /** Optional holes in the profile (same coordinates), e.g. a frame around a window. */
+  holes?: [number, number][][];
+  /** "z": the profile is a plan shape (plan x, plan y) extruded upwards from z = at. */
+  axis: "x" | "y" | "z";
   at: number;
   thickness: number;
 };
+
+/** Rounded organic volume (tree crown, shrub): an ellipsoid. */
+export type BlobPart = PartBase & { kind: "blob"; x: number; y: number; z: number; r: number; rz: number };
 
 /** Flat text plate on a wall (the building name). */
 export type LabelPart = PartBase & {
@@ -83,7 +93,7 @@ export type LabelPart = PartBase & {
   height: number;
 };
 
-export type Part = BoxPart | PrismPart | LabelPart;
+export type Part = BoxPart | PrismPart | LabelPart | BlobPart;
 
 /** A window or door on the facade, one per floor (id prefixed "F<n>-"). */
 export type FacadeOpening = {

@@ -64,7 +64,7 @@ export function makeRoleMaterial(role: SurfaceRole): THREE.MeshStandardMaterial 
 }
 
 /** Apply a resolved role style; flags a shader rebuild only when the set of maps changes. */
-export function applyStyle(m: THREE.MeshStandardMaterial, role: SurfaceRole, style: RoleStyle, quality: Quality, debugColor?: string) {
+export function applyStyle(m: THREE.MeshStandardMaterial, role: SurfaceRole, style: RoleStyle, quality: Quality, debugColor?: string, night = false) {
   const def: MaterialDef | undefined = MATERIALS[style.material];
   const textured = !debugColor && !!def?.textureSet && role !== "glass";
   const before = `${!!m.map}${!!m.normalMap}${!!m.roughnessMap}`;
@@ -89,5 +89,10 @@ export function applyStyle(m: THREE.MeshStandardMaterial, role: SurfaceRole, sty
     m.roughness = 1;
     m.envMapIntensity = 0.2;
   }
+  // night: warm window glow from the rooms, glowing light fittings, glass lets the glow through
+  const glow = night && !debugColor ? (role === "interior" ? 0.9 : role === "lightGlow" ? 4 : 0) : 0;
+  m.emissive.set(role === "lightGlow" ? "#FFD49A" : "#FFB45E");
+  m.emissiveIntensity = glow;
+  if (role === "glass") m.opacity = night ? 0.45 : 0.82;
   if (`${!!m.map}${!!m.normalMap}${!!m.roughnessMap}` !== before) m.needsUpdate = true;
 }

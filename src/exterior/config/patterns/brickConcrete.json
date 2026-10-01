@@ -196,6 +196,19 @@
         "gate": "verticalBars"
       }
     },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 3,
+        "shrubs": true
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
     "nameSign": {
       "enabled": true,
       "params": {

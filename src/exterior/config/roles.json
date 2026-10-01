@@ -142,5 +142,17 @@
   "road": {
     "label": "Road",
     "tip": "The road in front (south)."
+  },
+  "treeTrunk": {
+    "label": "Tree trunks",
+    "tip": "Trunks and stems of trees in the garden."
+  },
+  "solar": {
+    "label": "Solar panels",
+    "tip": "Rooftop solar panels."
+  },
+  "lightGlow": {
+    "label": "Light fittings",
+    "tip": "The glowing part of facade lights. They light up in night mode."
   }
 }

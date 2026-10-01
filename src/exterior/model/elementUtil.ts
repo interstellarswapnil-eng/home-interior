@@ -3,7 +3,11 @@ import { FLATS } from "./building";
 import type { FacadeOpening, Part } from "./types";
 
 export type ElementConfig = { enabled: boolean; slots?: string[]; params?: Record<string, unknown> };
-export type ElementCtx = { openings: FacadeOpening[] };
+export type ElementCtx = {
+  openings: FacadeOpening[];
+  /** Set when the roundedCorners element is on: window frames get soft corners or arches. */
+  soft?: { radius: number; arches: boolean };
+};
 export type Gen = (id: string, cfg: ElementConfig, ctx: ElementCtx) => Part[];
 
 export const num = (p: Record<string, unknown> | undefined, k: string, d: number) => (typeof p?.[k] === "number" ? (p[k] as number) : d);

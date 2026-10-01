@@ -2,6 +2,44 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-01: Phase 3 (controls A–D)
+
+- **Tabs:** Style · Colors · Elements · View. Compare and Save & export are shown but disabled until Phase 5.
+  - A quick bar on the 3D view gives view, light and turntable in one click.
+  - A flat paint-swatch strip sits on the view. Clicking a swatch opens that colour.
+- **Views (A):** 13 presets with smooth 0.9 s camera moves:
+  - like image 28
+  - 4 sides, 4 corners at 45°
+  - top (120 m up with a 16° lens, so it reads like a plan)
+  - bird's-eye
+  - street level at the gate (1.6 m)
+  - entrance close-up
+
+  Orbit limits: the camera never goes below 0.6 m and is pushed out of the flats' volume. The parking underneath stays reachable.
+- **Walk mode:** pointer-lock, WASD/arrows, Shift to go faster, 1.6 m eye height above the real ground (road 0, footpath 0.1, plot 0.3, parking 0.45). You collide with walls, columns and the compound wall. **The pedestrian gate is now drawn slid open**, because it's the way in. Touch walking is not implemented (desktop only, like the interior).
+- **Sun:** NOAA solar position for 19.09° N, 74.74° E, IST. Tests check solar noon ≈ 12:35, the June noon sun slightly north, and day length. The time slider runs from sunrise to sunset for the chosen date, with season shortcuts. True north = plan north [assumed].
+- **Cloudy:** uniform grey sky light, weak soft sun. This is the mode for judging colours.
+- **Night:** dark blue ambient light, rooms glow warm behind the glass, light fittings glow. **Real light sources and bloom come in Phase 4.**
+- **Pattern cards (B):** thumbnails are rendered from the real model by a small offscreen renderer after the main view loads, then cached in browser storage, keyed by a hash of the pattern file.
+- **Colours (C):**
+  - **Locks:** switching pattern or palette keeps only locked roles. Locking an unedited role freezes its current look.
+  - **Reset:** restores the pattern's colours.
+  - **Suggestions:** the colours this role actually gets across all palettes, current pattern first.
+  - **Material list:** filtered to what makes sense for the role (no brick railings).
+- **Elements (D):** all 18 from the list now generate geometry. New this phase:
+  - rounded corners / arches: a soft or arched window-frame ring, surface detail only, needs box frames
+  - facade lighting fixtures
+  - main door style (wood double / pivot / glass)
+  - landscaping (trees, shrubs, stepping stones)
+  - solar panels: 3 rows on a 2.2 m raised frame over the west terrace, tilted 19° south
+
+  Each element has on/off, params and "where it goes" slot checkboxes, built from `config/elements.json`.
+- **Click to select:** the card shows the role and slot in plain words, the colour, hex, suggestions, material and lock, plus "Adjust / Remove" for the element you clicked and "Add here" for the elements allowed at that spot.
+- **Tests and scripts:**
+  - `tests/exterior/`: sun, design reducer (locks, reset, elements), walk physics (gate, walls, ground)
+  - `npm run exterior:smoke` clicks through everything in a real browser
+  - `npm run exterior:perf`: pattern switch 10–130 ms, palette switch ≤ 130 ms, turntable ~140 fps (integrated GPU, both quality modes)
+
 ## 2026-10-01: Phase 2 (style system)
 
 - **8 patterns in `src/exterior/config/patterns/`:** Architect's design, the 6 starting patterns, and Warm curves (my references). Each of the 7 non-architect patterns has 3 palettes, with one ★ recommended and the reason shown in the app. The Phase 0 base/plinth refinements are applied.

@@ -15,13 +15,24 @@ function partGeometry(p: Exclude<Part, { kind: "label" }>): THREE.BufferGeometry
     g.translate(b.x + b.w / 2, (b.z0 + b.z1) / 2, -(b.y + b.h / 2));
     return g;
   }
+  if (p.kind === "blob") {
+    const g = new THREE.IcosahedronGeometry(1, 2);
+    g.scale(p.r, p.rz, p.r);
+    g.translate(p.x, p.z, -p.y);
+    return g;
+  }
   const shape = new THREE.Shape(p.profile.map(([u, z]) => new THREE.Vector2(u, z)));
-  const g = new THREE.ExtrudeGeometry(shape, { depth: p.thickness, bevelEnabled: false, curveSegments: 4 });
+  for (const h of p.holes ?? []) shape.holes.push(new THREE.Path(h.map(([u, z]) => new THREE.Vector2(u, z))));
+  const g = new THREE.ExtrudeGeometry(shape, { depth: p.thickness, bevelEnabled: false, curveSegments: 8 });
   if (p.axis === "x") g.translate(0, 0, -(p.at + p.thickness));
-  else {
+  else if (p.axis === "y") {
     // local x (= plan y) → world −z, extrusion (local z) → world +x
     g.rotateY(Math.PI / 2);
     g.translate(p.at, 0, 0);
+  } else {
+    // plan shape (x, y) in local x/y, extruded along local z → world: x, up, −y
+    g.rotateX(-Math.PI / 2);
+    g.translate(0, p.at, 0);
   }
   return g;
 }

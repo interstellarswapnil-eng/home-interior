@@ -203,13 +203,21 @@
     "roundedCorners": {
       "enabled": true,
       "params": {
-        "radius": 0.3
+        "radius": 0.25,
+        "arches": true
       }
     },
     "mainDoor": {
       "enabled": true,
       "params": {
         "style": "wood"
+      }
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 3,
+        "shrubs": true
       }
     },
     "nameSign": {

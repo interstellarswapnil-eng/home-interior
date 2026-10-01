@@ -226,8 +226,24 @@
     },
     "lighting": {
       "enabled": true,
+      "slots": [
+        "wall:frontName",
+        "wall:featureRecess",
+        "balcony:S",
+        "site:compoundFront"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
       "params": {
-        "type": "coveAndWallLights"
+        "trees": 3,
+        "shrubs": true
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
       }
     },
     "nameSign": {

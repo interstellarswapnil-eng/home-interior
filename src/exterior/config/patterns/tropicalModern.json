@@ -213,6 +213,19 @@
         "gate": "slats"
       }
     },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 4,
+        "shrubs": true
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
     "nameSign": {
       "enabled": true,
       "params": {

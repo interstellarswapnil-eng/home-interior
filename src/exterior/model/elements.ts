@@ -19,6 +19,7 @@ import { box, faceBox } from "./geom";
 import { FLOORS, num, slotOpenings, str, type ElementConfig, type ElementCtx, type Gen } from "./elementUtil";
 import { canopy, parapet, pergola, roofOverhang, stoneBase } from "./roofElements";
 import { cladding, jaali, slats, sunshades } from "./wallElements";
+import { landscaping, lighting, mainDoor, softFrame, solar } from "./siteElements";
 import type { Part, SurfaceRole } from "./types";
 
 export type { ElementConfig, ElementCtx };
@@ -33,6 +34,10 @@ const boxFrames: Gen = (id, cfg, ctx) => {
   for (const slot of cfg.slots ?? []) {
     const role = roleBySlot[slot] ?? str<SurfaceRole>(cfg.params, "role", "windowSurround");
     for (const o of slotOpenings(slot, ctx)) {
+      if (ctx.soft) {
+        out.push({ id: `${o.id}-${id}`, role, floor: o.floor, side: o.side, slot, element: id, ...softFrame(o, width, depth, ctx.soft.radius, ctx.soft.arches && o.type === "window" && o.b - o.a > 0.8) });
+        continue;
+      }
       const p = (k: string, a0: number, a1: number, z0: number, z1: number) =>
         out.push(box(`${o.id}-${id}-${k}`, role, faceBox(o.side, o.face, a0, a1, -depth, -0.002, z0, z1), { floor: o.floor, side: o.side, slot, element: id }));
       p("t", o.a - width, o.b + width, o.z1, o.z1 + width);
@@ -140,23 +145,28 @@ const railings: Gen = (id, cfg) => {
   return out;
 };
 
-/** D13 Planters: a planter box with greenery along a roof or balcony edge. */
+/** D13 Planters: plant boxes along the roof edge over a balcony stack, or inside each balcony front. */
 const planters: Gen = (id, cfg) => {
   const out: Part[] = [];
   const h = num(cfg.params, "height", 0.45);
   for (const slot of cfg.slots ?? []) {
     const key = slot.endsWith("N") ? "N" : "S";
     const b = BALCONY[key];
-    if (!slot.startsWith("edge:balconyRoof-")) continue;
-    const y = key === "S" ? b.y + 0.15 : b.y1 - 0.15 - 0.45;
-    const meta = { floor: 4, side: key, slot, element: id } as const;
-    out.push(box(`R-${id}-${key}-box`, "planter", { x: b.x + 0.15, y, w: b.x1 - b.x - 0.35, h: 0.45, z0: TERRACE, z1: TERRACE + h }, meta));
-    // greenery: a soft row of bushes, plus creepers spilling over the edge
-    const n = Math.round((b.x1 - b.x) / 0.45);
-    for (let i = 0; i < n; i++) {
-      const x = b.x + 0.2 + i * ((b.x1 - b.x - 0.5) / n);
-      const bump = 0.25 + 0.2 * Math.abs(Math.sin(i * 2.3));
-      out.push(box(`R-${id}-${key}-leaf-${i}`, "greenery", { x, y: y + 0.03, w: 0.42, h: 0.4, z0: TERRACE + h - 0.05, z1: TERRACE + h + bump }, meta));
+    const roof = slot.startsWith("edge:balconyRoof-");
+    if (!roof && !slot.startsWith("balcony:")) continue;
+    // roof: on the slab behind the edge; balcony: a trough on the inside of the front, below the rail
+    const levels = roof ? [{ pre: "R", z0: TERRACE, floor: 4 }] : FLOORS.map((f) => ({ pre: `F${f}`, z0: level(f) + 0.65 - h, floor: f }));
+    const depth = roof ? 0.45 : 0.3;
+    const y = key === "S" ? b.y + (roof ? 0.15 : 0.13) : b.y1 - (roof ? 0.15 : 0.13) - depth;
+    for (const { pre, z0, floor } of levels) {
+      const meta = { floor, side: key, slot, element: id } as const;
+      out.push(box(`${pre}-${id}-${key}-box`, "planter", { x: b.x + 0.15, y, w: b.x1 - b.x - 0.4, h: depth, z0, z1: z0 + h }, meta));
+      const n = Math.round((b.x1 - b.x) / 0.42);
+      for (let i = 0; i < n; i++) {
+        const x = b.x + 0.4 + i * ((b.x1 - b.x - 0.85) / Math.max(1, n - 1));
+        const r = (roof ? 0.24 : 0.18) + 0.06 * Math.abs(Math.sin(i * 2.3 + floor));
+        out.push({ id: `${pre}-${id}-${key}-leaf-${i}`, kind: "blob", role: "greenery", x, y: y + depth / 2, z: z0 + h + r * 0.4, r, rz: r * 0.85, ...meta });
+      }
     }
   }
   return out;
@@ -203,7 +213,7 @@ const compoundWall: Gen = (id, cfg) => {
   }
   // gates
   const gate = (k: string, a: number, b: number) => {
-    const y = P.y0 + 0.08;
+    const y = k === "ped" ? P.y0 + 0.26 : P.y0 + 0.08;
     const gh = H + 0.1;
     out.push(box(`${id}-gate-${k}-top`, "gate", { x: a, y, w: b - a, h: 0.05, z0: gh - 0.06, z1: gh }, meta("site:gate")));
     out.push(box(`${id}-gate-${k}-bottom`, "gate", { x: a, y, w: b - a, h: 0.05, z0: 0.05, z1: 0.12 }, meta("site:gate")));
@@ -222,7 +232,9 @@ const compoundWall: Gen = (id, cfg) => {
     for (let i = 0; i <= n; i++)
       out.push(box(`${id}-gate-${k}-bar-${i}`, "gate", { x: a + i * ((b - a - 0.03) / n), y: y + 0.01, w: 0.03, h: 0.03, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
   };
-  gate("ped", gp.a, gp.b);
+  // the pedestrian gate is shown slid open (behind the wall, inside the plot): it is the way in
+  const slid = gp.b - gp.a;
+  gate("ped", gp.a - slid - 0.1, gp.a - 0.1);
   gate("veh", gv.a, gv.b);
   return out;
 };
@@ -265,11 +277,19 @@ export const ELEMENT_GENERATORS: Record<string, Gen> = {
   pergola,
   canopy,
   stoneBase,
+  lighting,
+  mainDoor,
+  landscaping,
+  solar,
+  // D12 is a modifier: it changes how boxFrames are drawn (see buildElements)
+  roundedCorners: () => [],
 };
 
 /** Generate the parts for every enabled element. Unknown element ids are ignored (Phase 3 adds more generators). */
 export function buildElements(elements: Record<string, ElementConfig>, ctx: ElementCtx): Part[] {
   const out: Part[] = [];
+  const rc = elements.roundedCorners;
+  if (rc?.enabled) ctx = { ...ctx, soft: { radius: num(rc.params, "radius", 0.25), arches: rc.params?.arches === true } };
   for (const [id, cfg] of Object.entries(elements)) {
     if (!cfg.enabled) continue;
     const gen = ELEMENT_GENERATORS[(cfg.params?.type as string) ?? id];

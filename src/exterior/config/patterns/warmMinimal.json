@@ -196,8 +196,23 @@
     },
     "lighting": {
       "enabled": true,
+      "slots": [
+        "edge:stiltBand",
+        "balcony:S",
+        "site:gate"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
       "params": {
-        "type": "linearUnderCanopy"
+        "trees": 3,
+        "shrubs": true
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "pivot"
       }
     },
     "nameSign": {

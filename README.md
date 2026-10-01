@@ -10,8 +10,13 @@ An interactive 2D floor plan and 3D model of a typical 1st to 3rd floor 2BHK in 
 
 The building's outside lives in a separate module: `src/exterior/`, opened from the **Interior | Exterior** switch in the header, or at http://localhost:5173/exterior.html. It reads the same floor plan (`plan/plan.ts`) and never changes it. The design notes are in `docs/exterior/`. Commands:
 
-- `npm run exterior:shots` saves preset views to `docs/exterior/screenshots/`.
-- `npm test` includes the exterior model tests.
+- `npm run exterior:shots` saves views to `docs/exterior/screenshots/`.
+- `npm run exterior:smoke` clicks through every tab, pattern, element, view and light mode in headless Chrome/Edge.
+- `npm run exterior:perf` reports style-switch times and fps.
+- `npm run exterior:assets` re-downloads the CC0 facade textures.
+- `npm test` includes the exterior tests.
+
+How to add a pattern or palette: `docs/exterior/ADDING_STYLES.md`.
 
 ## Run it
 

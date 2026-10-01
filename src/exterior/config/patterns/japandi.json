@@ -200,14 +200,22 @@
     "landscaping": {
       "enabled": true,
       "params": {
-        "ground": "gravel",
+        "trees": 2,
+        "shrubs": true,
         "steppingStones": true
       }
     },
     "lighting": {
       "enabled": true,
+      "slots": [
+        "site:compoundFront",
+        "site:gate"
+      ]
+    },
+    "mainDoor": {
+      "enabled": true,
       "params": {
-        "type": "warmLow"
+        "style": "wood"
       }
     },
     "nameSign": {
