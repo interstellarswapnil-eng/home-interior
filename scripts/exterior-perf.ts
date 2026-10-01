@@ -16,14 +16,20 @@ const run = <T>(page: Page, js: string) => page.evaluate(js) as Promise<T>;
 const twoFrames = "new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))";
 
 try {
-  for (const quality of ["normal", "high"]) {
+  for (const [quality, extra] of [
+    ["normal", ""],
+    ["high", ""],
+    ["normal", "&sky=night"],
+    ["high", "&sky=night"],
+  ]) {
+    const night = extra.includes("night");
     const page = await browser.newPage();
     page.on("pageerror", (e) => errors.push(String(e)));
-    await page.goto(`http://localhost:5197/exterior.html?cam=photo&thumbs=0&quality=${quality}`, { waitUntil: "load" });
+    await page.goto(`http://localhost:5197/exterior.html?cam=photo&thumbs=0&quality=${quality}${extra}&pattern=warmCurves`, { waitUntil: "load" });
     await page.waitForFunction("window.__extReady === true", { timeout: 120_000 });
     const names = await run<string[]>(page, `[...document.querySelectorAll(".pcard .pname")].map((e) => e.childNodes[0].textContent.trim())`);
-    console.log(`\nQuality: ${quality}`);
-    for (const [i, name] of names.entries()) {
+    console.log(`\nQuality: ${quality}${night ? " · night (real lights + bloom)" : ""}`);
+    for (const [i, name] of (night ? [] : names).entries()) {
       const ms = await run<number>(page, `(async () => { const t0 = performance.now(); document.querySelectorAll(".pcard")[${i}].click(); await ${twoFrames}; return performance.now() - t0; })()`);
       const pal = await run<number>(
         page,

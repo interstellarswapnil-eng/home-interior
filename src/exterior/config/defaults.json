@@ -48,6 +48,18 @@
     "lightGlow": {
       "material": "plaster",
       "color": "#F3EDE2"
+    },
+    "neighbor": {
+      "material": "concrete",
+      "color": "#B7B4AE"
+    },
+    "carBody": {
+      "material": "metalMatte",
+      "color": "#B0302B"
+    },
+    "person": {
+      "material": "plaster",
+      "color": "#5E5A57"
     }
   }
 }

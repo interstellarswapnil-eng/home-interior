@@ -17,7 +17,8 @@
     "exterior:shots": "tsx scripts/exterior-shots.ts",
     "exterior:assets": "tsx scripts/exterior-fetch-assets.ts",
     "exterior:perf": "tsx scripts/exterior-perf.ts",
-    "exterior:smoke": "tsx scripts/exterior-smoke.ts"
+    "exterior:smoke": "tsx scripts/exterior-smoke.ts",
+    "exterior:hdri": "tsx scripts/exterior-fetch-hdri.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -26,7 +27,8 @@
     "postprocessing": "^6.39.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "three-gpu-pathtracer": "0.0.24"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

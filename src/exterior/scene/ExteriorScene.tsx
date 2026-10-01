@@ -1,6 +1,10 @@
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { Environment, OrbitControls, PointerLockControls, Sky } from "@react-three/drei";
+import { Environment, OrbitControls, PointerLockControls } from "@react-three/drei";
+import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping } from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
+import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
+import skies from "../../../public/exterior/hdri/skies.json";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { buildElements } from "../model/elements";
@@ -8,6 +12,10 @@ import { resolveElements, resolveRoles, type DesignState } from "../model/resolv
 import { buildShell } from "../model/shell";
 import { BALCONY, CENTER, LOCATION, STILT_BAND, TOP, X_E, X_W, level } from "../model/building";
 import type { LabelPart, Part } from "../model/types";
+import { contextParts, LAMP_H, STREET_LAMPS, type ContextOptions } from "../model/context";
+import { lightingSources, type LightSpec } from "../model/siteElements";
+// the path tracer is only downloaded when a photo-quality still is requested
+const PhotoStill = lazy(() => import("./PhotoStill").then((m) => ({ default: m.PhotoStill })));
 import { dayOfYear, sunDirection, sunPosition } from "../sun";
 import { CAMERA_PRESETS, WALK_START, type CameraId } from "./cameras";
 import { buildRoleMeshes, partAtTriangle, toWorld, type RoleMesh } from "./geometry";
@@ -24,7 +32,10 @@ export type ViewState = {
   hour: number;
   /** yyyy-mm-dd */
   date: string;
+  context: ContextOptions;
 };
+
+export type PhotoRequest = { id: number; samples: number } | null;
 
 export type ExteriorSceneProps = {
   design: DesignState;
@@ -37,7 +48,12 @@ export type ExteriorSceneProps = {
   onPick?: (part: Part | null) => void;
   /** jump to presets instead of animating (scripts) */
   instantCamera?: boolean;
+  photo?: PhotoRequest;
+  onPhotoProgress?: (fraction: number) => void;
+  onPhotoDone?: (url: string | null) => void;
 };
+
+RectAreaLightUniformsLib.init();
 
 export const shell = buildShell();
 
@@ -47,9 +63,12 @@ export function designParts(design: DesignState): Part[] {
 }
 
 // ---------------------------------------------------------------------------
-function Building({ design, showRoles, onPick, quality, night }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality"> & { night: boolean }) {
+function Building({ design, showRoles, onPick, quality, night, context }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality"> & { night: boolean; context: ContextOptions }) {
   const elements = useMemo(() => resolveElements(design), [design]);
-  const parts = useMemo(() => [...shell.parts, ...buildElements(elements, { openings: shell.openings })], [elements]);
+  const parts = useMemo(
+    () => [...shell.parts, ...buildElements(elements, { openings: shell.openings }), ...contextParts(context)],
+    [elements, context],
+  );
   const partById = useMemo(() => new Map(parts.map((p) => [p.id, p])), [parts]);
   const meshes = useMemo(() => buildRoleMeshes(parts), [parts]);
   useEffect(() => () => meshes.forEach((m) => m.geometry.dispose()), [meshes]);
@@ -111,9 +130,20 @@ function NameSign({ part, onPick, night }: { part: LabelPart; onPick?: (p: Part 
 }
 
 // ---------------------------------------------------------------------------
-// Sky, sun, environment
+// Sky (HDRI), sun, night lights
 // ---------------------------------------------------------------------------
+type SkyKey = keyof typeof skies;
+const HDRI = (k: SkyKey) => `${import.meta.env.BASE_URL}exterior/hdri/${skies[k].file}`;
+
+/** Rotation (about the vertical) that puts the sky image's sun at the real sun's compass direction. */
+function skyRotation(k: SkyKey, sunWorld: THREE.Vector3): [number, number, number] {
+  const phiSky = (skies[k].sunU - 0.5) * 2 * Math.PI; // three.js equirect: u = atan2(z, x) / 2π + 0.5
+  const phiSun = Math.atan2(sunWorld.z, sunWorld.x);
+  return [0, phiSky - phiSun, 0];
+}
+
 function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
+  const { scene } = useThree();
   const target = useMemo(() => {
     const o = new THREE.Object3D();
     o.position.set(...toWorld(CENTER.x, CENTER.y, 0));
@@ -123,11 +153,20 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
   const alt = Math.max(1.5, sun.altitude);
   const dir = new THREE.Vector3(...sunDirection({ ...sun, altitude: alt }));
   const sunPos = dir.clone().multiplyScalar(60).add(target.position);
-  // warmer and dimmer near the horizon
-  const low = THREE.MathUtils.clamp(1 - (alt - 3) / 25, 0, 1);
+  const low = THREE.MathUtils.clamp(1 - (alt - 3) / 25, 0, 1); // 1 near the horizon
   const sunColor = new THREE.Color("#FFF1DE").lerp(new THREE.Color("#FFA45C"), low);
   const size = quality === "high" ? 4096 : 2048;
-  const envKey = `${view.sky}-${Math.round(view.hour * 4)}-${view.date}`;
+  const sky: SkyKey = view.sky === "night" ? "night" : view.sky === "overcast" ? "overcast" : alt < 15 ? "golden" : "day";
+  // the sky image's sun goes where the real sun is (cloudy / night: its bright side towards the south-west)
+  const rot = skyRotation(sky, view.sky === "clear" ? dir : new THREE.Vector3(...sunDirection({ altitude: 30, azimuth: 225 })));
+  const fog = view.sky === "night" ? "#0B111C" : view.sky === "overcast" ? "#C6CBCF" : "#C9D3DB";
+  useEffect(() => {
+    scene.fog = new THREE.Fog(fog, 140, 420);
+    return () => {
+      scene.fog = null;
+    };
+  }, [scene, fog]);
+
   const shadowProps = {
     castShadow: true,
     "shadow-mapSize": [size, size] as [number, number],
@@ -140,50 +179,72 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
     "shadow-bias": -0.0003,
     "shadow-normalBias": 0.03,
   };
-
-  if (view.sky === "night") {
-    return (
-      <>
-        <color attach="background" args={["#0E1626"]} />
-        <Environment key={envKey} frames={1} resolution={64} environmentIntensity={0.7}>
-          <mesh scale={200}>
-            <sphereGeometry />
-            <meshBasicMaterial color="#2A3A58" side={THREE.BackSide} />
-          </mesh>
-        </Environment>
-        <hemisphereLight args={["#4A5E88", "#2A241E", 0.6]} />
-        <primitive object={target} />
-        <directionalLight position={toWorld(CENTER.x - 30, CENTER.y - 20, 45)} target={target} intensity={0.3} color="#9FB4FF" {...shadowProps} />
-      </>
-    );
-  }
-  if (view.sky === "overcast") {
-    return (
-      <>
-        <color attach="background" args={["#C9CED3"]} />
-        <Environment key={envKey} frames={1} resolution={64} environmentIntensity={1.0}>
-          <mesh scale={200}>
-            <sphereGeometry />
-            <meshBasicMaterial color="#DADDE0" side={THREE.BackSide} />
-          </mesh>
-        </Environment>
-        <hemisphereLight args={["#E6E9EC", "#9C968C", 0.55]} />
-        <primitive object={target} />
-        <directionalLight position={toWorld(CENTER.x - 5, CENTER.y - 8, 60)} target={target} intensity={0.35} color="#F4F4F2" {...shadowProps} shadow-radius={12} />
-      </>
-    );
-  }
-  const sunArr = dir.toArray() as [number, number, number];
+  const env = { clear: { env: 0.55 - 0.2 * low, bg: 0.9 }, overcast: { env: 0.95, bg: 1.0 }, night: { env: 0.08, bg: 0.18 } }[view.sky];
   return (
     <>
-      <Sky sunPosition={sunArr} turbidity={6} rayleigh={1.2 + low} mieCoefficient={0.004} mieDirectionalG={0.8} distance={4500} />
-      <Environment key={envKey} frames={1} resolution={256} environmentIntensity={0.75 - 0.35 * low}>
-        <Sky sunPosition={sunArr} turbidity={6} rayleigh={1.2 + low} mieCoefficient={0.004} mieDirectionalG={0.8} distance={4500} />
-      </Environment>
-      <hemisphereLight args={["#DDE8F5", "#B8A88E", 0.25]} />
+      <Environment files={HDRI(sky)} background environmentIntensity={env.env} backgroundIntensity={env.bg} environmentRotation={rot} backgroundRotation={rot} />
       <primitive object={target} />
-      <directionalLight position={sunPos} target={target} intensity={1.7 * (0.35 + 0.65 * (1 - low))} color={sunColor} {...shadowProps} />
+      {view.sky === "clear" && <directionalLight position={sunPos} target={target} intensity={1.75 * (0.35 + 0.65 * (1 - low))} color={sunColor} {...shadowProps} />}
+      {view.sky === "overcast" && <directionalLight position={toWorld(CENTER.x - 5, CENTER.y - 8, 60)} target={target} intensity={0.3} color="#F4F4F2" {...shadowProps} shadow-radius={12} />}
+      {view.sky === "night" && (
+        <>
+          <hemisphereLight args={["#34466C", "#1C1814", 0.18]} />
+          <directionalLight position={toWorld(CENTER.x - 30, CENTER.y - 20, 45)} target={target} intensity={0.08} color="#A8BBFF" {...shadowProps} />
+        </>
+      )}
     </>
+  );
+}
+
+/** Real light sources for the facade lights and street lamps (night only). */
+function NightLights({ design, quality }: { design: DesignState; quality: Quality }) {
+  const els = useMemo(() => resolveElements(design), [design]);
+  const lights: LightSpec[] = useMemo(() => {
+    const l = els.lighting?.enabled ? lightingSources(els.lighting.slots ?? [], quality === "high") : [];
+    STREET_LAMPS.forEach(([x, y], i) => l.push({ kind: "spot", id: `street-${i}`, pos: [x, y + 1.25, LAMP_H - 0.2], target: [x, y + 2.5, 0], intensity: 60, angle: 0.95, distance: 22 }));
+    return l;
+  }, [els, quality]);
+  const warm = "#FFC98A";
+  return (
+    <group>
+      {lights.map((l) => {
+        if (l.kind === "point") return <pointLight key={l.id} position={toWorld(...l.pos)} intensity={l.intensity} distance={l.distance} decay={2} color={warm} />;
+        if (l.kind === "spot") return <Spot key={l.id} spec={l} color={warm} />;
+        return <Rect key={l.id} spec={l} color={warm} />;
+      })}
+    </group>
+  );
+}
+function Spot({ spec, color }: { spec: Extract<LightSpec, { kind: "spot" }>; color: string }) {
+  const t = useMemo(() => {
+    const o = new THREE.Object3D();
+    o.position.set(...toWorld(...spec.target));
+    return o;
+  }, [spec]);
+  return (
+    <>
+      <primitive object={t} />
+      <spotLight position={toWorld(...spec.pos)} target={t} intensity={spec.intensity} distance={spec.distance} angle={spec.angle} penumbra={0.7} decay={2} color={color} />
+    </>
+  );
+}
+function Rect({ spec, color }: { spec: Extract<LightSpec, { kind: "rect" }>; color: string }) {
+  const ref = useRef<THREE.RectAreaLight>(null);
+  useEffect(() => ref.current?.lookAt(...toWorld(...spec.target)), [spec]);
+  return <rectAreaLight ref={ref} position={toWorld(...spec.pos)} width={spec.width} height={spec.height} intensity={spec.intensity} color={color} />;
+}
+
+/** Ambient occlusion + anti-aliasing (High), glow around lights at night (bloom). */
+function Effects({ quality, night }: { quality: Quality; night: boolean }) {
+  const high = quality === "high";
+  if (!high && !night) return null;
+  return (
+    <EffectComposer multisampling={0} enableNormalPass={false}>
+      <>{high && <N8AO aoRadius={0.9} intensity={1.4} distanceFalloff={0.6} quality="medium" halfRes />}</>
+      <>{night && <Bloom mipmapBlur luminanceThreshold={1.0} luminanceSmoothing={0.2} intensity={0.9} />}</>
+      <>{high && <SMAA />}</>
+      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+    </EffectComposer>
   );
 }
 
@@ -336,19 +397,20 @@ function Expose() {
   return null;
 }
 
-export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera }: ExteriorSceneProps) {
+export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera, photo, onPhotoProgress, onPhotoDone }: ExteriorSceneProps) {
   const high = quality === "high";
   const night = view.sky === "night";
   return (
     <Canvas
       shadows="soft"
       dpr={high ? [1, 2] : [1, 1.25]}
-      gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: night ? 1.1 : 0.72 }}
+      gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: night ? 1.0 : 0.85 }}
       camera={{ position: [0, 10, 30], fov: 50 }}
       onPointerMissed={() => onPick?.(null)}
     >
       <Lighting view={view} quality={quality} />
-      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} />
+      {night && <NightLights design={design} quality={quality} />}
+      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={view.context} />
       {view.mode === "orbit" ? (
         <>
           <OrbitControls makeDefault enableDamping dampingFactor={0.1} maxPolarAngle={Math.PI * 0.49} minDistance={2} maxDistance={160} autoRotate={view.autoRotate} autoRotateSpeed={0.7} />
@@ -357,6 +419,13 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
         </>
       ) : (
         <Walk />
+      )}
+      {photo ? (
+        <Suspense fallback={null}>
+          <PhotoStill key={photo.id} samples={photo.samples} onProgress={onPhotoProgress} onDone={onPhotoDone} />
+        </Suspense>
+      ) : (
+        <Effects quality={quality} night={night} />
       )}
       <ReadyFlag />
       <Expose />

@@ -39,7 +39,7 @@ const boxFrames: Gen = (id, cfg, ctx) => {
         continue;
       }
       const p = (k: string, a0: number, a1: number, z0: number, z1: number) =>
-        out.push(box(`${o.id}-${id}-${k}`, role, faceBox(o.side, o.face, a0, a1, -depth, -0.002, z0, z1), { floor: o.floor, side: o.side, slot, element: id }));
+        out.push(box(`${o.id}-${id}-${k}`, role, faceBox(o.side, o.face, a0, a1, -depth, -0.002, z0, z1), { floor: o.floor, side: o.side, slot, element: id, bevel: 0.012 }));
       p("t", o.a - width, o.b + width, o.z1, o.z1 + width);
       p("b", o.a - width, o.b + width, o.z0 - width - 0.03, o.z0 - 0.03);
       p("l", o.a - width, o.a, o.z0 - 0.03, o.z1);
@@ -183,14 +183,14 @@ const compoundWall: Gen = (id, cfg) => {
   const meta = (slot: string) => ({ floor: -1, slot, element: id });
   const wall = (k: string, x0: number, y0: number, x1: number, y1: number, slot: string) => {
     out.push(box(`${id}-${k}`, "compoundWall", { x: x0, y: y0, w: x1 - x0, h: y1 - y0, z0: 0, z1: H }, meta(slot)));
-    out.push(box(`${id}-${k}-cap`, "trim", { x: x0 - 0.02, y: y0 - 0.02, w: x1 - x0 + 0.04, h: y1 - y0 + 0.04, z0: H, z1: H + 0.06 }, meta(slot)));
+    out.push(box(`${id}-${k}-cap`, "trim", { x: x0 - 0.02, y: y0 - 0.02, w: x1 - x0 + 0.04, h: y1 - y0 + 0.04, z0: H, z1: H + 0.06 }, { ...meta(slot), bevel: 0.01 }));
     const along = x1 - x0 > y1 - y0;
     const len = along ? x1 - x0 : y1 - y0;
     const n = Math.floor(len / every);
     for (let i = 1; i < n; i++) {
       const c = (along ? x0 : y0) + (i * len) / n;
       const r = along ? { x: c - 0.15, y: y0 - 0.04, w: 0.3, h: y1 - y0 + 0.08 } : { x: x0 - 0.04, y: c - 0.15, w: x1 - x0 + 0.08, h: 0.3 };
-      out.push(box(`${id}-${k}-pilaster-${i}`, "trim", { ...r, z0: 0, z1: H + 0.12 }, meta(slot)));
+      out.push(box(`${id}-${k}-pilaster-${i}`, "trim", { ...r, z0: 0, z1: H + 0.12 }, { ...meta(slot), bevel: 0.01 }));
     }
   };
   const gv = GATES.vehicle;

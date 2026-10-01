@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
-import { ExteriorScene, type Quality, type ViewState } from "./scene/ExteriorScene";
+import { ExteriorScene, type PhotoRequest, type Quality, type ViewState } from "./scene/ExteriorScene";
 import { CAMERA_IDS, CAMERA_PRESETS, type CameraId } from "./scene/cameras";
 import { PATTERNS, defaultDesign, patternById } from "./model/resolve";
 import type { Part, SurfaceRole } from "./model/types";
@@ -36,12 +36,16 @@ export function ExteriorApp() {
   const [camera, setCamera] = useState<CameraId>(pick("cam", CAMERA_IDS, "photo"));
   const [nonce, setNonce] = useState(0);
   const [quality, setQuality] = useState<Quality>(pick<Quality>("quality", ["normal", "high"], "normal"));
+  const [photo, setPhoto] = useState<PhotoRequest>(null);
+  const [photoProgress, setPhotoProgress] = useState(0);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [view, setViewState] = useState<ViewState>({
     mode: pick("mode", ["orbit", "walk"], "orbit"),
     autoRotate: params.get("spin") === "1",
     sky: pick("sky", ["clear", "overcast", "night"], "clear"),
     hour: Number(params.get("hour") ?? 16),
     date: params.get("date") ?? new Date().toISOString().slice(0, 10),
+    context: { neighbours: params.get("nb") === "1", car: params.get("ctx") !== "0", person: params.get("ctx") !== "0" },
   });
   const [showRoles, setShowRoles] = useState(params.get("roles") === "1");
   const [panel, setPanel] = useState(params.get("panel") !== "0");
@@ -63,11 +67,30 @@ export function ExteriorApp() {
     setTab("colors");
     setPanel(true);
   };
+  const takePhoto = (samples: number) => {
+    setView({ autoRotate: false, mode: "orbit" });
+    setPicked(null);
+    setPhotoProgress(0);
+    setPhoto({ id: Date.now(), samples });
+  };
   const openElement = (id: string) => {
     setFocusElement(id);
     setTab("elements");
     setPanel(true);
   };
+
+  // scripts: ?photo=64 renders a photo-quality still as soon as the view is ready
+  useEffect(() => {
+    const n = Number(params.get("photo"));
+    if (!n) return;
+    const t = setInterval(() => {
+      if (!(window as unknown as { __extReady?: boolean }).__extReady) return;
+      clearInterval(t);
+      takePhoto(n);
+    }, 300);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Pattern thumbnails: baked once from the real model after the main view is ready, then cached.
   useEffect(() => {
@@ -110,7 +133,41 @@ export function ExteriorApp() {
           showRoles={showRoles}
           onPick={(p) => setPicked(p)}
           instantCamera={params.get("instant") === "1"}
+          photo={photo}
+          onPhotoProgress={setPhotoProgress}
+          onPhotoDone={(url) => {
+            setPhoto(null);
+            setPhotoUrl(url ?? "error");
+          }}
         />
+        {photo && (
+          <div className="photoprogress">
+            Rendering a photo-quality still… {Math.round(photoProgress * 100)}%
+            <div className="bar">
+              <span style={{ width: `${photoProgress * 100}%` }} />
+            </div>
+            <button onClick={() => setPhoto(null)}>Cancel</button>
+          </div>
+        )}
+        {photoUrl && (
+          <div className="photomodal" onClick={() => setPhotoUrl(null)}>
+            <div className="photobox" onClick={(e) => e.stopPropagation()}>
+              {photoUrl === "error" ? (
+                <p>The photo renderer could not start on this device. Use High quality instead.</p>
+              ) : (
+                <img src={photoUrl} alt="Photo-quality still" />
+              )}
+              <div className="row between">
+                {photoUrl !== "error" && (
+                  <a className="btn" href={photoUrl} download={`pasaydan-${design.patternId}-${design.paletteId}-photo.png`}>
+                    Download PNG
+                  </a>
+                )}
+                <button onClick={() => setPhotoUrl(null)}>Close</button>
+              </div>
+            </div>
+          </div>
+        )}
         <PaintStrip design={design} onSelect={selectRole} />
         <div className="quickbar">
           <select
@@ -174,6 +231,8 @@ export function ExteriorApp() {
               setQuality={setQuality}
               showRoles={showRoles}
               setShowRoles={setShowRoles}
+              takePhoto={takePhoto}
+              photoBusy={!!photo}
             />
           )}
         </aside>

@@ -66,7 +66,8 @@ export const parapet: Gen = (id, cfg) => {
     if (w.side === "W") b.x -= 0.03;
     if (w.side === "N" || w.side === "S") b.h += 0.03;
     else b.w += 0.03;
-    push(w.id, "roofEdge", clipTower(b), w.side);
+    const c = clipTower(b);
+    if (c) out.push(box(w.id, "roofEdge", c, { ...meta, side: w.side, bevel: 0.01 }));
   }
   if (style === "band") {
     const depth = num(cfg.params, "bandDepth", 0.12);

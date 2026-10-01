@@ -233,3 +233,58 @@ export const solar: Gen = (id, cfg) => {
   return out;
 };
 
+
+// ---------------------------------------------------------------------------
+/** A real light source for night mode, at the same place as a lighting fixture. */
+export type LightSpec =
+  | { kind: "spot"; id: string; pos: [number, number, number]; target: [number, number, number]; intensity: number; angle: number; distance: number }
+  | { kind: "point"; id: string; pos: [number, number, number]; intensity: number; distance: number }
+  | { kind: "rect"; id: string; pos: [number, number, number]; target: [number, number, number]; width: number; height: number; intensity: number };
+
+/** Light sources for the enabled lighting slots (plan coordinates; z = height). `full` = High quality (more lights). */
+export function lightingSources(slots: string[], full: boolean): LightSpec[] {
+  const out: LightSpec[] = [];
+  for (const slot of slots) {
+    if (slot === "wall:frontName") {
+      for (const f of FLOORS)
+        for (const [k, x] of [
+          ["a", X_W + 0.7],
+          ["b", X_NOTCH_W - 0.7],
+        ] as const) {
+          const z = level(f) + 1.9;
+          const y = Y_S_MASTER - 0.07;
+          if (full) {
+            out.push({ kind: "spot", id: `sconce-${f}${k}-up`, pos: [x, y, z + 0.16], target: [x, y - 0.05, z + 2.5], intensity: 6, angle: 0.45, distance: 4 });
+            out.push({ kind: "spot", id: `sconce-${f}${k}-dn`, pos: [x, y, z - 0.16], target: [x, y - 0.05, z - 2.5], intensity: 6, angle: 0.45, distance: 4 });
+          } else out.push({ kind: "point", id: `sconce-${f}${k}`, pos: [x, y - 0.25, z], intensity: 2.5, distance: 3.5 });
+        }
+    } else if (slot === "wall:featureRecess") {
+      for (const f of FLOORS) out.push({ kind: "point", id: `groove-${f}`, pos: [X_NOTCH_W + 0.1, Y_S_MASTER - 0.3, level(f) + 1.6], intensity: 2, distance: 3.5 });
+    } else if (slot === "balcony:S" || slot === "balcony:N") {
+      const key = slot.endsWith("N") ? "N" : "S";
+      const b = BALCONY[key];
+      const y = key === "S" ? b.y + 0.16 : b.y1 - 0.17;
+      for (const f of [...FLOORS.slice(1), 4]) {
+        const z = (f === 4 ? TERRACE : level(f)) - 0.26;
+        out.push({ kind: "rect", id: `cove-${key}-${f}`, pos: [(b.x + b.x1) / 2, y, z], target: [(b.x + b.x1) / 2, y, z - 1], width: b.x1 - b.x - 0.5, height: 0.06, intensity: 14 });
+      }
+    } else if (slot === "edge:stiltBand") {
+      const z = level(1) - STILT_BAND - 0.02;
+      out.push({ kind: "rect", id: "band", pos: [(X_WING + X_E) / 2, Y_NOTCH + 0.03, z], target: [(X_WING + X_E) / 2, Y_NOTCH + 0.03, z - 1], width: X_E - X_WING - 0.4, height: 0.05, intensity: 10 });
+    } else if (slot === "site:compoundFront" && full) {
+      for (let i = 0; i < 6; i += 2) {
+        const x = PLOT.x0 + 0.4 + (i * (GATES.pedestrian.a - 0.8 - PLOT.x0)) / 5;
+        out.push({ kind: "point", id: `pil-${i}`, pos: [x, PLOT.y0 + 0.11, COMPOUND_H + 0.25], intensity: 1.2, distance: 2.5 });
+      }
+    } else if (slot === "site:gate") {
+      for (const [k, x] of [
+        ["p1", GATES.pedestrian.a - 0.12],
+        ["p2", GATES.pedestrian.b + 0.12],
+        ["p3", GATES.vehicle.a - 0.12],
+        ["p4", GATES.vehicle.b + 0.12],
+      ] as const)
+        out.push({ kind: "spot", id: `up-${k}`, pos: [x, PLOT.y0 - 0.2, 0.15], target: [x, PLOT.y0 + 0.05, 2.5], intensity: 5, angle: 0.35, distance: 3.5 });
+    }
+  }
+  return out;
+}

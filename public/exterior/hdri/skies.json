@@ -1,0 +1,22 @@
+{
+  "day": {
+    "file": "day_2k.hdr",
+    "sunElevationDeg": 40.9,
+    "sunU": 0.6003
+  },
+  "golden": {
+    "file": "golden_2k.hdr",
+    "sunElevationDeg": 19.1,
+    "sunU": 0.6003
+  },
+  "overcast": {
+    "file": "overcast_1k.hdr",
+    "sunElevationDeg": 23.0,
+    "sunU": 0.5815
+  },
+  "night": {
+    "file": "night_1k.hdr",
+    "sunElevationDeg": 84.2,
+    "sunU": 0.7827
+  }
+}

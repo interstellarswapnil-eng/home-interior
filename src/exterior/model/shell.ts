@@ -208,7 +208,7 @@ function openingParts(o: FacadeOpening): Part[] {
   else inner("glass", "glass");
   if (o.type === "window") {
     // projecting sill with a drip edge
-    f("sill", "sill", faceBox(o.side, o.face, o.a - 0.05, o.b + 0.05, -0.05, GLASS_IN - 0.035, o.z0 - 0.03, o.z0));
+    out.push(box(`${o.id}-sill`, "sill", faceBox(o.side, o.face, o.a - 0.05, o.b + 0.05, -0.05, GLASS_IN - 0.035, o.z0 - 0.03, o.z0), { floor: o.floor, side: o.side, slot: `win:${o.planId}`, bevel: 0.006 }));
   }
   return out;
 }
@@ -222,7 +222,7 @@ function slabParts(): Part[] {
   // Stilt band (beam + slab edge) around the building at the first floor
   // (not across the stair tower, which runs down to the ground: OUTLINE edges 5, 6 and the tower part of 7)
   for (const w of edgeWalls(OUTLINE, 0.25, L1 - STILT_BAND, L1, (i) => (i === 5 || i === 6 ? null : { id: `F0-stiltband-${i}`, role: "trim", slot: "edge:stiltBand", floor: 0 })))
-    out.push(box(w.id, w.role, w.side === "W" ? southOfTower(w) : w, { floor: 0, side: w.side, slot: w.slot }));
+    out.push(box(w.id, w.role, w.side === "W" ? southOfTower(w) : w, { floor: 0, side: w.side, slot: w.slot, bevel: 0.015 }));
   // Soffit under the first floor (seen from the parking)
   FOOTPRINT_RECTS.forEach((r, i) => out.push(box(`F0-soffit-${i}`, "soffit", { ...inset(r, 0.1), z0: L1 - SLAB - 0.02, z1: L1 - SLAB }, { floor: 0, side: "under", slot: "edge:parkingCeiling" })));
 
@@ -231,11 +231,14 @@ function slabParts(): Part[] {
     const r = { x: b.x, y: b.y, w: b.x1 - b.x, h: b.y1 - b.y };
     for (const f of FLAT_FLOORS) {
       const L = level(f);
-      out.push(box(`F${f}-balcony-${key}-slab`, "trim", { ...r, z0: L - 0.22, z1: L }, { floor: f, side: key, slot: `balcony:${key}` }));
+      out.push(box(`F${f}-balcony-${key}-slab`, "trim", { ...r, z0: L - 0.22, z1: L }, { floor: f, side: key, slot: `balcony:${key}`, bevel: 0.015 }));
+      // drip groove under the slab, just behind the front edge
+      const dy = key === "S" ? r.y + 0.04 : r.y + r.h - 0.055;
+      out.push(box(`F${f}-balcony-${key}-drip`, "joint", { x: r.x + 0.05, y: dy, w: r.w - 0.1, h: 0.015, z0: L - 0.2415, z1: L - 0.24 }, { floor: f, side: "under", slot: `balcony:${key}` }));
       out.push(box(`F${f}-balcony-${key}-soffit`, "soffit", { x: r.x + 0.01, y: r.y + 0.01, w: r.w - 0.02, h: r.h - 0.02, z0: L - 0.24, z1: L - 0.22 }, { floor: f, side: "under", slot: `balcony:${key}` }));
     }
     // roof slab over the top balcony + its soffit
-    out.push(box(`R-balcony-${key}-roof`, "trim", { ...r, z0: TERRACE - 0.22, z1: TERRACE }, { floor: 4, side: key, slot: `edge:balconyRoof-${key}` }));
+    out.push(box(`R-balcony-${key}-roof`, "trim", { ...r, z0: TERRACE - 0.22, z1: TERRACE }, { floor: 4, side: key, slot: `edge:balconyRoof-${key}`, bevel: 0.015 }));
     out.push(box(`R-balcony-${key}-soffit`, "soffit", { x: r.x + 0.01, y: r.y + 0.01, w: r.w - 0.02, h: r.h - 0.02, z0: TERRACE - 0.24, z1: TERRACE - 0.22 }, { floor: 3, side: "under", slot: `balcony:${key}` }));
   }
 
@@ -246,7 +249,7 @@ function slabParts(): Part[] {
   out.push(box("R-head-roof", "roofEdge", { x: X_W - 0.05, y: LIFT_BOX.y - 0.05, w: X_CORE_E - X_W + 0.1, h: Y_STAIR_N - LIFT_BOX.y + 0.1, z0: TOP - 0.25, z1: TOP }, { floor: 4, side: "roof", slot: "wall:stairTower" }));
 
   // Stilt columns; their base sleeves come from the `stoneBase` element
-  COLUMNS.forEach(([x, y, w, h], i) => out.push(box(`F0-column-${i}`, "column", { x, y, w, h, z0: PLINTH, z1: level(1) - STILT_BAND }, { floor: 0, slot: "wall:columns" })));
+  COLUMNS.forEach(([x, y, w, h], i) => out.push(box(`F0-column-${i}`, "column", { x, y, w, h, z0: PLINTH, z1: level(1) - STILT_BAND }, { floor: 0, slot: "wall:columns", bevel: 0.02 })));
   return out;
 }
 
@@ -267,9 +270,9 @@ function interiorParts(): Part[] {
 function siteParts(): Part[] {
   const out: Part[] = [];
   const P = PLOT;
-  out.push(box("site-context", "context", { x: P.x0 - 40, y: P.y0 - 40, w: P.x1 - P.x0 + 80, h: P.y1 - P.y0 + 80, z0: -0.12, z1: -0.06 }, { slot: "site:surroundings" }));
-  out.push(box("site-road", "road", { x: P.x0 - 40, y: P.y0 - 9.5, w: P.x1 - P.x0 + 80, h: 7.5, z0: -0.07, z1: -0.02 }, { slot: "site:road" }));
-  out.push(box("site-footpath", "paving", { x: P.x0 - 40, y: P.y0 - 2.0, w: P.x1 - P.x0 + 80, h: 2.0, z0: -0.07, z1: 0.1 }, { slot: "site:road" }));
+  out.push(box("site-context", "context", { x: P.x0 - 400, y: P.y0 - 400, w: P.x1 - P.x0 + 800, h: P.y1 - P.y0 + 800, z0: -0.12, z1: -0.06 }, { slot: "site:surroundings" }));
+  out.push(box("site-road", "road", { x: P.x0 - 400, y: P.y0 - 9.5, w: P.x1 - P.x0 + 800, h: 7.5, z0: -0.07, z1: -0.02 }, { slot: "site:road" }));
+  out.push(box("site-footpath", "paving", { x: P.x0 - 400, y: P.y0 - 2.0, w: P.x1 - P.x0 + 800, h: 2.0, z0: -0.07, z1: 0.1 }, { slot: "site:road" }));
   out.push(box("site-paving", "paving", { x: P.x0, y: P.y0, w: P.x1 - P.x0, h: P.y1 - P.y0, z0: -0.07, z1: PAVING }, { slot: "site:driveway" }));
   // Garden strips on the sides and rear
   const g = (id: string, x0: number, y0: number, x1: number, y1: number) =>
@@ -304,12 +307,31 @@ function siteParts(): Part[] {
 // ---------------------------------------------------------------------------
 export type Shell = { parts: Part[]; openings: FacadeOpening[] };
 
+/** V-groove joint lines in the plaster at each floor line (main walls and the stair tower). */
+function jointParts(): Part[] {
+  const out: Part[] = [];
+  const line = (id: string, side: "N" | "S" | "E" | "W", face: number, a: number, b: number, z: number, slot: string, floor: number) =>
+    out.push(box(id, "joint", faceBox(side, face, a, b, -0.003, 0, z - 0.006, z + 0.006), { floor, side, slot }));
+  for (let f = 2; f <= FLATS; f++) {
+    const z = level(f);
+    line(`F${f}-joint-w`, "W", X_W, Y_S_MASTER + 0.01, Y_TOWER_S - 0.01, z, "wall:west", f);
+    line(`F${f}-joint-s`, "S", Y_S_MASTER, X_W + 0.01, X_NOTCH_W - 0.01, z, "wall:frontName", f);
+    line(`F${f}-joint-e`, "E", X_E, Y_NOTCH + 0.01, Y_LIVING_N - 0.01, z, "wall:east", f);
+  }
+  for (let f = 1; f <= FLATS + 1; f++) {
+    const z = level(f);
+    line(`F${f}-joint-tw`, "W", X_W, Y_TOWER_S + 0.01, Y_STAIR_N - 0.01, z, "wall:stairTower", f);
+    line(`F${f}-joint-tn`, "N", Y_STAIR_N, X_W + 0.01, X_CORE_E - 0.01, z, "wall:stairTower", f);
+  }
+  return out;
+}
+
 export function buildShell(): Shell {
   const openings = facadeOpenings();
   const parts: Part[] = [];
   for (const w of facadeWalls()) parts.push(...splitWall(w, openings));
   for (const o of openings) parts.push(...openingParts(o));
-  parts.push(...slabParts(), ...interiorParts(), ...siteParts());
+  parts.push(...slabParts(), ...interiorParts(), ...siteParts(), ...jointParts());
   return { parts, openings };
 }
 

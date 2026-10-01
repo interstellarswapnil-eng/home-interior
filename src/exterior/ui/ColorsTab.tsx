@@ -6,7 +6,7 @@ import { Tip } from "./Tip";
 
 /** The surfaces most people change first; the rest sit under "More surfaces". */
 export const MAIN_ROLES: SurfaceRole[] = ["mainWall", "secondSurface", "featureWall", "base", "windowSurround", "trim", "soffit", "railing", "windowFrame", "mainDoor", "compoundWall", "paving"];
-const HIDDEN: SurfaceRole[] = ["interior", "context", "road"];
+const HIDDEN: SurfaceRole[] = ["interior", "context", "road", "joint", "neighbor", "carBody", "person"];
 const MORE_ROLES = (Object.keys(ROLES) as SurfaceRole[]).filter((r) => !MAIN_ROLES.includes(r) && !HIDDEN.includes(r));
 
 /** Editor for one surface role: colour picker, hex, suggestions, material, lock, reset. */

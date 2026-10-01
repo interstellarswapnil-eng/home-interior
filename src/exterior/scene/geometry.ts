@@ -4,6 +4,7 @@
  */
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import type { Part, SurfaceRole } from "../model/types";
 
 export const toWorld = (x: number, y: number, z = 0): [number, number, number] => [x, z, -y];
@@ -11,7 +12,8 @@ export const toWorld = (x: number, y: number, z = 0): [number, number, number] =
 function partGeometry(p: Exclude<Part, { kind: "label" }>): THREE.BufferGeometry {
   if (p.kind === "box") {
     const b = p.box;
-    const g = new THREE.BoxGeometry(b.w, b.z1 - b.z0, b.h);
+    const r = p.bevel ? Math.min(p.bevel, b.w / 2 - 1e-4, b.h / 2 - 1e-4, (b.z1 - b.z0) / 2 - 1e-4) : 0;
+    const g = r > 0.002 ? new RoundedBoxGeometry(b.w, b.z1 - b.z0, b.h, 2, r) : new THREE.BoxGeometry(b.w, b.z1 - b.z0, b.h);
     g.translate(b.x + b.w / 2, (b.z0 + b.z1) / 2, -(b.y + b.h / 2));
     return g;
   }

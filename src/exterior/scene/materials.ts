@@ -13,7 +13,7 @@ import { SURFACE_ROLES, type SurfaceRole } from "../model/types";
 
 export type Quality = "normal" | "high";
 
-const NO_SHADOW: SurfaceRole[] = ["glass", "interior", "context", "road", "ground", "paving"];
+const NO_SHADOW: SurfaceRole[] = ["glass", "interior", "context", "road", "ground", "paving", "joint", "lightGlow"];
 export const castsShadow = (role: SurfaceRole) => !NO_SHADOW.includes(role);
 
 /** Debug view: a distinct colour per role ("Colour each surface type"). */
@@ -88,6 +88,13 @@ export function applyStyle(m: THREE.MeshStandardMaterial, role: SurfaceRole, sty
   if (role === "interior") {
     m.roughness = 1;
     m.envMapIntensity = 0.2;
+  }
+  // joint lines follow the main wall colour, darker, as a shadow line would
+  if (role === "joint" && !debugColor) {
+    m.map = null;
+    m.normalMap = null;
+    m.roughnessMap = null;
+    m.color.set(style.color).multiplyScalar(0.55);
   }
   // night: warm window glow from the rooms, glowing light fittings, glass lets the glow through
   const glow = night && !debugColor ? (role === "interior" ? 0.9 : role === "lightGlow" ? 4 : 0) : 0;

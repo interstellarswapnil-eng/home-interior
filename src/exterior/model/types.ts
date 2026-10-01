@@ -31,6 +31,10 @@ export const SURFACE_ROLES = [
   "treeTrunk",
   "solar",
   "lightGlow",
+  "joint",
+  "neighbor",
+  "carBody",
+  "person",
   "compoundWall",
   "gate",
   "paving",
@@ -59,7 +63,7 @@ type PartBase = {
   element?: string;
 };
 
-export type BoxPart = PartBase & { kind: "box"; box: Box };
+export type BoxPart = PartBase & { kind: "box"; box: Box; /** rounded edge radius (m) */ bevel?: number };
 
 /**
  * A 2D profile in a vertical plane, extruded horizontally.

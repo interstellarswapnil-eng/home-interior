@@ -23,9 +23,11 @@ export type ViewTabProps = {
   setQuality: (q: Quality) => void;
   showRoles: boolean;
   setShowRoles: (b: boolean) => void;
+  takePhoto: (samples: number) => void;
+  photoBusy: boolean;
 };
 
-export function ViewTab({ view, setView, camera, goCamera, quality, setQuality, showRoles, setShowRoles }: ViewTabProps) {
+export function ViewTab({ view, setView, camera, goCamera, quality, setQuality, showRoles, setShowRoles, takePhoto, photoBusy }: ViewTabProps) {
   const { sunrise, sunset } = sunTimes(LOCATION.lat, LOCATION.lon, dayOfYear(view.date));
   return (
     <>
@@ -100,6 +102,34 @@ export function ViewTab({ view, setView, camera, goCamera, quality, setQuality, 
             <option value="high">High quality (for screenshots)</option>
           </select>
         </label>
+      </section>
+      <section>
+        <h3>Show for scale</h3>
+        {(
+          [
+            ["neighbours", "Neighbour buildings (plain grey)"],
+            ["car", "A parked car"],
+            ["person", "A person (1.7 m)"],
+          ] as const
+        ).map(([k, label]) => (
+          <label key={k} className="row">
+            <input type="checkbox" checked={view.context[k]} onChange={(e) => setView({ context: { ...view.context, [k]: e.target.checked } })} /> {label}
+          </label>
+        ))}
+      </section>
+      <section>
+        <h3>
+          Photo-quality still{" "}
+          <Tip text="Traces real light paths for the current view: soft shadows, bounced light and reflections, like an architect's render. Takes about 1 to 4 minutes on a laptop; the view may freeze for a moment while it prepares. Keep the window open, then download the PNG." />
+        </h3>
+        <div className="seg wide">
+          <button disabled={photoBusy || view.mode !== "orbit"} onClick={() => takePhoto(128)}>
+            Quick (128 samples)
+          </button>
+          <button disabled={photoBusy || view.mode !== "orbit"} onClick={() => takePhoto(512)}>
+            Best (512 samples)
+          </button>
+        </div>
       </section>
       <section>
         <h3>

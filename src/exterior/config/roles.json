@@ -154,5 +154,22 @@
   "lightGlow": {
     "label": "Light fittings",
     "tip": "The glowing part of facade lights. They light up in night mode."
+  },
+  "joint": {
+    "label": "Joint lines",
+    "tip": "Thin grooves in the plaster at each floor and drip grooves under slab edges. They follow the main wall colour, a little darker.",
+    "fallback": "mainWall"
+  },
+  "neighbor": {
+    "label": "Neighbour buildings",
+    "tip": "Plain grey blocks for scale (View tab)."
+  },
+  "carBody": {
+    "label": "Car",
+    "tip": "A parked car for scale (View tab)."
+  },
+  "person": {
+    "label": "Person",
+    "tip": "A 1.7 m person for scale (View tab)."
   }
 }

@@ -10,7 +10,7 @@ import { executablePath, glArgs } from "./browser";
 const outDir = "docs/exterior/screenshots";
 mkdirSync(outDir, { recursive: true });
 
-const shots: { file: string; query: string; click?: [number, number]; waitThumbs?: boolean }[] = [
+const shots: { file: string; query: string; click?: [number, number]; waitThumbs?: boolean; waitPhoto?: boolean }[] = [
   { file: "p1-corner.png", query: "cam=photo&panel=0" },
   { file: "p1-front.png", query: "cam=front&panel=0" },
   { file: "p1-left-west.png", query: "cam=left&panel=0" },
@@ -50,12 +50,25 @@ const shots: { file: string; query: string; click?: [number, number]; waitThumbs
   { file: "p3-earthy-arches.png", query: "pattern=earthyOrganic&panel=0&cp=-7,1.5,6.5&ct=0,3,6.5&fov=50" },
   { file: "p3-solar-pergola.png", query: "pattern=tropicalModern&panel=0&on=solar&cam=bird" },
   { file: "p3-mobile.png", query: "cam=photo&pattern=warmCurves" },
+  // Phase 4: realism and lighting (High quality)
+  { file: "p4-day-high.png", query: "cam=photo&pattern=warmCurves&panel=0&quality=high&hour=11" },
+  { file: "p4-afternoon-high.png", query: "cam=cornerSW&pattern=architect&panel=0&quality=high&hour=16" },
+  { file: "p4-golden-high.png", query: "cam=photo&pattern=warmCurves&panel=0&quality=high&hour=17.7" },
+  { file: "p4-sun-check.png", query: "pattern=architect&panel=0&hour=17.6&sky=clear&cp=5,-8,1.7&ct=-94.4,-19.3,1.6&fov=60" },
+  { file: "p4-overcast-high.png", query: "cam=photo&pattern=tropicalModern&panel=0&quality=high&sky=overcast" },
+  { file: "p4-night-high.png", query: "cam=photo&pattern=warmCurves&panel=0&quality=high&sky=night" },
+  { file: "p4-night-dark.png", query: "cam=cornerSE&pattern=darkModern&panel=0&quality=high&sky=night" },
+  { file: "p4-night-normal.png", query: "cam=photo&pattern=architect&panel=0&sky=night" },
+  { file: "p4-details-high.png", query: "pattern=warmCurves&panel=0&quality=high&hour=10&cp=-3.2,-3.6,6.4&ct=1.5,0,5.3&fov=50" },
+  { file: "p4-context-street.png", query: "cam=street&pattern=architect&panel=0&quality=high&hour=10" },
+  { file: "p4-context-bird.png", query: "cam=bird&pattern=japandi&panel=0&quality=high&nb=1" },
+  { file: "p4-photo-still.png", query: "cam=photo&pattern=warmCurves&panel=0&photo=96", waitPhoto: true },
 ];
 
 const only = process.argv.slice(2);
 const server = await createServer({ server: { port: 5198, strictPort: true }, logLevel: "error" });
 await server.listen();
-const browser = await puppeteer.launch({ executablePath, headless: true, args: glArgs, defaultViewport: { width: 1600, height: 1000, deviceScaleFactor: 1 } });
+const browser = await puppeteer.launch({ executablePath, headless: true, args: glArgs, protocolTimeout: 900_000, defaultViewport: { width: 1600, height: 1000, deviceScaleFactor: 1 } });
 const errors: string[] = [];
 try {
   for (const s of shots) {
@@ -67,6 +80,7 @@ try {
     const extra = `${s.query.includes("thumbs=") ? "" : "&thumbs=0"}${s.query.includes("date=") ? "" : "&date=2026-10-01"}&instant=1`;
     await page.goto(`http://localhost:5198/exterior.html?${s.query}${extra}`, { waitUntil: "load", timeout: 90_000 });
     await page.waitForFunction("window.__extReady === true", { timeout: 120_000 });
+    if (s.waitPhoto) await page.waitForSelector(".photobox img", { timeout: 600_000 });
     if (s.waitThumbs) await page.waitForFunction("document.querySelectorAll('.pthumb img').length >= 8", { timeout: 180_000 });
     if (s.click) {
       await page.mouse.click(...s.click);
