@@ -68,6 +68,10 @@ export function App() {
             {meta.project} · {meta.style} · {meta.household}
           </span>
         </div>
+        <nav className="seg">
+          <button className="on">Interior</button>
+          <button onClick={() => (location.href = "exterior.html")}>Exterior</button>
+        </nav>
         <div className="seg">
           {(["2d", "split", "3d"] as View[]).map((v) => (
             <button key={v} className={view === v ? "on" : ""} onClick={() => setView(v)}>

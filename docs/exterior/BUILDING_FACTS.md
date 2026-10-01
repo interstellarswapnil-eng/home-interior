@@ -12,21 +12,21 @@ Units are metres, with feet in brackets. Plan coordinates follow the interior mo
 
 `exterior_references/` contains **29 JPEG images and nothing else**: no floor plan, no architect's 3D file, no PDF.
 
-Two of them, **#25** (`19.40.04 (1).jpeg`) and **#28** (`19.40.05.jpeg`), show the same apartment block from the same corner. It has stilt parking, 3 residential floors, a stair tower, one stack of balconies, and the Marathi name sign "पसायदान" (*Pasaydan*). That matches the "typical 1st to 3rd floor" plan the interior module is built on. **I'm treating #25/#28 as the architect's current design, two variants of it. Please confirm (Question 1).**
+Two of them, **#25** (`19.40.04 (1).jpeg`) and **#28** (`19.40.05.jpeg`), show the same apartment block from the same corner. It has stilt parking, 3 residential floors, a stair tower, one stack of balconies, and the Marathi name sign "पसायदान" (*Pasaydan*). That matches the "typical 1st to 3rd floor" plan the interior module is built on. **Confirmed by you: this is your building. #28 is the current design**, and it is the "Architect's design" baseline. #25 is an older variant and is not modelled.
 
 - #25: rounded window box frames, glowing vertical LED groove, curved balcony parapets.
 - #28: square box frames, white vertical fins in the side recesses, and the same balconies.
 
-If they are your building, they become the "Architect's design" preset. If not, the preset falls back to a plain version of the building in the same colours.
+How #28 maps onto the plan (confirmed against the openings): the **balcony face is the south face (the road side)**. Per floor it has the kitchen-balcony door on the left and the kitchen window on the right, exactly as on the plan. The face with the staggered stair windows is the **west** face, with the stair tower at its north (left) end.
 
 ## Overall
 
 | Item | Value | Source |
 |---|---|---|
-| Building type | Apartment block: stilt (parking) ground floor + 3 residential floors, **one 2BHK flat per floor** | [plan] "typical 1st to 3rd floor", lift + shared stair on plan; [render] 3 floors over stilts |
+| Building type | Apartment block: stilt (parking) ground floor + 3 identical residential floors, **one 2BHK flat per floor**, no penthouse | [plan] + your answer |
 | Location | Ahilyanagar (Ahmednagar), Maharashtra. Lat **19.09° N**, long **74.74° E** | Section 0; coordinates [assumed: city centre] |
-| Front of the building faces | **South** (per Section 0). ⚠ See "Facing: a possible conflict" below | Section 0 |
-| Plot size | Unknown. **Assumed** footprint + 3.0 m front margin + 1.5 m on the other three sides, giving about **13.4 m × 16.1 m (44′ × 53′)** | [assumed] |
+| Front of the building faces | **South**: the road is on the south (confirmed). The arrow on the plan drawing is ignored | Section 0 + your answer |
+| Plot size | **2 gunthas = 202.3 m² (2,178 sq ft)** [you]. Shape [assumed]: rectangle **13.0 m (E–W) × 15.56 m (N–S)**, giving margins of 1.32 m on the east and west, 1.40 m at the rear (north) and 2.53 m at the front (south, from the balcony face) | your answer + [assumed] |
 | Plot shape | The source drawing has a slanted line across the top (north), which may be a non-rectangular plot boundary. Modelled as a rectangle for now | [plan] drawing; [assumed] |
 
 ## Footprint (per residential floor)
@@ -101,15 +101,14 @@ The **master bedroom's south wall has no window** [plan]. It's the obvious place
 | Parking | Under the stilts; paver or mosaic paving | [render] |
 | Landscaping | Hedge along the front wall, a few palms/trees in the margins | [render] |
 
-## Facing: a possible conflict (please confirm)
+## Facing (resolved)
 
-Section 0 says the front faces **south**. Here is what that means on this plan, and what doesn't quite fit:
+The road is on the **south**. The street sees:
+- the master bedroom's blank south wall (name sign)
+- the 1.0 m recess with the full-height wood strip
+- the stacked south balconies
 
-1. **If the road is on the south**, the street sees the master bedroom's blank south wall, the 1.0 m step-back with the guest-bath ventilator, and the stacked kitchen balconies. The stair/lift entrance (NW) is at the back, so you'd walk through the parking to reach it. This is common for stilt buildings and works fine.
-2. **The source drawing has an arrow pointing in from the west**, next to the master bedroom. On Indian drawings that usually marks the road or the main approach, which would suggest a **west** road.
-3. **#25/#28 show two faces equally**: a long face with the staggered stair windows at its far left (that matches the **west** face, with north to the left), and a side face with the stacked balconies (that matches the **south** face). This looks like a **corner plot with roads on the south and the west**.
-
-The model works for any of these. Only the gate position, the "front" camera presets and the sun direction change. But I need your answer before Phase 1 (Question 2).
+The vehicle gate is in front of the balcony wing and leads into the stilt parking. The pedestrian gate leads through the parking to the ground-floor stair/lift lobby (NW).
 
 ## Interior module link
 

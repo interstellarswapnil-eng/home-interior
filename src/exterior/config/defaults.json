@@ -1,0 +1,14 @@
+{
+  "_comment": "Roles every design gets unless a palette sets them. Palettes and the user can override any of these.",
+  "roles": {
+    "glass": { "material": "glass", "color": "#2C3A40" },
+    "greenery": { "material": "foliage", "color": "#55703A" },
+    "interior": { "material": "interiorDark", "color": "#3A332C" },
+    "context": { "material": "concrete", "color": "#B4AFA6" },
+    "road": { "material": "asphalt", "color": "#4A4A4C" },
+    "paving": { "material": "mosaicPaving", "color": "#B9B6B0" },
+    "ground": { "material": "grass", "color": "#6E8A4A" },
+    "railing": { "material": "metalMatte", "color": "#1E1E1E" },
+    "sill": { "material": "stone", "color": "#D9D2C6" }
+  }
+}

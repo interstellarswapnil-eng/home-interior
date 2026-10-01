@@ -6,6 +6,13 @@ An interactive 2D floor plan and 3D model of a typical 1st to 3rd floor 2BHK in 
 
 ![2D plan](docs/screenshots/plan-2d.png)
 
+## Exterior module (in progress)
+
+The building's outside lives in a separate module: `src/exterior/`, opened from the **Interior | Exterior** switch in the header, or at http://localhost:5173/exterior.html. It reads the same floor plan (`plan/plan.ts`) and never changes it. The design notes are in `docs/exterior/`. Commands:
+
+- `npm run exterior:shots` saves preset views to `docs/exterior/screenshots/`.
+- `npm test` includes the exterior model tests.
+
 ## Run it
 
 ```bash
