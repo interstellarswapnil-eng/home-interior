@@ -11,11 +11,9 @@ import {
   FLOOR_FTF,
   LIFT_BOX,
   OUTLINE,
-  PARAPET_H,
   PAVING,
   PLINTH,
   PLOT,
-  ROOF_OUTLINE,
   SLAB,
   STILT_BAND,
   TERRACE,
@@ -41,6 +39,21 @@ const E = EXT_WALL;
 const southOfTower = <T extends { x: number; y: number; h: number }>(w: T): T =>
   Math.abs(w.x - X_W) > 0.01 ? w : { ...w, h: Math.min(w.y + w.h, Y_TOWER_S) - w.y };
 const FLAT_FLOORS = Array.from({ length: FLATS }, (_, i) => i + 1);
+
+/** Stilt columns [assumed grid]: x, y, w (along x), h (along y). */
+export const COLUMNS: [number, number, number, number][] = [
+  [X_W, Y_S_MASTER, 0.3, 0.45],
+  [X_NOTCH_W - 0.3, Y_S_MASTER, 0.3, 0.45],
+  [X_W, 3.4, 0.3, 0.45],
+  [X_NOTCH_W - 0.3, 3.4, 0.3, 0.45],
+  [X_WING, Y_NOTCH, 0.3, 0.45],
+  [7.7, Y_NOTCH, 0.3, 0.45],
+  [X_E - 0.3, Y_NOTCH, 0.3, 0.45],
+  [X_E - 0.3, 4.6, 0.3, 0.45],
+  [X_CORE_E, 4.6, 0.3, 0.45],
+  [X_E - 0.3, Y_LIVING_N - 0.45, 0.3, 0.45],
+  [7.7, Y_LIVING_N - 0.45, 0.3, 0.45],
+];
 
 const inset = (r: { x: number; y: number; w: number; h: number }, d: number) => ({ x: r.x + d, y: r.y + d, w: r.w - 2 * d, h: r.h - 2 * d });
 
@@ -226,46 +239,14 @@ function slabParts(): Part[] {
     out.push(box(`R-balcony-${key}-soffit`, "soffit", { x: r.x + 0.01, y: r.y + 0.01, w: r.w - 0.02, h: r.h - 0.02, z0: TERRACE - 0.24, z1: TERRACE - 0.22 }, { floor: 3, side: "under", slot: `balcony:${key}` }));
   }
 
-  // Terrace slab + parapet with coping
+  // Terrace slab
   FOOTPRINT_RECTS.forEach((r, i) => out.push(box(`R-terrace-${i}`, "context", { ...inset(r, 0.1), z0: TERRACE - SLAB, z1: TERRACE + 0.02 }, { floor: 4, side: "roof", slot: "edge:terrace" })));
-  // (ROOF_OUTLINE edge 8 and the north part of edge 9 run along the stair head room, which rises above the terrace)
-  const roofEdge = (i: number, id: string, role: "mainWall" | "roofEdge") => (i === 8 ? null : { id: `${id}-${i}`, role, slot: "edge:terrace", floor: 4 });
-  for (const w0 of edgeWalls(ROOF_OUTLINE, 0.15, TERRACE, TERRACE + PARAPET_H - 0.05, (i) => roofEdge(i, "R-parapet", "mainWall"))) {
-    const w = w0.side === "W" ? southOfTower(w0) : w0;
-    out.push(box(w.id, w.role, w, { floor: 4, side: w.side, slot: w.slot }));
-  }
-  for (const w0 of edgeWalls(ROOF_OUTLINE, 0.21, TERRACE + PARAPET_H - 0.05, TERRACE + PARAPET_H, (i) => roofEdge(i, "R-coping", "roofEdge"))) {
-    const w = w0.side === "W" ? southOfTower(w0) : w0;
-    // coping overhangs the parapet by 30 mm on the outside
-    const grow = 0.03;
-    const b = { ...w };
-    if (w.side === "S") b.y -= grow;
-    if (w.side === "W") b.x -= grow;
-    if (w.side === "N" || w.side === "S") b.h += grow;
-    else b.w += grow;
-    out.push(box(w.id, w.role, b, { floor: 4, side: w.side, slot: w.slot }));
-  }
+  // Terrace parapet: see the `parapet` element (style is part of the design).
   // Head-room roof slab + coping band
   out.push(box("R-head-roof", "roofEdge", { x: X_W - 0.05, y: LIFT_BOX.y - 0.05, w: X_CORE_E - X_W + 0.1, h: Y_STAIR_N - LIFT_BOX.y + 0.1, z0: TOP - 0.25, z1: TOP }, { floor: 4, side: "roof", slot: "wall:stairTower" }));
 
-  // Stilt columns [assumed grid]
-  const cols: [number, number, number, number][] = [
-    [X_W, Y_S_MASTER, 0.3, 0.45],
-    [X_NOTCH_W - 0.3, Y_S_MASTER, 0.3, 0.45],
-    [X_W, 3.4, 0.3, 0.45],
-    [X_NOTCH_W - 0.3, 3.4, 0.3, 0.45],
-    [X_WING, Y_NOTCH, 0.3, 0.45],
-    [7.7, Y_NOTCH, 0.3, 0.45],
-    [X_E - 0.3, Y_NOTCH, 0.3, 0.45],
-    [X_E - 0.3, 4.6, 0.3, 0.45],
-    [X_CORE_E, 4.6, 0.3, 0.45],
-    [X_E - 0.3, Y_LIVING_N - 0.45, 0.3, 0.45],
-    [7.7, Y_LIVING_N - 0.45, 0.3, 0.45],
-  ];
-  cols.forEach(([x, y, w, h], i) => {
-    out.push(box(`F0-column-${i}`, "column", { x, y, w, h, z0: PLINTH + 0.6, z1: level(1) - STILT_BAND }, { floor: 0, slot: "wall:columns" }));
-    out.push(box(`F0-column-${i}-base`, "base", { x: x - 0.01, y: y - 0.01, w: w + 0.02, h: h + 0.02, z0: PLINTH, z1: PLINTH + 0.6 }, { floor: 0, slot: "wall:columns" }));
-  });
+  // Stilt columns; their base sleeves come from the `stoneBase` element
+  COLUMNS.forEach(([x, y, w, h], i) => out.push(box(`F0-column-${i}`, "column", { x, y, w, h, z0: PLINTH, z1: level(1) - STILT_BAND }, { floor: 0, slot: "wall:columns" })));
   return out;
 }
 

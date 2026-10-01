@@ -1,0 +1,200 @@
+{
+  "id": "darkModern",
+  "order": 3,
+  "name": "Dark Modern",
+  "description": "Bold and dramatic: dark volumes warmed with wood at the entrance and under the balconies. Strong at night.",
+  "defaultPaletteId": "whiteAnthracite",
+  "notes": {
+    "climate": "Dark walls absorb heat. In Ahilyanagar keep dark colours as the second surface or on the shaded north face, not on the west or south.",
+    "maintenance": "Medium: dark paint fades in strong sun (use UV-stable exterior paint); white shows dust.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "charcoalCedar",
+      "name": "Charcoal & cedar",
+      "note": "Striking, but charcoal on the sunny west and south faces will heat the flats. Best used as a comparison.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#34363A"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#EDEAE3"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#A9714B"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1A1A1A"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1A1A1A"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1A1A1A"
+        },
+        "base": {
+          "material": "concrete",
+          "color": "#9A978F"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#9A978F"
+        }
+      }
+    },
+    {
+      "id": "whiteAnthracite",
+      "name": "White & anthracite",
+      "recommended": true,
+      "note": "Recommended: keeps the dark colour as the 30% second surface, so the main walls stay cool. Pure white shows dust; repaint about every 5 years.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#F0EEE9"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#383E42"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#9C6B48"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#383E42"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#383E42"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#383E42"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#4D4E4B"
+        },
+        "paving": {
+          "material": "slate",
+          "color": "#4D4E4B"
+        }
+      }
+    },
+    {
+      "id": "forestBronze",
+      "name": "Forest green & bronze",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#2F3A32"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#EAE4D9"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#B07A4F"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#CDB48C"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#CDB48C"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess"
+      ]
+    },
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w"
+      ],
+      "params": {
+        "depth": 0.35,
+        "width": 0.15
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "band"
+      }
+    },
+    "canopy": {
+      "enabled": true,
+      "slots": [
+        "site:gate"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.6,
+        "gate": "solid"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "params": {
+        "type": "uplightsWashers"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

@@ -1,5 +1,22 @@
 /** Named slots: places on the building where elements can go (shown in plain words in the app). */
-import { FLATS } from "./building";
+import {
+  FLATS,
+  EXT_WALL,
+  LIFT_BOX,
+  PLINTH,
+  STILT_BAND,
+  TERRACE,
+  X_E,
+  X_NOTCH_W,
+  X_W,
+  X_WING,
+  Y_LIVING_N,
+  Y_NOTCH,
+  Y_S_MASTER,
+  Y_STAIR_N,
+  Y_TOWER_S,
+  level,
+} from "./building";
 import type { Slot } from "./types";
 
 const FLOORS = Array.from({ length: FLATS }, (_, i) => i + 1);
@@ -13,6 +30,7 @@ export const SLOTS: Slot[] = [
   { id: "wall:west", label: "West side wall (bedrooms)", side: "W", kind: "wall", floors: FLOORS },
   { id: "wall:east", label: "East side wall (living + kitchen)", side: "E", kind: "wall", floors: FLOORS },
   { id: "wall:stairTower", label: "Staircase tower", side: "W", kind: "wall", floors: [...ALL, 4] },
+  { id: "wall:stairTowerBase", label: "Bottom of the staircase tower (ground floor)", side: "W", kind: "wall", floors: [0] },
   { id: "wall:groundCore", label: "Ground-floor lift and stair lobby walls", side: "S", kind: "wall", floors: [0] },
   { id: "wall:columns", label: "Parking columns", side: "under", kind: "wall", floors: [0] },
   { id: "wall:plinth", label: "Plinth (raised parking floor edge)", side: "S", kind: "wall", floors: [0] },
@@ -27,6 +45,7 @@ export const SLOTS: Slot[] = [
   { id: "edge:stiltBand", label: "Band above the parking", side: "S", kind: "edge", floors: [0] },
   { id: "edge:parkingCeiling", label: "Parking ceiling", side: "under", kind: "edge", floors: [0] },
   { id: "site:compoundFront", label: "Front compound wall", side: "S", kind: "site", floors: [-1] },
+  { id: "terrace:pergola", label: "Terrace (east part)", side: "roof", kind: "edge", floors: [4] },
   { id: "site:compoundSides", label: "Side and rear compound walls", side: "S", kind: "site", floors: [-1] },
   { id: "site:gate", label: "Gates and gate pillars", side: "S", kind: "site", floors: [-1] },
   { id: "site:driveway", label: "Driveway and parking floor", side: "S", kind: "site", floors: [-1] },
@@ -51,3 +70,43 @@ export const slotById = (id?: string) => SLOTS.find((s) => s.id === id);
 
 export const floorName = (f: number) =>
   f === -1 ? "Site" : f === 0 ? "Ground (parking)" : f === 4 ? "Terrace" : `${f === 1 ? "1st" : f === 2 ? "2nd" : "3rd"} floor`;
+
+// ---------------------------------------------------------------------------
+// Slot regions: the facade areas that wall elements (slats, jaali, cladding) cover.
+// ---------------------------------------------------------------------------
+
+export type Region = { side: "N" | "S" | "E" | "W"; face: number; a: number; b: number; z0: number; z1: number };
+
+export function slotRegions(slotId: string): Region[] {
+  const L1 = level(1);
+  switch (slotId) {
+    case "wall:frontName":
+      return [{ side: "S", face: Y_S_MASTER, a: X_W, b: X_NOTCH_W, z0: L1, z1: TERRACE }];
+    case "wall:featureRecess":
+      return [
+        { side: "S", face: Y_NOTCH, a: X_NOTCH_W, b: X_WING, z0: L1, z1: TERRACE },
+        { side: "E", face: X_NOTCH_W, a: Y_S_MASTER, b: Y_NOTCH, z0: L1, z1: TERRACE },
+      ];
+    case "wall:balconyBack-S":
+      return [{ side: "S", face: Y_NOTCH, a: X_WING, b: X_E, z0: L1, z1: TERRACE }];
+    case "wall:balconyBack-N":
+      return [{ side: "N", face: Y_LIVING_N, a: X_WING, b: X_E - EXT_WALL, z0: L1, z1: TERRACE }];
+    case "wall:west":
+      return [{ side: "W", face: X_W, a: Y_S_MASTER, b: Y_TOWER_S, z0: L1, z1: TERRACE }];
+    case "wall:east":
+      return [{ side: "E", face: X_E, a: Y_NOTCH, b: Y_LIVING_N, z0: L1, z1: TERRACE }];
+    case "wall:stairTower":
+      return [{ side: "W", face: X_W, a: Y_TOWER_S, b: Y_STAIR_N, z0: PLINTH, z1: TERRACE }];
+    case "wall:stairTowerBase":
+      return [{ side: "W", face: X_W, a: Y_TOWER_S, b: Y_STAIR_N, z0: PLINTH, z1: L1 - STILT_BAND }];
+    case "entrance:lobby":
+      return [{ side: "S", face: Y_TOWER_S, a: X_W + EXT_WALL, b: LIFT_BOX.x, z0: PLINTH, z1: L1 - STILT_BAND }];
+    case "balconySide:S":
+      return [{ side: "S", face: Y_NOTCH, a: X_WING + 0.1, b: X_WING + 0.9, z0: L1, z1: TERRACE }];
+    case "balconySide:N":
+      return [{ side: "N", face: Y_LIVING_N, a: X_WING + 0.1, b: X_WING + 0.9, z0: L1, z1: TERRACE }];
+    default:
+      return [];
+  }
+}
+

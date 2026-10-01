@@ -1,0 +1,220 @@
+{
+  "id": "japandi",
+  "order": 2,
+  "name": "Japandi",
+  "description": "Quiet and natural: low contrast, horizontal lines, dark and light wood together, garden first.",
+  "defaultPaletteId": "greigeCharred",
+  "notes": {
+    "climate": "The deep roof edge shades the top floor; greige hides dust. Charred wood must be a wood-look panel outdoors.",
+    "maintenance": "Low: muted colours age gracefully; gravel needs raking.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "greigeCharred",
+      "name": "Greige & charred wood",
+      "recommended": true,
+      "note": "Recommended: greige is the most dust-friendly wall colour here, and the charred accent echoes the dark frames in your image 15.",
+      "roles": {
+        "mainWall": {
+          "material": "texturedPlaster",
+          "color": "#D3CBBE"
+        },
+        "secondSurface": {
+          "material": "woodLook",
+          "color": "#C8A97E"
+        },
+        "featureWall": {
+          "material": "charredWood",
+          "color": "#2A2623"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#3B342D"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#3B342D"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#3B342D"
+        },
+        "base": {
+          "material": "concrete",
+          "color": "#8C8A84"
+        },
+        "paving": {
+          "material": "gravel",
+          "color": "#8C8A84"
+        },
+        "ground": {
+          "material": "gravel",
+          "color": "#B5B0A6"
+        }
+      }
+    },
+    {
+      "id": "paperStone",
+      "name": "Paper & stone",
+      "roles": {
+        "mainWall": {
+          "material": "limewash",
+          "color": "#E9E3D7"
+        },
+        "secondSurface": {
+          "material": "stonePanels",
+          "color": "#A69E91"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#A9714B"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#5F605C"
+        },
+        "paving": {
+          "material": "slate",
+          "color": "#5F605C"
+        },
+        "ground": {
+          "material": "gravel",
+          "color": "#A8A49A"
+        }
+      }
+    },
+    {
+      "id": "mushroomMoss",
+      "name": "Mushroom & moss",
+      "note": "Base darkened slightly (#9C978D) so splashes don't show.",
+      "roles": {
+        "mainWall": {
+          "material": "texturedPlaster",
+          "color": "#BCB2A4"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#7C8466"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#CDB089"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#333333"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#333333"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#333333"
+        },
+        "base": {
+          "material": "concrete",
+          "color": "#9C978D"
+        },
+        "paving": {
+          "material": "gravel",
+          "color": "#B5B0A6"
+        },
+        "ground": {
+          "material": "gravel",
+          "color": "#B5B0A6"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "slats": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess",
+        "balconySide:S",
+        "balconySide:N"
+      ],
+      "params": {
+        "orientation": "vertical",
+        "width": 0.04,
+        "gap": 0.035,
+        "depth": 0.07
+      }
+    },
+    "roofOverhang": {
+      "enabled": true,
+      "params": {
+        "depth": 0.9
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "bars"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "edge:balconyRoof-S"
+      ]
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.45
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.2,
+        "pilasterEvery": 4,
+        "gate": "slats"
+      }
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "ground": "gravel",
+        "steppingStones": true
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "params": {
+        "type": "warmLow"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

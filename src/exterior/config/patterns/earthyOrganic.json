@@ -1,0 +1,222 @@
+{
+  "id": "earthyOrganic",
+  "order": 5,
+  "name": "Earthy Organic",
+  "description": "Soft and handmade: textured limewash, soft curves, terracotta details and a wooden door.",
+  "defaultPaletteId": "clay",
+  "notes": {
+    "climate": "Limewash breathes and stays cool; earthy mid-tones hide dust and sun-fading.",
+    "maintenance": "Medium: limewash needs a fresh coat every 3–4 years (cheap).",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "limewashTerracotta",
+      "name": "Limewash & terracotta",
+      "note": "Base darkened from travertine to #A89679 for splash. Limewash white streaks; plan a recoat every 3 years.",
+      "roles": {
+        "mainWall": {
+          "material": "limewash",
+          "color": "#EEE7DC"
+        },
+        "secondSurface": {
+          "material": "terracotta",
+          "color": "#B86B4B"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#C4A27A"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#A89679"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#D2C1A4"
+        }
+      }
+    },
+    {
+      "id": "clay",
+      "name": "Clay",
+      "recommended": true,
+      "note": "Recommended: a mid-tone clay body ages well in dust and sun, unlike limewash white.",
+      "roles": {
+        "mainWall": {
+          "material": "limewash",
+          "color": "#D2B898"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#A86A4A"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#6E4B33"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#5C4632"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#5C4632"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#5C4632"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#C9B595"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#C9B595"
+        }
+      }
+    },
+    {
+      "id": "stoneOlive",
+      "name": "Stone & olive",
+      "note": "Base darkened from limestone to #ADA28F for splash.",
+      "roles": {
+        "mainWall": {
+          "material": "limewash",
+          "color": "#DCD2C1"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#7A7A55"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#B48A5E"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#5A4C3A"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#5A4C3A"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#5A4C3A"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#ADA28F"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#CFC6B5"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "jaali": {
+      "enabled": true,
+      "slots": [
+        "balconySide:S",
+        "balconySide:N"
+      ],
+      "params": {
+        "cell": 0.16,
+        "bar": 0.04,
+        "depth": 0.08
+      }
+    },
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w"
+      ],
+      "params": {
+        "depth": 0.2,
+        "width": 0.25
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "curvedSolidGlass",
+        "low": 0.5,
+        "split": 0.45
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "edge:balconyRoof-S"
+      ]
+    },
+    "canopy": {
+      "enabled": true,
+      "slots": [
+        "site:gate"
+      ],
+      "params": {
+        "style": "woodPergola"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "slats"
+      }
+    },
+    "roundedCorners": {
+      "enabled": true,
+      "params": {
+        "radius": 0.3
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

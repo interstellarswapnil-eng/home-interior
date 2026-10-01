@@ -27,3 +27,10 @@
   .xapp { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
   .xpanel { border-left: 0; border-top: 1px solid var(--line); max-height: 42vh; }
 }
+
+.palettes { display: grid; gap: 5px; margin: 6px 0; }
+.palette { display: flex; align-items: center; gap: 10px; text-align: left; padding: 6px 8px; }
+.palette.on { background: #f1ede6; color: var(--ink); border-color: var(--ink); }
+.palette .chips { display: flex; gap: 2px; }
+.palette .chips .swatch { width: 16px; height: 22px; border-radius: 2px; }
+.star { color: #b88a4f; }

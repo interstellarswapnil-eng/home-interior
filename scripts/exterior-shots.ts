@@ -23,6 +23,15 @@ const shots: { file: string; query: string; click?: [number, number] }[] = [
   { file: "p1-roles-bird.png", query: "cam=bird&roles=1&panel=0" },
   { file: "p1-app.png", query: "cam=corner" },
   { file: "p1-pick.png", query: "cam=corner", click: [640, 560] },
+  // Phase 2: every pattern (recommended palette) from the street corner, plus close-ups for texture scale
+  ...["architect", "warmMinimal", "japandi", "darkModern", "tropicalModern", "earthyOrganic", "brickConcrete", "warmCurves"].map((p) => ({
+    file: `p2-${p}.png`,
+    query: `cam=corner&panel=0&pattern=${p}`,
+  })),
+  { file: "p2-close-brick.png", query: "pattern=brickConcrete&panel=0&cp=-4,-1.5,4.5&ct=0,3,6&fov=50" },
+  { file: "p2-close-warmCurves.png", query: "pattern=warmCurves&panel=0&cp=1.5,-4.5,5&ct=4.5,0.5,6&fov=55" },
+  { file: "p2-close-tropical.png", query: "pattern=tropicalModern&panel=0&cp=-5,3,9&ct=0,7,8&fov=55" },
+  { file: "p2-app.png", query: "cam=corner&pattern=warmCurves" },
 ];
 
 const only = process.argv.slice(2);

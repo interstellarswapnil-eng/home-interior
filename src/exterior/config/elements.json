@@ -1,0 +1,152 @@
+{
+  "_comment": "Element catalogue. Patterns switch these on and set params; the Elements tab (Phase 3) is built from this file. status: ready = has a generator; planned = coming in a later phase (ignored until then).",
+  "slats": {
+    "n": 1, "label": "Wood slats", "status": "ready",
+    "tip": "Rows of thin wood-look blades with gaps. Louver = the same idea with angled or horizontal blades. They shade, add privacy and warmth.",
+    "slotKinds": ["wall", "window", "entrance", "balcony"],
+    "params": {
+      "orientation": { "label": "Direction", "options": ["vertical", "horizontal"], "default": "vertical" },
+      "width": { "label": "Slat width (m)", "min": 0.03, "max": 0.12, "step": 0.01, "default": 0.05 },
+      "gap": { "label": "Gap (m)", "min": 0.02, "max": 0.15, "step": 0.01, "default": 0.05 },
+      "depth": { "label": "Depth (m)", "min": 0.03, "max": 0.2, "step": 0.01, "default": 0.08 }
+    }
+  },
+  "fins": {
+    "n": 2, "label": "Vertical fins", "status": "ready",
+    "tip": "Thin vertical blades (concrete or metal) beside or in front of windows. They cut low morning / evening sun.",
+    "slotKinds": ["window", "balcony"],
+    "params": {
+      "count": { "label": "Number of fins", "min": 2, "max": 12, "step": 1, "default": 5 },
+      "width": { "label": "Fin width (m)", "min": 0.03, "max": 0.15, "step": 0.01, "default": 0.06 },
+      "depth": { "label": "Depth (m)", "min": 0.08, "max": 0.45, "step": 0.01, "default": 0.18 }
+    }
+  },
+  "jaali": {
+    "n": 3, "label": "Jaali screen", "status": "ready",
+    "tip": "Jaali = a perforated screen of brick, concrete blocks or laser-cut metal. Lets in breeze and soft light, keeps out harsh sun.",
+    "slotKinds": ["wall", "window", "balcony"],
+    "params": {
+      "cell": { "label": "Opening size (m)", "min": 0.1, "max": 0.4, "step": 0.01, "default": 0.22 },
+      "bar": { "label": "Bar thickness (m)", "min": 0.02, "max": 0.12, "step": 0.01, "default": 0.05 },
+      "depth": { "label": "Depth (m)", "min": 0.04, "max": 0.25, "step": 0.01, "default": 0.1 }
+    }
+  },
+  "boxFrames": {
+    "n": 4, "label": "Box frames around windows", "status": "ready",
+    "tip": "A projecting frame around a window. It shades the glass, protects from rain and adds depth.",
+    "slotKinds": ["window"],
+    "params": {
+      "depth": { "label": "Depth (m)", "min": 0.1, "max": 0.6, "step": 0.01, "default": 0.3 },
+      "width": { "label": "Frame width (m)", "min": 0.08, "max": 0.35, "step": 0.01, "default": 0.18 }
+    }
+  },
+  "cladding": {
+    "n": 5, "label": "Feature wall cladding", "status": "ready",
+    "tip": "A layer of wood-look panels, stone, brick tiles, fluted panels or terracotta tiles on a chosen wall. Its look comes from the Feature wall material.",
+    "slotKinds": ["wall"],
+    "params": {}
+  },
+  "stoneBase": {
+    "n": 6, "label": "Stone base", "status": "ready",
+    "tip": "Cladding on the bottom of the walls and parking columns. Plinth = this bottom band; it takes splashes and scuffs.",
+    "slotKinds": [],
+    "params": { "height": { "label": "Height (m)", "min": 0.3, "max": 1.5, "step": 0.05, "default": 0.6 } }
+  },
+  "canopy": {
+    "n": 7, "label": "Entrance canopy", "status": "ready",
+    "tip": "A small roof over the entrance door or the pedestrian gate.",
+    "slotKinds": ["entrance", "site"],
+    "params": {
+      "style": { "label": "Type", "options": ["concrete", "glass", "woodPergola"], "default": "concrete" },
+      "depth": { "label": "Depth (m)", "min": 0.6, "max": 2.0, "step": 0.05, "default": 1.1 }
+    }
+  },
+  "sunshades": {
+    "n": 8, "label": "Sunshades over windows", "status": "ready",
+    "tip": "A projecting ledge (chajja) above a window. Blocks high sun and rain.",
+    "slotKinds": ["window"],
+    "params": {
+      "depth": { "label": "Depth (m)", "min": 0.3, "max": 1.2, "step": 0.05, "default": 0.6 },
+      "thickness": { "label": "Thickness (m)", "min": 0.04, "max": 0.2, "step": 0.01, "default": 0.08 }
+    }
+  },
+  "roofOverhang": {
+    "n": 8, "label": "Roof overhang", "status": "ready",
+    "tip": "The roof slab projects beyond the walls, shading the top floor and keeping rain off the walls.",
+    "slotKinds": [],
+    "params": { "depth": { "label": "Overhang depth (m)", "min": 0.3, "max": 1.5, "step": 0.05, "default": 0.6 } }
+  },
+  "pergola": {
+    "n": 9, "label": "Terrace pergola", "status": "ready",
+    "tip": "An open frame of beams on the terrace for dappled shade.",
+    "slotKinds": [],
+    "params": {
+      "spacing": { "label": "Beam spacing (m)", "min": 0.2, "max": 1.0, "step": 0.05, "default": 0.45 },
+      "length": { "label": "Length (m)", "min": 2.5, "max": 8.0, "step": 0.1, "default": 4.2 }
+    }
+  },
+  "parapet": {
+    "n": 10, "label": "Parapet and roof edge", "status": "ready",
+    "tip": "Parapet = the low wall around the terrace. Thin edge, thick band, or glass.",
+    "slotKinds": [],
+    "params": { "style": { "label": "Style", "options": ["thin", "band", "glass"], "default": "thin" } }
+  },
+  "railings": {
+    "n": 11, "label": "Balcony railings", "status": "ready",
+    "tip": "The balcony edge: frameless glass, vertical bars, a solid wall, or a curved wall with glass (as on your current design).",
+    "slotKinds": ["balcony"],
+    "params": { "style": { "label": "Style", "options": ["curvedSolidGlass", "glass", "bars", "solid"], "default": "glass" } }
+  },
+  "roundedCorners": {
+    "n": 12, "label": "Rounded corners and arches", "status": "planned",
+    "tip": "Soft rounded edges and arch-shaped frames, added as a surface detail only (no structural change).",
+    "slotKinds": ["wall", "window"],
+    "params": {}
+  },
+  "planters": {
+    "n": 13, "label": "Planters", "status": "ready",
+    "tip": "Built-in plant boxes on balcony and roof edges.",
+    "slotKinds": ["balcony", "edge"],
+    "params": { "height": { "label": "Height (m)", "min": 0.3, "max": 0.8, "step": 0.05, "default": 0.45 } }
+  },
+  "lighting": {
+    "n": 14, "label": "Facade lighting", "status": "planned",
+    "tip": "Uplights, wall washers, linear LEDs and bollards. Shown in night mode (Phase 4).",
+    "slotKinds": ["wall", "edge", "site"],
+    "params": {}
+  },
+  "mainDoor": {
+    "n": 15, "label": "Main door style", "status": "planned",
+    "tip": "The entrance door: wood, pivot, or a colour accent.",
+    "slotKinds": ["entrance"],
+    "params": {}
+  },
+  "compoundWall": {
+    "n": 16, "label": "Compound wall and gate", "status": "ready",
+    "tip": "The boundary wall around the plot and the gates.",
+    "slotKinds": [],
+    "params": {
+      "height": { "label": "Wall height (m)", "min": 0.9, "max": 2.1, "step": 0.05, "default": 1.5 },
+      "pilasterEvery": { "label": "Pilaster spacing (m)", "min": 1.5, "max": 6.0, "step": 0.5, "default": 3.0 },
+      "gate": { "label": "Gate", "options": ["verticalBars", "slats", "solid"], "default": "verticalBars" }
+    }
+  },
+  "landscaping": {
+    "n": 17, "label": "Landscaping", "status": "planned",
+    "tip": "Lawn, gravel, pavers, driveway, trees and plants. Ground and paving materials already follow the palette.",
+    "slotKinds": ["site"],
+    "params": {}
+  },
+  "solar": {
+    "n": 18, "label": "Solar panels", "status": "planned",
+    "tip": "Rooftop solar panels on a frame over the terrace.",
+    "slotKinds": [],
+    "params": {}
+  },
+  "nameSign": {
+    "n": 0, "label": "Name sign", "status": "ready",
+    "tip": "The building name on the road-facing wall.",
+    "slotKinds": [],
+    "params": {}
+  }
+}

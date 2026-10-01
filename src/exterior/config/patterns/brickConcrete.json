@@ -1,0 +1,206 @@
+{
+  "id": "brickConcrete",
+  "order": 6,
+  "name": "Brick & Concrete",
+  "description": "Honest raw materials with clean lines: brick walls, a brick jaali stair wall, concrete frames, black steel.",
+  "defaultPaletteId": "redBrickBlack",
+  "notes": {
+    "climate": "Brick is local, hides dust and weathers well. Charcoal brick heats up on the west face.",
+    "maintenance": "Low: seal brick with a water repellent every few years; no repainting.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "redBrickBlack",
+      "name": "Red brick & black",
+      "recommended": true,
+      "note": "Recommended: clay brick tiles are local, affordable and weatherproof, and brick hides dirt.",
+      "roles": {
+        "mainWall": {
+          "material": "brick",
+          "color": "#9C4F35"
+        },
+        "secondSurface": {
+          "material": "concrete",
+          "color": "#A9A69F"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8B5E3C"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "base": {
+          "material": "concrete",
+          "color": "#8C8984"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#8C8984"
+        },
+        "trim": {
+          "material": "concrete",
+          "color": "#A9A69F"
+        }
+      }
+    },
+    {
+      "id": "whitewashedBrick",
+      "name": "Whitewashed brick",
+      "roles": {
+        "mainWall": {
+          "material": "brick",
+          "color": "#E4DED3"
+        },
+        "secondSurface": {
+          "material": "concrete",
+          "color": "#8F8C86"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8E5E3E"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#5A5A57"
+        },
+        "paving": {
+          "material": "slate",
+          "color": "#5A5A57"
+        },
+        "trim": {
+          "material": "concrete",
+          "color": "#8F8C86"
+        }
+      }
+    },
+    {
+      "id": "charcoalBronze",
+      "name": "Charcoal brick & bronze",
+      "note": "Base darkened from light stone to #8F887C for splash. Charcoal brick on the west face gets hot.",
+      "roles": {
+        "mainWall": {
+          "material": "brick",
+          "color": "#45403C"
+        },
+        "secondSurface": {
+          "material": "concrete",
+          "color": "#B9B3A8"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#B08A60"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#5A4A3A"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#5A4A3A"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#5A4A3A"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#8F887C"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#BDB6A8"
+        },
+        "trim": {
+          "material": "concrete",
+          "color": "#B9B3A8"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "jaali": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTower"
+      ],
+      "params": {
+        "cell": 0.24,
+        "bar": 0.075,
+        "depth": 0.115,
+        "role": "mainWall"
+      }
+    },
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w",
+        "win:win-living-e",
+        "win:win-kitchen-e"
+      ],
+      "params": {
+        "depth": 0.25,
+        "width": 0.15,
+        "role": "secondSurface"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "bars"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "band"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.45
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "verticalBars"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

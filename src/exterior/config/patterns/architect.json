@@ -1,5 +1,6 @@
 {
   "id": "architect",
+  "order": 0,
   "name": "Architect's design",
   "description": "Your current design (image 28): cream walls, taupe box frames, a wood-look strip and curved glass balconies.",
   "defaultPaletteId": "asDesigned",
@@ -15,46 +16,160 @@
       "recommended": true,
       "note": "Colours measured from image 28 (paint estimates).",
       "roles": {
-        "mainWall": { "material": "plaster", "color": "#EADCCB" },
-        "secondSurface": { "material": "texturedPlaster", "color": "#B8A28A" },
-        "featureWall": { "material": "flutedWood", "color": "#7A5636" },
-        "trim": { "material": "plaster", "color": "#F3EAE0" },
-        "roofEdge": { "material": "plaster", "color": "#F3EAE0" },
-        "windowSurround": { "material": "plaster", "color": "#B8A28A" },
-        "fins": { "material": "plaster", "color": "#F3EAE0" },
-        "soffit": { "material": "woodLook", "color": "#A8774A" },
-        "column": { "material": "plaster", "color": "#EFE6DA" },
-        "base": { "material": "plaster", "color": "#B8A28A" },
-        "balconyFront": { "material": "plaster", "color": "#EADCCB" },
-        "windowFrame": { "material": "metalMatte", "color": "#2A2A2A" },
-        "railing": { "material": "metalMatte", "color": "#222222" },
-        "gate": { "material": "metalMatte", "color": "#222222" },
-        "door": { "material": "woodLook", "color": "#6B4A2E" },
-        "mainDoor": { "material": "woodLook", "color": "#6B4A2E" },
-        "compoundWall": { "material": "plaster", "color": "#E3D5C2" },
-        "planter": { "material": "plaster", "color": "#EADCCB" },
-        "paving": { "material": "mosaicPaving", "color": "#B9B6B0" }
+        "mainWall": {
+          "material": "plaster",
+          "color": "#EADCCB"
+        },
+        "secondSurface": {
+          "material": "texturedPlaster",
+          "color": "#B8A28A"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#7A5636"
+        },
+        "trim": {
+          "material": "plaster",
+          "color": "#F3EAE0"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#F3EAE0"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#B8A28A"
+        },
+        "fins": {
+          "material": "plaster",
+          "color": "#F3EAE0"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#A8774A"
+        },
+        "column": {
+          "material": "plaster",
+          "color": "#EFE6DA"
+        },
+        "base": {
+          "material": "plaster",
+          "color": "#B8A28A"
+        },
+        "balconyFront": {
+          "material": "plaster",
+          "color": "#EADCCB"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#2A2A2A"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "door": {
+          "material": "woodLook",
+          "color": "#6B4A2E"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#6B4A2E"
+        },
+        "compoundWall": {
+          "material": "plaster",
+          "color": "#E3D5C2"
+        },
+        "planter": {
+          "material": "plaster",
+          "color": "#EADCCB"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#B9B6B0"
+        }
       }
     }
   ],
   "elements": {
     "boxFrames": {
       "enabled": true,
-      "slots": ["win:win-master-w", "win:win-kids-w", "win:stair-a", "win:stair-b"],
-      "params": { "depth": 0.32, "width": 0.2, "roleBySlot": { "win:stair-a": "trim", "win:stair-b": "trim" } }
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w",
+        "win:stair-a",
+        "win:stair-b"
+      ],
+      "params": {
+        "depth": 0.32,
+        "width": 0.2,
+        "roleBySlot": {
+          "win:stair-a": "trim",
+          "win:stair-b": "trim"
+        }
+      }
     },
     "fins": {
       "enabled": true,
-      "slots": ["win:win-kids-w", "balconySide:S", "balconySide:N"],
-      "params": { "count": 5, "width": 0.06, "depth": 0.18, "role": "fins" }
+      "slots": [
+        "win:win-kids-w",
+        "balconySide:S",
+        "balconySide:N"
+      ],
+      "params": {
+        "count": 5,
+        "width": 0.06,
+        "depth": 0.18,
+        "role": "fins"
+      }
     },
     "railings": {
       "enabled": true,
-      "slots": ["balcony:S", "balcony:N"],
-      "params": { "style": "curvedSolidGlass", "low": 0.35, "split": 0.38 }
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "curvedSolidGlass",
+        "low": 0.35,
+        "split": 0.38
+      }
     },
-    "planters": { "enabled": true, "slots": ["edge:balconyRoof-S"] },
-    "compoundWall": { "enabled": true, "params": { "height": 1.5, "pilasterEvery": 3, "gate": "verticalBars" } },
-    "nameSign": { "enabled": true, "params": { "text": "पसायदान" } }
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "edge:balconyRoof-S"
+      ]
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "pilasterEvery": 3,
+        "gate": "verticalBars"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
   }
 }

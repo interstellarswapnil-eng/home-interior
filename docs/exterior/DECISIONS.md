@@ -2,6 +2,29 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-01: Phase 2 (style system)
+
+- **8 patterns in `src/exterior/config/patterns/`:** Architect's design, the 6 starting patterns, and Warm curves (my references). Each of the 7 non-architect patterns has 3 palettes, with one ★ recommended and the reason shown in the app. The Phase 0 base/plinth refinements are applied.
+- **Section 6 column mapping:**
+  - Main walls → `mainWall`
+  - Second → `secondSurface`
+  - Feature → `featureWall`
+  - Metal → `windowFrame` + `railing` + `gate`
+  - Base & paving → `base` + `paving`
+
+  Other roles follow fallbacks in `roles.json`. Exceptions:
+  - The brick palettes set concrete slab edges (`trim`); otherwise the slabs would turn to brick.
+  - Warm curves sets a plain wood-look soffit, so the balcony ceilings aren't fluted.
+- **Textures:** 16 CC0 Poly Haven sets plus a generated fluted normal map, 1k JPG, 11 MB in total. They're loaded only when a design uses them. Albedos are neutral grey (linear mean 0.5) and tinted by the palette colour × 2, so the average tone matches the hex exactly. Credits are in `ASSET_CREDITS.md`.
+- **Real-world scale is calibrated by eye**, because Poly Haven's listed size didn't match the visible units for these two:
+  - brick: 1.4 m per repeat, giving 85 mm courses and about 240 mm bricks
+  - stone panels: 1.5 m, giving about 330 × 600 mm panels
+- **Swapped textures:** the textured plaster was a peeling wall and the pavers were tactile tiles, so both were replaced. Plaster and limewash contrast was lowered so walls don't look blotchy.
+- **New generators** (all config-driven, with params): slats/louvers, jaali, cladding, sunshades, roof overhang, pergola, canopy (concrete / glass / wood pergola, over the lobby door or the pedestrian gate), parapet styles (thin / band / glass) and stone base. Also a slatted gate style. **The parapet and the column base sleeves moved from the fixed shell into elements**, so patterns can change them.
+- **Planned (catalogued, generated in later phases):** rounded corners/arches, facade lighting, main door style, landscaping, solar panels. Patterns already list them; they're ignored until their generators exist.
+- **Light tuned** (sun 1.7, exposure 0.72) so cream reads as cream. Colour judging will be done in the Phase 4 overcast mode.
+- **Speed:** pattern switch 50–200 ms, palette switch 50–175 ms (`npm run exterior:perf`). Target ≈ 1 s.
+
 ## 2026-10-01: Phase 1 (building model)
 
 - **Shell is code, not a file.** `src/exterior/model/shell.ts` builds every wall, opening, slab, balcony, column and the site from `plan/plan.ts` + `building.ts`. It's pure data, unit-tested in `tests/exterior/model.test.ts`.

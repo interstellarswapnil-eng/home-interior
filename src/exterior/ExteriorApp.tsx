@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ExteriorScene, type Quality } from "./scene/ExteriorScene";
 import { CAMERA_IDS, CAMERA_PRESETS, type CameraId } from "./scene/cameras";
-import { ROLES, defaultDesign, patternById, resolveRoles } from "./model/resolve";
+import { PATTERNS, ROLES, defaultDesign, patternById, resolveRoles } from "./model/resolve";
 import { floorName, slotById } from "./model/slots";
 import { sideName } from "./model/shell";
 import { SURFACE_ROLES, type Part } from "./model/types";
@@ -14,7 +14,11 @@ const pick = <T extends string>(key: string, allowed: readonly T[], def: T): T =
 };
 
 export function ExteriorApp() {
-  const [design] = useState(() => defaultDesign(params.get("pattern") ?? "architect"));
+  const [design, setDesign] = useState(() => {
+    const d = defaultDesign(params.get("pattern") ?? "architect");
+    const pal = params.get("palette");
+    return pal && patternById(d.patternId).palettes.some((p) => p.id === pal) ? { ...d, paletteId: pal } : d;
+  });
   const [camera, setCamera] = useState<CameraId>(pick("cam", CAMERA_IDS, "corner"));
   const [nonce, setNonce] = useState(0);
   const [quality, setQuality] = useState<Quality>(pick<Quality>("quality", ["normal", "high"], "normal"));
@@ -62,13 +66,38 @@ export function ExteriorApp() {
       {panel && (
         <aside className="xpanel">
           <section>
-            <h3>Design</h3>
-            <div>
-              <strong>{pattern.name}</strong>
-            </div>
+            <h3>Style</h3>
+            <label className="row">
+              Pattern
+              <select value={design.patternId} onChange={(e) => setDesign(defaultDesign(e.target.value))}>
+                {PATTERNS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </label>
             <p className="muted small">{pattern.description}</p>
+            <div className="palettes">
+              {pattern.palettes.map((p) => (
+                <button key={p.id} className={`palette ${design.paletteId === p.id ? "on" : ""}`} onClick={() => setDesign({ ...design, paletteId: p.id })} title={p.note}>
+                  <span className="chips">
+                    {(["mainWall", "secondSurface", "featureWall", "railing", "base"] as const).map((r) => (
+                      <span key={r} className="swatch" style={{ background: p.roles[r]?.color ?? roles[r].color }} />
+                    ))}
+                  </span>
+                  <span>
+                    {p.name}
+                    {p.recommended && <b className="star" title="Recommended"> ★</b>}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {pattern.palettes.find((p) => p.id === design.paletteId)?.note && (
+              <p className="muted small">{pattern.palettes.find((p) => p.id === design.paletteId)?.note}</p>
+            )}
             <p className="small">
-              <b>Good to know:</b> {pattern.notes.climate}
+              <b>Good to know:</b> {pattern.notes.climate} <span className="muted">{pattern.notes.maintenance} Cost: {pattern.notes.relativeCost}</span>
             </p>
           </section>
           <section>

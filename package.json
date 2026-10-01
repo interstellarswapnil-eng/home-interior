@@ -14,7 +14,9 @@
     "immersive": "tsx scripts/immersive.ts",
     "fetch-assets": "tsx scripts/fetch-assets.ts",
     "perf": "tsx scripts/perf.ts",
-    "exterior:shots": "tsx scripts/exterior-shots.ts"
+    "exterior:shots": "tsx scripts/exterior-shots.ts",
+    "exterior:assets": "tsx scripts/exterior-fetch-assets.ts",
+    "exterior:perf": "tsx scripts/exterior-perf.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

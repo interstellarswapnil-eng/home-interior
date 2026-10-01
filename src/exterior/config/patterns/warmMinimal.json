@@ -1,0 +1,210 @@
+{
+  "id": "warmMinimal",
+  "order": 1,
+  "name": "Warm Minimal",
+  "description": "Clean, calm boxes in warm white, one warm wood feature, slim dark frames.",
+  "defaultPaletteId": "sandOak",
+  "notes": {
+    "climate": "Light walls keep the flats cool. Use wood-look HPL outdoors; keep real teak under cover.",
+    "maintenance": "Low to medium: repaint every 5–6 years; very light walls show dust streaks under sills.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "whiteTeak",
+      "name": "Warm white & teak",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#EEEAE1"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#D6CEC1"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8E5E3E"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#A9A49B"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#A9A49B"
+        }
+      }
+    },
+    {
+      "id": "sandOak",
+      "name": "Sand & oak",
+      "recommended": true,
+      "note": "Recommended: soft sand hides Ahilyanagar dust better than warm white and sits close to your architect's cream. Base darkened from travertine to #B3A68E for splash.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#E8E0D2"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#C8B69B"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#C4A27A"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#3F362D"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#3F362D"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#3F362D"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#B3A68E"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#D3C4A8"
+        }
+      }
+    },
+    {
+      "id": "greyWalnut",
+      "name": "Soft grey & walnut",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#ECEBE7"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#8E9290"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#5C3F2B"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#2E3133"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#2E3133"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#2E3133"
+        },
+        "base": {
+          "material": "concrete",
+          "color": "#9C9993"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#9C9993"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "slats": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess"
+      ],
+      "params": {
+        "orientation": "vertical",
+        "width": 0.05,
+        "gap": 0.05,
+        "depth": 0.08
+      }
+    },
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w"
+      ],
+      "params": {
+        "depth": 0.25,
+        "width": 0.12
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "edge:balconyRoof-S"
+      ]
+    },
+    "canopy": {
+      "enabled": true,
+      "slots": [
+        "site:gate"
+      ],
+      "params": {
+        "style": "concrete"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "slats"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "params": {
+        "type": "linearUnderCanopy"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

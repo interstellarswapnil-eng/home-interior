@@ -1,0 +1,223 @@
+{
+  "id": "tropicalModern",
+  "order": 4,
+  "name": "Tropical Modern",
+  "description": "Open, shaded and green: deep shades over openings, wood-look louvers, a jaali stair wall, a stone base.",
+  "defaultPaletteId": "sandSandstone",
+  "notes": {
+    "climate": "The best fit for Ahilyanagar's sun: a shade over every window and a jaali on the hot west stair wall.",
+    "maintenance": "Medium: louvers need occasional cleaning; planters need drip irrigation.",
+    "relativeCost": "$$$"
+  },
+  "palettes": [
+    {
+      "id": "whiteTeak",
+      "name": "White & teak",
+      "note": "Pure white shows dust and rain streaks; acceptable under this pattern's deep shades.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#F2F0EB"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#CFC8BC"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8B5A3C"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#222222"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#5F605C"
+        },
+        "paving": {
+          "material": "slate",
+          "color": "#5F605C"
+        }
+      }
+    },
+    {
+      "id": "sandSandstone",
+      "name": "Sand & sandstone",
+      "recommended": true,
+      "note": "Recommended: local-looking sandstone, dust-friendly sand walls, and it matches the stone piers in your images 5 and 24.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#E1D5C1"
+        },
+        "secondSurface": {
+          "material": "stonePanels",
+          "color": "#CDB48C"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#6F4630"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#4E4034"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#4E4034"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#4E4034"
+        },
+        "base": {
+          "material": "stackedStone",
+          "color": "#9E9483"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#9E9483"
+        }
+      }
+    },
+    {
+      "id": "stoneTerracotta",
+      "name": "Stone & terracotta",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#C9C4BA"
+        },
+        "secondSurface": {
+          "material": "terracotta",
+          "color": "#B5654A"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8B5A3C"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#2F3D33"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#2F3D33"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#2F3D33"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#77756F"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#77756F"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "sunshades": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w",
+        "win:win-living-e",
+        "win:win-kitchen-e"
+      ],
+      "params": {
+        "depth": 0.6
+      }
+    },
+    "roofOverhang": {
+      "enabled": true,
+      "params": {
+        "depth": 0.75
+      }
+    },
+    "slats": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess",
+        "win:win-kids-w"
+      ],
+      "params": {
+        "orientation": "vertical",
+        "width": 0.06,
+        "gap": 0.06,
+        "depth": 0.1
+      }
+    },
+    "jaali": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTower"
+      ],
+      "params": {
+        "cell": 0.22,
+        "bar": 0.05,
+        "depth": 0.1
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.9
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "edge:balconyRoof-S"
+      ]
+    },
+    "pergola": {
+      "enabled": true,
+      "params": {
+        "spacing": 0.45
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "slats"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

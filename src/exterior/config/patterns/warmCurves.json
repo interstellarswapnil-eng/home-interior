@@ -1,0 +1,240 @@
+{
+  "id": "warmCurves",
+  "order": 7,
+  "name": "Warm curves (my references)",
+  "description": "From your references: warm cream with soft curves, wood underneath and in vertical strips, glass balconies, a touch of stone.",
+  "defaultPaletteId": "ivoryTeak",
+  "notes": {
+    "climate": "Good fit if wood-look panels are used outside; box frames shade the hot west windows.",
+    "maintenance": "Medium: repaint cream every 5–6 years; keep LED drivers reachable.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "ivoryTeak",
+      "name": "Ivory & teak",
+      "recommended": true,
+      "note": "Recommended: the look most of your references share, and the closest to your architect's colours, so it reads as an upgrade, not a different building.",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#ECE4D6"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#B5A089"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#8A5A3A"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "base": {
+          "material": "stackedStone",
+          "color": "#8C8174"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#A9A49B"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#8A5A3A"
+        }
+      }
+    },
+    {
+      "id": "creamWalnut",
+      "name": "Cream & walnut, charcoal frames",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#EAE5DC"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#3A3836"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#5E3F2A"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#5F605C"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#9A978F"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#5E3F2A"
+        }
+      }
+    },
+    {
+      "id": "sandLedge",
+      "name": "Sand & ledge stone",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#E3D6C3"
+        },
+        "secondSurface": {
+          "material": "stackedStone",
+          "color": "#9C8A74"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#9A6A42"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#4A3B2F"
+        },
+        "base": {
+          "material": "stackedStone",
+          "color": "#7C6E60"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#C9B595"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#9A6A42"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#C9B79F"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:win-master-w",
+        "win:win-kids-w"
+      ],
+      "params": {
+        "depth": 0.3,
+        "width": 0.2
+      }
+    },
+    "slats": {
+      "enabled": true,
+      "slots": [
+        "balconySide:S",
+        "balconySide:N"
+      ],
+      "params": {
+        "orientation": "vertical",
+        "width": 0.05,
+        "gap": 0.04,
+        "depth": 0.06
+      }
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTowerBase"
+      ],
+      "params": {
+        "role": "base"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "curvedSolidGlass",
+        "low": 0.35,
+        "split": 0.38
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "edge:balconyRoof-S"
+      ]
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "canopy": {
+      "enabled": true,
+      "slots": [
+        "site:gate"
+      ],
+      "params": {
+        "style": "concrete"
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "slats"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "params": {
+        "type": "coveAndWallLights"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान"
+      }
+    }
+  }
+}

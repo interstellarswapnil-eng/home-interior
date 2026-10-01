@@ -28,8 +28,13 @@ export type MaterialDef = {
   kind: MaterialKind;
   roughness: number;
   metalness?: number;
+  /** Folder in public/exterior/textures with albedo / normal / rough maps (neutral grey, tinted by the colour). */
   textureSet?: string;
   realSizeMeters?: [number, number];
+  /** Optional separate normal map (e.g. generated flutes) and its repeat size. */
+  normalSet?: string;
+  normalSizeMeters?: [number, number];
+  normalScale?: number;
 };
 
 export type RoleStyle = { material: string; color: string };
@@ -44,6 +49,8 @@ export type Palette = {
 
 export type Pattern = {
   id: string;
+  /** Position in the pattern list (optional; new patterns without it go last). */
+  order?: number;
   name: string;
   description: string;
   palettes: Palette[];
@@ -67,12 +74,14 @@ export type DesignState = {
 export type RoleInfo = { label: string; tip: string; fallback?: SurfaceRole };
 
 export const ROLES = rolesJson as Record<SurfaceRole, RoleInfo>;
-export const MATERIALS = materialsJson as Record<string, MaterialDef>;
+/** Keys starting with "_" in config JSON are comments. */
+const noComments = <T>(o: Record<string, unknown>) => Object.fromEntries(Object.entries(o).filter(([k]) => !k.startsWith("_"))) as Record<string, T>;
+export const MATERIALS = noComments<MaterialDef>(materialsJson);
 const DEFAULT_ROLES = defaultsJson.roles as Partial<Record<SurfaceRole, RoleStyle>>;
 
 /** Every pattern file in config/patterns is picked up automatically. */
 const patternFiles = import.meta.glob("../config/patterns/*.json", { eager: true, import: "default" }) as Record<string, Pattern>;
-export const PATTERNS: Pattern[] = Object.values(patternFiles).sort((a, b) => (a.id === "architect" ? -1 : b.id === "architect" ? 1 : 0));
+export const PATTERNS: Pattern[] = Object.values(patternFiles).sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name));
 export const patternById = (id: string) => PATTERNS.find((p) => p.id === id) ?? PATTERNS[0];
 
 const NEUTRAL: RoleStyle = { material: "plaster", color: "#D8D2C8" };

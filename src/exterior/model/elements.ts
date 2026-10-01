@@ -5,7 +5,6 @@
 import {
   BALCONY,
   COMPOUND_H,
-  FLATS,
   GATES,
   PLOT,
   TERRACE,
@@ -17,18 +16,12 @@ import {
   level,
 } from "./building";
 import { box, faceBox } from "./geom";
-import type { FacadeOpening, Part, SurfaceRole } from "./types";
+import { FLOORS, num, slotOpenings, str, type ElementConfig, type ElementCtx, type Gen } from "./elementUtil";
+import { canopy, parapet, pergola, roofOverhang, stoneBase } from "./roofElements";
+import { cladding, jaali, slats, sunshades } from "./wallElements";
+import type { Part, SurfaceRole } from "./types";
 
-export type ElementConfig = { enabled: boolean; slots?: string[]; params?: Record<string, unknown> };
-export type ElementCtx = { openings: FacadeOpening[] };
-type Gen = (id: string, cfg: ElementConfig, ctx: ElementCtx) => Part[];
-
-const num = (p: Record<string, unknown> | undefined, k: string, d: number) => (typeof p?.[k] === "number" ? (p[k] as number) : d);
-const str = <T extends string>(p: Record<string, unknown> | undefined, k: string, d: T) => (typeof p?.[k] === "string" ? (p[k] as T) : d);
-const FLOORS = Array.from({ length: FLATS }, (_, i) => i + 1);
-
-/** Openings that belong to a window slot ("win:<planId>"). */
-const slotOpenings = (slot: string, ctx: ElementCtx) => ctx.openings.filter((o) => `win:${o.planId}` === slot);
+export type { ElementConfig, ElementCtx };
 
 // ---------------------------------------------------------------------------
 /** D4 Box frames around windows: a projecting square frame. */
@@ -174,7 +167,7 @@ const compoundWall: Gen = (id, cfg) => {
   const out: Part[] = [];
   const H = num(cfg.params, "height", COMPOUND_H);
   const every = num(cfg.params, "pilasterEvery", 3.0);
-  const gateStyle = str<"verticalBars" | "solid">(cfg.params, "gate", "verticalBars");
+  const gateStyle = str<"verticalBars" | "slats" | "solid">(cfg.params, "gate", "verticalBars");
   const P = PLOT;
   const T = 0.23;
   const meta = (slot: string) => ({ floor: -1, slot, element: id });
@@ -218,6 +211,13 @@ const compoundWall: Gen = (id, cfg) => {
       out.push(box(`${id}-gate-${k}-panel`, "gate", { x: a, y: y + 0.01, w: b - a, h: 0.03, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
       return;
     }
+    if (gateStyle === "slats") {
+      // horizontal boards with narrow gaps
+      const rows = Math.floor((gh - 0.18) / 0.13);
+      for (let i = 0; i < rows; i++)
+        out.push(box(`${id}-gate-${k}-board-${i}`, "gate", { x: a, y: y + 0.01, w: b - a, h: 0.03, z0: 0.12 + i * 0.13, z1: 0.12 + i * 0.13 + 0.1 }, meta("site:gate")));
+      return;
+    }
     const n = Math.floor((b - a) / 0.11);
     for (let i = 0; i <= n; i++)
       out.push(box(`${id}-gate-${k}-bar-${i}`, "gate", { x: a + i * ((b - a - 0.03) / n), y: y + 0.01, w: 0.03, h: 0.03, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
@@ -249,7 +249,23 @@ const nameSign: Gen = (id, cfg) => {
   ];
 };
 
-export const ELEMENT_GENERATORS: Record<string, Gen> = { boxFrames, fins, railings, planters, compoundWall, nameSign };
+export const ELEMENT_GENERATORS: Record<string, Gen> = {
+  boxFrames,
+  fins,
+  railings,
+  planters,
+  compoundWall,
+  nameSign,
+  slats,
+  jaali,
+  cladding,
+  sunshades,
+  roofOverhang,
+  parapet,
+  pergola,
+  canopy,
+  stoneBase,
+};
 
 /** Generate the parts for every enabled element. Unknown element ids are ignored (Phase 3 adds more generators). */
 export function buildElements(elements: Record<string, ElementConfig>, ctx: ElementCtx): Part[] {

@@ -10,9 +10,9 @@ import { CENTER } from "../model/building";
 import type { LabelPart, Part } from "../model/types";
 import { CAMERA_PRESETS, type CameraId } from "./cameras";
 import { buildRoleMeshes, partAtTriangle, toWorld, type RoleMesh } from "./geometry";
-import { applyStyle, castsShadow, makeRoleMaterial, roleDebugColor } from "./materials";
+import { applyStyle, castsShadow, makeRoleMaterial, roleDebugColor, texturesIdle, type Quality } from "./materials";
 
-export type Quality = "normal" | "high";
+export type { Quality };
 
 export type ExteriorSceneProps = {
   design: DesignState;
@@ -29,7 +29,7 @@ const shell = buildShell();
 /** Sun from the south-west, mid-afternoon (Phase 4 adds the real sun path for Ahilyanagar). */
 const SUN_DIR = new THREE.Vector3(-0.55, 0.62, 0.56).normalize();
 
-function Building({ design, showRoles, onPick }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick">) {
+function Building({ design, showRoles, onPick, quality }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality">) {
   const elements = useMemo(() => resolveElements(design), [design]);
   const parts = useMemo(() => [...shell.parts, ...buildElements(elements, { openings: shell.openings })], [elements]);
   const partById = useMemo(() => new Map(parts.map((p) => [p.id, p])), [parts]);
@@ -44,7 +44,7 @@ function Building({ design, showRoles, onPick }: Pick<ExteriorSceneProps, "desig
       mat = makeRoleMaterial(m.role);
       materials.set(m.role, mat);
     }
-    applyStyle(mat, m.role, roles[m.role], showRoles ? roleDebugColor(m.role) : undefined);
+    applyStyle(mat, m.role, roles[m.role], quality, showRoles ? roleDebugColor(m.role) : undefined);
     return mat;
   };
 
@@ -110,7 +110,7 @@ function SunAndSky({ quality }: { quality: Quality }) {
       <directionalLight
         position={sunPos}
         target={target}
-        intensity={2.1}
+        intensity={1.7}
         color="#FFEFD9"
         castShadow
         shadow-mapSize={[size, size]}
@@ -162,6 +162,7 @@ function CameraLimits() {
 function ReadyFlag() {
   const n = useRef(0);
   useFrame(() => {
+    if (!texturesIdle()) return;
     if (++n.current === 30) (window as unknown as { __extReady?: boolean }).__extReady = true;
   });
   return null;
@@ -173,12 +174,12 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, showRoles,
     <Canvas
       shadows="soft"
       dpr={high ? [1, 2] : [1, 1.25]}
-      gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.78 }}
+      gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.72 }}
       camera={{ position: [0, 10, 30], fov: 50 }}
       onPointerMissed={() => onPick?.(null)}
     >
       <SunAndSky quality={quality} />
-      <Building design={design} showRoles={showRoles} onPick={onPick} />
+      <Building design={design} showRoles={showRoles} onPick={onPick} quality={quality} />
       <OrbitControls makeDefault enableDamping dampingFactor={0.1} maxPolarAngle={Math.PI * 0.49} minDistance={2} maxDistance={110} />
       <CameraRig id={camera} nonce={cameraNonce} />
       <CameraLimits />
