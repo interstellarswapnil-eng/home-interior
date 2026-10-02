@@ -68,10 +68,16 @@ export const jaali: Gen = (id, cfg, ctx) => {
         const a = Math.min(r.b - bar, r.a + i * ca - (i === 0 ? 0 : bar / 2));
         out.push(box(`${r.key}-${id}-v${i}`, role, faceBox(r.side, r.face, a, a + bar, d0, d1, r.z0, r.z1), meta));
       }
+      const graded = cfg.params?.graded === true;
       for (let j = 0; j <= nZ; j++) {
-        const z = Math.min(r.z1 - bar, r.z0 + j * cz - (j === 0 ? 0 : bar / 2));
-        out.push(box(`${r.key}-${id}-h${j}`, role, faceBox(r.side, r.face, r.a + bar, r.b - bar, d0 + 0.01, d1 - 0.01, z, z + bar), meta));
+        // graded: bars thick at the bottom (dense), thin at the top (open)
+        const t = nZ ? j / nZ : 0;
+        const bj = graded ? bar * (1.9 - 1.5 * t) : bar;
+        const z = Math.min(r.z1 - bj, r.z0 + j * cz - (j === 0 ? 0 : bj / 2));
+        out.push(box(`${r.key}-${id}-h${j}`, role, faceBox(r.side, r.face, r.a + bar, r.b - bar, d0 + 0.01, d1 - 0.01, z, z + bj), meta));
       }
+      if (cfg.params?.backlight === true)
+        out.push(box(`${r.key}-${id}-glow`, "lightGlow", faceBox(r.side, r.face, r.a + 0.05, r.b - 0.05, -0.02, -0.004, r.z0 + 0.05, r.z1 - 0.05), meta));
       // standoff brackets
       out.push(box(`${r.key}-${id}-br0`, "railing", faceBox(r.side, r.face, r.a + 0.1, r.a + 0.14, -off, -0.001, r.z0, r.z1), meta));
       out.push(box(`${r.key}-${id}-br1`, "railing", faceBox(r.side, r.face, r.b - 0.14, r.b - 0.1, -off, -0.001, r.z0, r.z1), meta));
@@ -90,7 +96,8 @@ export function claddingLayer(r: Region, depth: number, role: SurfaceRole, id: s
 
 /** D5 Feature wall cladding: wood-look, stone, brick, fluted or terracotta panels over a wall slot. */
 export const cladding: Gen = (id, cfg, ctx) => {
-  const depth = num(cfg.params, "depth", 0.025);
+  // 30 mm: sits just proud of the 25 mm stone-base layer, so the two never share a plane
+  const depth = num(cfg.params, "depth", 0.03);
   const role = str<SurfaceRole>(cfg.params, "role", "featureWall");
   return (cfg.slots ?? []).flatMap((slot) => slotRegions(slot).flatMap((r, i) => claddingLayer(r, depth, role, `${id}-${slot.replace(/[:]/g, "-")}-${i}`, slot, ctx.openings)));
 };

@@ -1,0 +1,251 @@
+{
+  "id": "c6TaupeFlute",
+  "order": 15,
+  "kind": "concept",
+  "name": "C6 Taupe and Flute",
+  "description": "Two thick taupe boxes float in front of a charcoal fluted backdrop, under an angled roof; one arched window cuts the dark wall.",
+  "refs": [
+    8,
+    12
+  ],
+  "hero": {
+    "element": "boxA",
+    "name": "Taupe boxes, fluted backdrop"
+  },
+  "supporting": [
+    {
+      "element": "boxB",
+      "name": "Second taupe box"
+    },
+    {
+      "element": "boxFrames",
+      "name": "One arched window"
+    }
+  ],
+  "crown": {
+    "element": "floatingRoof",
+    "name": "Angled roof"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Dark wall with taupe band, black gate, dark paving"
+  },
+  "accentRoles": [
+    "windowSurround"
+  ],
+  "defaultPaletteId": "taupeCharcoal",
+  "optional": {
+    "masterRoadWindow": true
+  },
+  "notes": {
+    "climate": "Figure-ground scheme: the dark backdrop sits in the shade of the boxes, so it heats less than a dark main wall would.",
+    "maintenance": "Fluted panels collect dust: choose 25 mm+ grooves.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "taupeCharcoal",
+      "name": "Taupe & charcoal flutes",
+      "recommended": true,
+      "note": "From the study (images 8, 12).",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#A8998A"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#C2B5A6"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#2F2E2C"
+        },
+        "base": {
+          "material": "slate",
+          "color": "#2F2E2C"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#2F2E2C"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#8A6142"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#141414"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#A8998A"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3A4448"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#141414"
+        },
+        "mainDoor": {
+          "material": "metalMatte",
+          "color": "#141414"
+        },
+        "compoundWall": {
+          "material": "plaster",
+          "color": "#2F2E2C"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#141414"
+        },
+        "paving": {
+          "material": "slate",
+          "color": "#2B2A29"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#5C2E2E"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "boxA": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.2,
+        "depth": 0.8,
+        "u0": -0.45,
+        "u1": 4.1,
+        "from": 1,
+        "dz0": -0.45,
+        "to": 4,
+        "dz1": 0.6,
+        "faceWidth": 0.5,
+        "radius": 0,
+        "role": "windowSurround"
+      }
+    },
+    "boxB": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.5,
+        "depth": 0.7,
+        "u0": 5.4,
+        "u1": 10.4,
+        "from": 1,
+        "dz0": -0.45,
+        "to": 4,
+        "dz1": 0.6,
+        "faceWidth": 0.45,
+        "radius": 0,
+        "role": "windowSurround"
+      }
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:frontName",
+        "wall:featureRecess",
+        "wall:balconyBack-S"
+      ],
+      "params": {
+        "role": "featureWall"
+      }
+    },
+    "boxFrames": {
+      "enabled": true,
+      "slots": [
+        "win:opt-win-master-s"
+      ],
+      "params": {
+        "depth": 0.15,
+        "width": 0.15,
+        "role": "windowSurround"
+      }
+    },
+    "roundedCorners": {
+      "enabled": true,
+      "params": {
+        "radius": 0.3,
+        "arches": true
+      }
+    },
+    "floatingRoof": {
+      "enabled": true,
+      "params": {
+        "tiltDeg": 8,
+        "overhangS": 0.7,
+        "overhangW": 0.3,
+        "overhangE": 0.3,
+        "fascia": 0.2
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.6,
+        "gate": "solid",
+        "bandRole": "windowSurround"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "site:gate",
+        "edge:stiltBand"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 1,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "pivot"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

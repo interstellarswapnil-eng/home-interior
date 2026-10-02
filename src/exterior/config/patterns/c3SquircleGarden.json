@@ -1,0 +1,214 @@
+{
+  "id": "c3SquircleGarden",
+  "order": 12,
+  "kind": "concept",
+  "name": "C3 Squircle Garden",
+  "description": "Two soft rounded-rectangle frames: one wraps the upper floors, one pushes forward around the first-floor balcony.",
+  "refs": [
+    4,
+    11,
+    9
+  ],
+  "hero": {
+    "element": "squircleOuter",
+    "name": "Nested squircle frames"
+  },
+  "supporting": [
+    {
+      "element": "squircleBalcony",
+      "name": "Projecting balcony squircle"
+    },
+    {
+      "element": "secondSurface",
+      "name": "Grey board cladding"
+    }
+  ],
+  "crown": {
+    "element": "squircleOuter",
+    "name": "Rounded top of the frame"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Low wall, stone planters, stepping stones"
+  },
+  "accentRoles": [
+    "windowSurround"
+  ],
+  "defaultPaletteId": "whiteGreyBoards",
+  "notes": {
+    "climate": "Deep frames shade the balconies; light colours keep the flats cool.",
+    "maintenance": "White frames show dust streaks: add drip grooves on every top edge.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "whiteGreyBoards",
+      "name": "White & grey boards",
+      "recommended": true,
+      "note": "From the study (images 4, 11, 9).",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#F4F2EE"
+        },
+        "secondSurface": {
+          "material": "woodLook",
+          "color": "#C9CBC8"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#8C6B4A"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#6F6A62"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#F4F2EE"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#9A7350"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#2A2A2A"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#F4F2EE"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#43504F"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#2A2A2A"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#5B3F2A"
+        },
+        "compoundWall": {
+          "material": "plaster",
+          "color": "#E6E2DA"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#2A2A2A"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#C2BBAF"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#5E7B42"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "squircleOuter": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.2,
+        "depth": 0.9,
+        "u0": -0.65,
+        "u1": 10.45,
+        "from": 2,
+        "dz0": -0.45,
+        "to": 4,
+        "dz1": 0.6,
+        "faceWidth": 0.6,
+        "radius": 1.2,
+        "role": "windowSurround"
+      }
+    },
+    "squircleBalcony": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.5,
+        "depth": 0.8,
+        "u0": 5.2,
+        "u1": 10.5,
+        "from": 1,
+        "dz0": -0.45,
+        "to": 2,
+        "dz1": -0.6,
+        "faceWidth": 0.5,
+        "radius": 0.8,
+        "role": "windowSurround"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S"
+      ]
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.2,
+        "gate": "verticalBars"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "site:compoundFront"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 3,
+        "shrubs": true,
+        "steppingStones": true
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

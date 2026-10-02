@@ -1,0 +1,230 @@
+{
+  "id": "c7DeccanVeranda",
+  "order": 16,
+  "kind": "concept",
+  "name": "C7 Deccan Veranda",
+  "description": "A tilted, slatted roof frame opens to the road like a monsoon umbrella over deep shaded verandas; a split-face basalt spine runs up the stair tower.",
+  "refs": [
+    6,
+    12
+  ],
+  "hero": {
+    "element": "floatingRoof",
+    "name": "Tilted roof frame"
+  },
+  "supporting": [
+    {
+      "element": "bands",
+      "name": "Charcoal slab bands with LED"
+    },
+    {
+      "element": "cladding",
+      "name": "Basalt stair-tower spine"
+    },
+    {
+      "element": "planters",
+      "name": "Parapet planters"
+    }
+  ],
+  "crown": {
+    "element": "floatingRoof",
+    "name": "Slatted tilted roof"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Basalt wall, cream coping, wood slat gate"
+  },
+  "accentRoles": [
+    "pergola",
+    "roofEdge"
+  ],
+  "defaultPaletteId": "limeBasalt",
+  "notes": {
+    "climate": "Built for the monsoon: the tilted roof and deep verandas keep rain and high sun off the glass.",
+    "maintenance": "Basalt is local and tough; wood-look slats outdoors.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "limeBasalt",
+      "name": "Lime cream & basalt",
+      "recommended": true,
+      "note": "From the study (images 6, 12) and Ahilyanagar's monsoon.",
+      "roles": {
+        "mainWall": {
+          "material": "limewash",
+          "color": "#E6DCC8"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#D3C6AE"
+        },
+        "featureWall": {
+          "material": "stackedStone",
+          "color": "#3B3A38"
+        },
+        "base": {
+          "material": "stackedStone",
+          "color": "#3B3A38"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#33312E"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#8B6440"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1D1D1D"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#33312E"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3E4A4C"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1D1D1D"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#7A5634"
+        },
+        "compoundWall": {
+          "material": "stackedStone",
+          "color": "#3B3A38"
+        },
+        "gate": {
+          "material": "woodLook",
+          "color": "#8B6440"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#7E776B"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#4D6B38"
+        },
+        "pergola": {
+          "material": "woodLook",
+          "color": "#8B6440"
+        },
+        "trim": {
+          "material": "limewash",
+          "color": "#E6DCC8"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "floatingRoof": {
+      "enabled": true,
+      "params": {
+        "tiltDeg": 9,
+        "slatted": true,
+        "overhangS": 1.4,
+        "overhangW": 0.5,
+        "overhangE": 0.5,
+        "overhangN": 0.3,
+        "fascia": 0.2,
+        "slatSpacing": 0.16
+      }
+    },
+    "bands": {
+      "enabled": true,
+      "params": {
+        "projection": 0.3,
+        "thickness": 0.22,
+        "endRadius": 0,
+        "floors": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "westRun": 6.5,
+        "eastRun": 2.0,
+        "role": "windowSurround"
+      }
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTower"
+      ],
+      "params": {
+        "role": "featureWall"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "edge:balconyRoof-S",
+        "balcony:S"
+      ]
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "slats"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "site:gate"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 2,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

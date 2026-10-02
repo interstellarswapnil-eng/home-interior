@@ -31,12 +31,14 @@ function facadeClashes(parts: Part[]): string[] {
 
 describe("design library", () => {
   it("has the architect's design, the 6 starting patterns and My references", () => {
-    expect(PATTERNS.map((p) => p.id)).toEqual(["architect", "warmMinimal", "japandi", "darkModern", "tropicalModern", "earthyOrganic", "brickConcrete", "warmCurves"]);
+    expect(PATTERNS.filter((p) => p.kind !== "concept").map((p) => p.id)).toEqual(["architect", "warmMinimal", "japandi", "darkModern", "tropicalModern", "earthyOrganic", "brickConcrete", "warmCurves"]);
+    expect(PATTERNS.filter((p) => p.kind === "concept").map((p) => p.id)).toEqual(["c1TravertineLantern", "c2SoftStreamline", "c3SquircleGarden", "c4QuarterArc", "c5BrassLotus", "c6TaupeFlute", "c7DeccanVeranda"]);
   });
 
   it("each pattern (except the architect's) has ≥3 palettes and exactly one recommended", () => {
     for (const p of PATTERNS.filter((x) => x.id !== "architect")) {
-      expect(p.palettes.length, p.id).toBeGreaterThanOrEqual(3);
+      // v2 concepts get their 2–3 palette variants in Step 3; until then one is enough
+      expect(p.palettes.length, p.id).toBeGreaterThanOrEqual(p.kind === "concept" ? 1 : 3);
       expect(p.palettes.filter((x) => x.recommended).length, p.id).toBe(1);
       expect(p.notes.climate && p.notes.maintenance && p.notes.relativeCost, p.id).toBeTruthy();
     }
@@ -45,8 +47,9 @@ describe("design library", () => {
   it("pattern elements are in the catalogue, ready ones have generators, slots exist", () => {
     for (const p of PATTERNS)
       for (const [id, cfg] of Object.entries(p.elements)) {
-        expect(CATALOGUE[id], `${p.id}: element ${id}`).toBeDefined();
-        if (CATALOGUE[id].status === "ready") expect(ELEMENT_GENERATORS[id], `${p.id}: generator ${id}`).toBeDefined();
+        const type = (cfg.params?.type as string) ?? id;
+        expect(CATALOGUE[type] ?? ELEMENT_GENERATORS[type], `${p.id}: element ${id} (${type})`).toBeDefined();
+        if (CATALOGUE[type]?.status === "ready" || !CATALOGUE[type]) expect(ELEMENT_GENERATORS[type], `${p.id}: generator ${type}`).toBeDefined();
         for (const s of cfg.slots ?? []) expect(slotIds.has(s), `${p.id}/${id}: slot ${s}`).toBe(true);
       }
   });

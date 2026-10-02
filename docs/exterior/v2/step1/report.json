@@ -1,0 +1,848 @@
+{
+  "reports": {
+    "c1TravertineLantern": {
+      "name": "C1 Travertine Lantern",
+      "description": "A quiet travertine house with one glowing bronze jaali spine running up the full height beside the balconies.",
+      "hero": {
+        "element": "jaali",
+        "name": "Bronze jaali spine"
+      },
+      "supporting": [
+        {
+          "element": "pictureFrame",
+          "name": "Charcoal picture frame with planter"
+        },
+        {
+          "element": "cladding",
+          "name": "Dark fluted base"
+        }
+      ],
+      "crown": {
+        "element": "floatingRoof",
+        "name": "Floating roof, walnut soffit"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Travertine wall, charcoal band, slat gate, backlit nameplate"
+      },
+      "refs": [
+        2,
+        12,
+        6
+      ],
+      "flags": [
+        {
+          "id": "floatingRoof-proj-road (south)",
+          "title": "Floating roof, walnut soffit: projects 1.50 m on the road (south) side",
+          "detail": "Beyond the building line by 1.50 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.32 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "floatingRoof-margin-W",
+          "title": "Floating roof, walnut soffit: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.45 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "floatingRoof-roof",
+          "title": "Floating roof, walnut soffit: new roof structure over the terrace",
+          "detail": "Needs posts or brackets and a structural check; rooftop projections around the building are limited (about 0.3 m) beyond what counts as a canopy.",
+          "rule": "UDCPR 6.7(e) rooftop projections; structural approval"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Bronze jaali spine”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "2 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 1.50 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "stone, plaster, metal, wood"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Floating roof, walnut soffit"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Travertine wall, charcoal band, slat gate, backlit nameplate"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": null,
+          "note": "hero is central: judge by eye"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C4 Quarter Arc (difference 7.4, needs ≥ 4)"
+        }
+      ]
+    },
+    "c2SoftStreamline": {
+      "name": "C2 Soft Streamline",
+      "description": "A smooth off-white house where every floor edge becomes a rounded band that wraps the corner, traced by a warm LED line.",
+      "hero": {
+        "element": "bands",
+        "name": "Rounded wraparound bands"
+      },
+      "supporting": [
+        {
+          "element": "fins",
+          "name": "Slim white fins"
+        },
+        {
+          "element": "planters",
+          "name": "Cascading planters"
+        }
+      ],
+      "crown": {
+        "element": "bands",
+        "name": "Double cornice"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Dark wall, wood slat gate, rounded nameplate"
+      },
+      "refs": [
+        3,
+        7,
+        5
+      ],
+      "flags": [
+        {
+          "id": "bands-margin-W",
+          "title": "Rounded wraparound bands: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.75 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "bands-curved",
+          "title": "Rounded wraparound bands: rounded slab-edge bands",
+          "detail": "Extends the slab edges with rounded bands (RCC with curved shuttering or GRC shells): a structural and detailing change.",
+          "rule": "Curved slab edges / GRC shells that change structure"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Rounded wraparound bands”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "2 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 0.75 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, wood, stone"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Double cornice"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Dark wall, wood slat gate, rounded nameplate"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": null,
+          "note": "hero is central: judge by eye"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C4 Quarter Arc (difference 9.5, needs ≥ 4)"
+        }
+      ]
+    },
+    "c3SquircleGarden": {
+      "name": "C3 Squircle Garden",
+      "description": "Two soft rounded-rectangle frames: one wraps the upper floors, one pushes forward around the first-floor balcony.",
+      "hero": {
+        "element": "squircleOuter",
+        "name": "Nested squircle frames"
+      },
+      "supporting": [
+        {
+          "element": "squircleBalcony",
+          "name": "Projecting balcony squircle"
+        },
+        {
+          "element": "secondSurface",
+          "name": "Grey board cladding"
+        }
+      ],
+      "crown": {
+        "element": "squircleOuter",
+        "name": "Rounded top of the frame"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Low wall, stone planters, stepping stones"
+      },
+      "refs": [
+        4,
+        11,
+        9
+      ],
+      "flags": [
+        {
+          "id": "squircleOuter-proj-road (south)",
+          "title": "Nested squircle frames: projects 0.90 m on the road (south) side",
+          "detail": "Beyond the building line by 0.90 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.92 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "squircleOuter-margin-W",
+          "title": "Nested squircle frames: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.45 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "squircleBalcony-proj-road (south)",
+          "title": "Projecting balcony squircle: projects 1.10 m on the road (south) side",
+          "detail": "Beyond the building line by 1.10 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.72 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Nested squircle frames”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "2 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 1.10 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, wood, stone"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Rounded top of the frame"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Low wall, stone planters, stepping stones"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": null,
+          "note": "hero is central: judge by eye"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C4 Quarter Arc (difference 6.7, needs ≥ 4)"
+        }
+      ]
+    },
+    "c4QuarterArc": {
+      "name": "C4 Quarter Arc",
+      "description": "One huge white arc rises from the ground at the road corner and sweeps over the top, holding a ledgestone wall and wood slats.",
+      "hero": {
+        "element": "arc",
+        "name": "Quarter arc frame"
+      },
+      "supporting": [
+        {
+          "element": "cladding",
+          "name": "Ledgestone wall inside the arc"
+        },
+        {
+          "element": "slats",
+          "name": "Wood slat panel"
+        },
+        {
+          "element": "planters",
+          "name": "Balcony planters"
+        }
+      ],
+      "crown": {
+        "element": "arc",
+        "name": "Arc sweeps over the parapet"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "White pillars with light slots, black gate"
+      },
+      "refs": [
+        10,
+        11,
+        5
+      ],
+      "flags": [
+        {
+          "id": "arc-margin-W",
+          "title": "Quarter arc frame: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.50 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "arc-ground",
+          "title": "Quarter arc frame: stands on the ground in front of the building",
+          "detail": "Part of this move reaches down into the marginal open space; supports there are usually not allowed.",
+          "rule": "UDCPR 6.7(k): no supporting columns in the required front margin"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Quarter arc frame”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "3 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 0.60 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, stone, wood"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Arc sweeps over the parapet"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "White pillars with light slots, black gate"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": true,
+          "note": "hero 2.5 m off-centre (balance: judge by eye)"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C5 Brass and Lotus (difference 5.6, needs ≥ 4)"
+        }
+      ]
+    },
+    "c5BrassLotus": {
+      "name": "C5 Brass and Lotus",
+      "description": "A calm cream house crowned by a thick portal frame and a teak pergola with brass lanterns; a lotus jaali gate and a brass Devanagari nameplate welcome you.",
+      "hero": {
+        "element": "portal",
+        "name": "Portal crown pergola"
+      },
+      "supporting": [
+        {
+          "element": "planters",
+          "name": "Cascading balcony plants"
+        },
+        {
+          "element": "cladding",
+          "name": "Dark teak entrance wall"
+        }
+      ],
+      "crown": {
+        "element": "pergolaCrown",
+        "name": "Teak pergola with brass lanterns"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Black granite-look wall, lotus jaali gate, brass nameplate"
+      },
+      "refs": [
+        1,
+        2
+      ],
+      "flags": [
+        {
+          "id": "portal-proj-road (south)",
+          "title": "Portal crown pergola: projects 1.00 m on the road (south) side",
+          "detail": "Beyond the building line by 1.00 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.82 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "portal-margin-W",
+          "title": "Portal crown pergola: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.25 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "pergolaCrown-roof",
+          "title": "Teak pergola with brass lanterns: new roof structure over the terrace",
+          "detail": "Needs posts or brackets and a structural check; rooftop projections around the building are limited (about 0.3 m) beyond what counts as a canopy.",
+          "rule": "UDCPR 6.7(e) rooftop projections; structural approval"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Portal crown pergola”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "2 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 1.00 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, wood, stone"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Teak pergola with brass lanterns"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Black granite-look wall, lotus jaali gate, brass nameplate"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": null,
+          "note": "hero is central: judge by eye"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C4 Quarter Arc (difference 5.6, needs ≥ 4)"
+        }
+      ]
+    },
+    "c6TaupeFlute": {
+      "name": "C6 Taupe and Flute",
+      "description": "Two thick taupe boxes float in front of a charcoal fluted backdrop, under an angled roof; one arched window cuts the dark wall.",
+      "hero": {
+        "element": "boxA",
+        "name": "Taupe boxes, fluted backdrop"
+      },
+      "supporting": [
+        {
+          "element": "boxB",
+          "name": "Second taupe box"
+        },
+        {
+          "element": "boxFrames",
+          "name": "One arched window"
+        }
+      ],
+      "crown": {
+        "element": "floatingRoof",
+        "name": "Angled roof"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Dark wall with taupe band, black gate, dark paving"
+      },
+      "refs": [
+        8,
+        12
+      ],
+      "flags": [
+        {
+          "id": "boxA-proj-road (south)",
+          "title": "Taupe boxes, fluted backdrop: projects 0.80 m on the road (south) side",
+          "detail": "Beyond the building line by 0.80 m (limit 0.75 m for chajjas / frames over the marginal open space); about 2.02 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "boxA-margin-W",
+          "title": "Taupe boxes, fluted backdrop: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.25 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "floatingRoof-proj-road (south)",
+          "title": "Angled roof: projects 1.00 m on the road (south) side",
+          "detail": "Beyond the building line by 1.00 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.82 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "floatingRoof-margin-W",
+          "title": "Angled roof: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.30 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "floatingRoof-roof",
+          "title": "Angled roof: new roof structure over the terrace",
+          "detail": "Needs posts or brackets and a structural check; rooftop projections around the building are limited (about 0.3 m) beyond what counts as a canopy.",
+          "rule": "UDCPR 6.7(e) rooftop projections; structural approval"
+        },
+        {
+          "id": "opt-masterRoadWindow",
+          "title": "New window on the road-side wall (master bedroom)",
+          "detail": "A 1.2 m wide window in the blank south wall of the master bedroom (sill 0.9 m, head 2.1 m), on every floor. Cross-ventilation with the west window; the name sign moves up.",
+          "rule": "New or resized opening"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Taupe boxes, fluted backdrop”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "2 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 1.00 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, wood, stone"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Angled roof"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Dark wall with taupe band, black gate, dark paving"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "light built into the hero"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": true,
+          "note": "hero 3.2 m off-centre (balance: judge by eye)"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C1 Travertine Lantern (difference 10.7, needs ≥ 4)"
+        }
+      ]
+    },
+    "c7DeccanVeranda": {
+      "name": "C7 Deccan Veranda",
+      "description": "A tilted, slatted roof frame opens to the road like a monsoon umbrella over deep shaded verandas; a split-face basalt spine runs up the stair tower.",
+      "hero": {
+        "element": "floatingRoof",
+        "name": "Tilted roof frame"
+      },
+      "supporting": [
+        {
+          "element": "bands",
+          "name": "Charcoal slab bands with LED"
+        },
+        {
+          "element": "cladding",
+          "name": "Basalt stair-tower spine"
+        },
+        {
+          "element": "planters",
+          "name": "Parapet planters"
+        }
+      ],
+      "crown": {
+        "element": "floatingRoof",
+        "name": "Slatted tilted roof"
+      },
+      "threshold": {
+        "element": "compoundWall",
+        "name": "Basalt wall, cream coping, wood slat gate"
+      },
+      "refs": [
+        6,
+        12
+      ],
+      "flags": [
+        {
+          "id": "floatingRoof-proj-road (south)",
+          "title": "Tilted roof frame: projects 1.70 m on the road (south) side",
+          "detail": "Beyond the building line by 1.70 m (limit 0.75 m for chajjas / frames over the marginal open space); about 1.12 m of open space left to the boundary (assumed margins).",
+          "rule": "UDCPR 6.7(a): projection over marginal open space ≤ 0.75 m"
+        },
+        {
+          "id": "floatingRoof-margin-W",
+          "title": "Tilted roof frame: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.50 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "floatingRoof-roof",
+          "title": "Tilted roof frame: new roof structure over the terrace",
+          "detail": "Needs posts or brackets and a structural check; rooftop projections around the building are limited (about 0.3 m) beyond what counts as a canopy.",
+          "rule": "UDCPR 6.7(e) rooftop projections; structural approval"
+        },
+        {
+          "id": "bands-margin-W",
+          "title": "Charcoal slab bands with LED: narrows the side-road margin",
+          "detail": "The west open space is only about 1.32 m (assumed) before this 0.30 m projection.",
+          "rule": "Check the minimum side margin with the architect"
+        },
+        {
+          "id": "bands-curved",
+          "title": "Charcoal slab bands with LED: projecting slab-edge bands",
+          "detail": "Extends the slab edges with bands (RCC or GRC shells): a structural and detailing change.",
+          "rule": "Curved slab edges / GRC shells that change structure"
+        }
+      ],
+      "gate": [
+        {
+          "n": 1,
+          "label": "Hero nameable in three words",
+          "pass": true,
+          "note": "“Tilted roof frame”"
+        },
+        {
+          "n": 2,
+          "label": "At most 3 supporting moves",
+          "pass": true,
+          "note": "3 supporting"
+        },
+        {
+          "n": 3,
+          "label": "One element ≥ 450 mm proud, one recess ≥ 900 mm",
+          "pass": true,
+          "note": "proud 1.70 m · recess 1.31 m (balcony pockets)"
+        },
+        {
+          "n": 4,
+          "label": "≤ 4 materials + glass",
+          "pass": true,
+          "note": "plaster, stone, wood"
+        },
+        {
+          "n": 5,
+          "label": "Dark used as lines",
+          "pass": true,
+          "note": "dark only on frames, fascias, gates"
+        },
+        {
+          "n": 6,
+          "label": "Designed crown",
+          "pass": true,
+          "note": "Slatted tilted roof"
+        },
+        {
+          "n": 7,
+          "label": "Designed threshold",
+          "pass": true,
+          "note": "Basalt wall, cream coping, wood slat gate"
+        },
+        {
+          "n": 8,
+          "label": "Hero has its own light",
+          "pass": true,
+          "note": "facade lighting layer"
+        },
+        {
+          "n": 9,
+          "label": "Asymmetric but balanced",
+          "pass": null,
+          "note": "hero is central: judge by eye"
+        },
+        {
+          "n": 10,
+          "label": "Distinct in grey",
+          "pass": true,
+          "note": "closest in grey: C4 Quarter Arc (difference 5.6, needs ≥ 4)"
+        }
+      ]
+    }
+  },
+  "grey": {
+    "c1TravertineLantern": {
+      "distinct": true,
+      "note": "closest in grey: C4 Quarter Arc (difference 7.4, needs ≥ 4)"
+    },
+    "c2SoftStreamline": {
+      "distinct": true,
+      "note": "closest in grey: C4 Quarter Arc (difference 9.5, needs ≥ 4)"
+    },
+    "c3SquircleGarden": {
+      "distinct": true,
+      "note": "closest in grey: C4 Quarter Arc (difference 6.7, needs ≥ 4)"
+    },
+    "c4QuarterArc": {
+      "distinct": true,
+      "note": "closest in grey: C5 Brass and Lotus (difference 5.6, needs ≥ 4)"
+    },
+    "c5BrassLotus": {
+      "distinct": true,
+      "note": "closest in grey: C4 Quarter Arc (difference 5.6, needs ≥ 4)"
+    },
+    "c6TaupeFlute": {
+      "distinct": true,
+      "note": "closest in grey: C1 Travertine Lantern (difference 10.7, needs ≥ 4)"
+    },
+    "c7DeccanVeranda": {
+      "distinct": true,
+      "note": "closest in grey: C4 Quarter Arc (difference 5.6, needs ≥ 4)"
+    }
+  }
+}

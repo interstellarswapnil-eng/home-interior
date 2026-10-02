@@ -2,6 +2,31 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: v2 brief (exteriorV2.md / exteriorV2study.md), Step 1: concept thumbnails
+
+- **Your answers:** the old styles stay as "Earlier styles" (saved designs keep working). Approval flags use the **assumed** margins until the real ones are known.
+- **References:** the study's images 1–12 are files #0–#11 in `exterior_references` (checked against its descriptions).
+- **Adapted to this building:** the study assumed a G+2 house in Pune. Here it's the G+3 stilt apartment in Ahilyanagar, which falls under the same UDCPR-2020. "Porch" becomes the gate, compound wall and ground-floor lobby.
+- **Design moves** (`src/exterior/model/moves.ts`) are config-driven element generators, so concepts reuse palettes, compare, save and export:
+  - `frame`: portal, picture, squircle or capsule, plus the quarter arc (by leaving sides out and giving one corner a big radius)
+  - `bands`: streamline slab bands with an LED under-edge
+  - `floatingRoof`: flat or tilted, solid or slatted
+  - `lanterns`
+  - upgraded v1 details: graded and backlit jaali, a jaali gate, a compound-wall band, a backlit nameplate on the compound wall
+- **7 concepts** are in `config/patterns/c1…c7*.json`. Each has one hero, ≤ 3 supporting moves, a crown and a threshold, the study's hex values, accent roles, and its references. **For now each has one palette; the 2–3 variants come in Step 3.**
+- **Approval flags** (`model/approval.ts`) are measured from the geometry against the assumed margins:
+  - projection > 0.75 m (UDCPR 6.7(a))
+  - narrowing the ~1.3 m side-road margin
+  - supports on the ground in the front margin (6.7(k))
+  - curved or projecting slab bands
+  - new roof structures (6.7(e))
+  - canopies (6.7(d))
+  - new or resized openings
+- **Quality gate:** items 1–8 are automated. Item 9 (balance) is judged by eye. Item 10, the **grey test**, is computed from renders: all-grey street-corner view in afternoon sun, building crop, mean grey-level difference to every other concept and the Architect's design, pass mark ≥ 4/255 (my calibration). A dead-on flat grey elevation hid all depth and made every concept look the same, which is why the grey test uses the street corner.
+- **New looks and views:** a dusk sky (blue hour, warm afterglow in the west, lights and window glow on); `look=grey|massing`; long-lens elevation cameras for the south and west. **Dusk as the app default and the Day / Golden / Dusk / Night switch come in Step 2.**
+- **Board:** `npm run exterior:board` → `docs/exterior/v2/step1/concepts.html` and `concepts-board.png`.
+- **Results:** gate 9–10/10 for every concept (the open item is "balanced"). Flags: C1 3, C2 2, C3 3, C4 2, C5 3, C6 6, C7 5.
+
 ## 2026-10-02: side road on the west (windows side)
 
 - **The plot is now a corner plot.** A road runs along the west, on the windows side, perpendicular to the main road on the south. Both roads are 7.5 m wide with a 2 m footpath along the plot [assumed widths]. They meet at the south-west corner, where the south footpath stops and the road crosses. The layout constants are in `building.ts` (`SOUTH_ROAD`, `WEST_ROAD`, footpaths).

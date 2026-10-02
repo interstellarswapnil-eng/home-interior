@@ -2,6 +2,8 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { ExteriorScene, type PhotoRequest, type Quality, type SceneApi, type ViewState } from "./scene/ExteriorScene";
 import { CAMERA_IDS, CAMERA_PRESETS, EXPORT_VIEWS, type CameraId } from "./scene/cameras";
 import { PATTERNS, defaultDesign, patternById } from "./model/resolve";
+import { approvalFlags, qualityGate } from "./model/approval";
+import { designParts } from "./scene/ExteriorScene";
 import type { Part, SurfaceRole } from "./model/types";
 import { designReducer, type DesignAction } from "./state/design";
 import { historyReducer, initHistory } from "./state/history";
@@ -23,6 +25,8 @@ const pick = <T extends string>(key: string, allowed: readonly T[], def: T): T =
   const v = params.get(key) as T | null;
   return v && allowed.includes(v) ? v : def;
 };
+/** scripts: ?ui=0 hides the overlays on the 3D view (clean renders) */
+const hideUi = params.get("ui") === "0";
 const TABS = ["style", "colors", "elements", "view", "compare", "save"] as const;
 type Tab = (typeof TABS)[number];
 const TAB_LABEL: Record<Tab, string> = { style: "Style", colors: "Colors", elements: "Elements", view: "View", compare: "Compare", save: "Save & export" };
@@ -37,6 +41,17 @@ function initialDesign() {
   for (const id of params.get("opt")?.split(",").filter(Boolean) ?? []) d = designReducer(d, { type: "optional", id, on: true });
   return d;
 }
+
+// scripts: flags and quality gate for any pattern, computed with the same code as the app
+(window as unknown as { __extV2?: unknown }).__extV2 = {
+  report: (id: string) => {
+    const d = defaultDesign(id);
+    const parts = designParts(d);
+    const p = patternById(id);
+    return { name: p.name, description: p.description, hero: p.hero, supporting: p.supporting, crown: p.crown, threshold: p.threshold, refs: p.refs, flags: approvalFlags(d, parts), gate: qualityGate(d, parts) };
+  },
+  concepts: () => PATTERNS.filter((p) => p.kind === "concept").map((p) => p.id),
+};
 
 export function ExteriorApp() {
   const [hist, dispatchH] = useReducer(historyReducer, undefined, () => initHistory(initialDesign()));
@@ -58,10 +73,11 @@ export function ExteriorApp() {
   const [view, setViewState] = useState<ViewState>({
     mode: pick("mode", ["orbit", "walk"], "orbit"),
     autoRotate: params.get("spin") === "1",
-    sky: pick("sky", ["clear", "overcast", "night"], "clear"),
+    sky: pick("sky", ["clear", "overcast", "dusk", "night"], "clear"),
     hour: Number(params.get("hour") ?? 16),
     date: params.get("date") ?? new Date().toISOString().slice(0, 10),
     context: { neighbours: params.get("nb") === "1", car: params.get("ctx") !== "0", person: params.get("ctx") !== "0" },
+    look: pick<"full" | "grey" | "massing">("look", ["full", "grey", "massing"], "full"),
   });
   const [showRoles, setShowRoles] = useState(params.get("roles") === "1");
   const [panel, setPanel] = useState(params.get("panel") !== "0");
@@ -261,7 +277,7 @@ export function ExteriorApp() {
           </div>
         )}
         {inCompare && <div className="cmplabel">{flipB ? "B" : "A"}: {flipB ? bLabel : "Current design"}</div>}
-        {!inCompare && <PaintStrip design={design} onSelect={selectRole} />}
+        {!inCompare && !hideUi && <PaintStrip design={design} onSelect={selectRole} />}
         </div>
         {sideBySide && (
           <div className="scenepane">
@@ -269,6 +285,7 @@ export function ExteriorApp() {
             <div className="cmplabel">B: {bLabel}</div>
           </div>
         )}
+        {!hideUi && (
         <div className="quickbar">
           <select
             value={view.mode === "walk" ? "walk" : camera}
@@ -293,6 +310,7 @@ export function ExteriorApp() {
             ⟳ Turntable
           </button>
         </div>
+        )}
         {view.mode === "walk" && (
           <button id="walk-start" className="walkhint">
             Click here to walk · W A S D to move · mouse to look · Esc to stop

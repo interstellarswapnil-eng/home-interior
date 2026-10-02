@@ -47,8 +47,23 @@ export type Palette = {
   roles: Partial<Record<SurfaceRole, RoleStyle>>;
 };
 
+/** v2: one named move inside a concept (element id in `elements`). */
+export type MoveRef = { element: string; name: string };
+
 export type Pattern = {
   id: string;
+  /** "concept" = v2 design concept (hero move + supporting moves); "style" (default) = v1 style. */
+  kind?: "concept" | "style";
+  hero?: MoveRef;
+  supporting?: MoveRef[];
+  crown?: MoveRef;
+  threshold?: MoveRef;
+  /** roles kept in colour in the grey + accent massing view */
+  accentRoles?: SurfaceRole[];
+  /** reference images from the study (1–12 = files #0–#11) */
+  refs?: number[];
+  /** optional bigger changes the concept switches on by default (need approval) */
+  optional?: Record<string, boolean>;
   /** Position in the pattern list (optional; new patterns without it go last). */
   order?: number;
   name: string;
@@ -125,5 +140,5 @@ export function resolveElements(design: Pick<DesignState, "patternId" | "overrid
 
 export function defaultDesign(patternId = "architect"): DesignState {
   const p = patternById(patternId);
-  return { name: p.name, patternId: p.id, paletteId: p.defaultPaletteId, overrides: { roles: {}, elements: {} } };
+  return { name: p.name, patternId: p.id, paletteId: p.defaultPaletteId, overrides: { roles: {}, elements: {} }, ...(p.optional ? { optional: { ...p.optional } } : {}) };
 }

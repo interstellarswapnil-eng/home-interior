@@ -1,0 +1,232 @@
+{
+  "id": "c4QuarterArc",
+  "order": 13,
+  "kind": "concept",
+  "name": "C4 Quarter Arc",
+  "description": "One huge white arc rises from the ground at the road corner and sweeps over the top, holding a ledgestone wall and wood slats.",
+  "refs": [
+    10,
+    11,
+    5
+  ],
+  "hero": {
+    "element": "arc",
+    "name": "Quarter arc frame"
+  },
+  "supporting": [
+    {
+      "element": "cladding",
+      "name": "Ledgestone wall inside the arc"
+    },
+    {
+      "element": "slats",
+      "name": "Wood slat panel"
+    },
+    {
+      "element": "planters",
+      "name": "Balcony planters"
+    }
+  ],
+  "crown": {
+    "element": "arc",
+    "name": "Arc sweeps over the parapet"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "White pillars with light slots, black gate"
+  },
+  "accentRoles": [
+    "windowSurround"
+  ],
+  "defaultPaletteId": "whiteLedgestone",
+  "notes": {
+    "climate": "The stone face takes the road dust; the arc shades the master bedroom wall.",
+    "maintenance": "The arc is a GRC or steel-framed shell: check joints after each monsoon.",
+    "relativeCost": "$$$"
+  },
+  "palettes": [
+    {
+      "id": "whiteLedgestone",
+      "name": "White & ledgestone",
+      "recommended": true,
+      "note": "From the study (images 10, 11, 5).",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#F1EDE6"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#D9D2C6"
+        },
+        "featureWall": {
+          "material": "stackedStone",
+          "color": "#7D7A74"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#3D3C3A"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#F1EDE6"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#8B6646"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#F7F4EE"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3D494D"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#6F4E33"
+        },
+        "compoundWall": {
+          "material": "plaster",
+          "color": "#F1EDE6"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1E1E1E"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#A39C90"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#52703C"
+        },
+        "slats": {
+          "material": "woodLook",
+          "color": "#8B6646"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "arc": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.2,
+        "depth": 0.6,
+        "u0": -0.7,
+        "u1": 5.59,
+        "from": 0,
+        "dz0": -0.45,
+        "to": 4,
+        "dz1": 1.05,
+        "faceWidth": 0.5,
+        "sides": "lt",
+        "radii": [
+          0,
+          0,
+          0,
+          3.6
+        ],
+        "role": "windowSurround"
+      }
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:frontName"
+      ],
+      "params": {
+        "role": "featureWall"
+      }
+    },
+    "slats": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess"
+      ],
+      "params": {
+        "orientation": "vertical",
+        "width": 0.05,
+        "gap": 0.04,
+        "depth": 0.08,
+        "role": "slats"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S"
+      ]
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.5,
+        "gate": "verticalBars"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "site:gate",
+        "balcony:S"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 2,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "pivot"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

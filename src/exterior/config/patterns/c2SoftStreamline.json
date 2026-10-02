@@ -1,0 +1,221 @@
+{
+  "id": "c2SoftStreamline",
+  "order": 11,
+  "kind": "concept",
+  "name": "C2 Soft Streamline",
+  "description": "A smooth off-white house where every floor edge becomes a rounded band that wraps the corner, traced by a warm LED line.",
+  "refs": [
+    3,
+    7,
+    5
+  ],
+  "hero": {
+    "element": "bands",
+    "name": "Rounded wraparound bands"
+  },
+  "supporting": [
+    {
+      "element": "fins",
+      "name": "Slim white fins"
+    },
+    {
+      "element": "planters",
+      "name": "Cascading planters"
+    }
+  ],
+  "crown": {
+    "element": "bands",
+    "name": "Double cornice"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Dark wall, wood slat gate, rounded nameplate"
+  },
+  "accentRoles": [
+    "trim"
+  ],
+  "defaultPaletteId": "offWhiteWalnut",
+  "notes": {
+    "climate": "Bands shade every window from the high sun and throw rain off the walls.",
+    "maintenance": "Curved GRC or plaster bands need a skilled crew; repaint off-white every 5–6 years.",
+    "relativeCost": "$$$"
+  },
+  "palettes": [
+    {
+      "id": "offWhiteWalnut",
+      "name": "Off-white & walnut",
+      "recommended": true,
+      "note": "From the study (images 3, 7, 5).",
+      "roles": {
+        "mainWall": {
+          "material": "plaster",
+          "color": "#EFEAE0"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#E2DACB"
+        },
+        "featureWall": {
+          "material": "flutedWood",
+          "color": "#5E4330"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#4A4A48"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#EFEAE0"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#8A6142"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#EFEAE0"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3C474C"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1C1C1C"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#6A4A30"
+        },
+        "compoundWall": {
+          "material": "plaster",
+          "color": "#4A4A48"
+        },
+        "gate": {
+          "material": "woodLook",
+          "color": "#8A6142"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#B9B2A6"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#55703E"
+        },
+        "trim": {
+          "material": "plaster",
+          "color": "#F3EFE7"
+        },
+        "fins": {
+          "material": "plaster",
+          "color": "#EFEAE0"
+        },
+        "column": {
+          "material": "stonePanels",
+          "color": "#4A4A48"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "bands": {
+      "enabled": true,
+      "params": {
+        "projection": 0.75,
+        "thickness": 0.45,
+        "endRadius": 1.2,
+        "floors": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "doubleCornice": true,
+        "westRun": 6.5,
+        "eastRun": 2.0,
+        "role": "trim"
+      }
+    },
+    "fins": {
+      "enabled": true,
+      "slots": [
+        "balconySide:S"
+      ],
+      "params": {
+        "count": 6,
+        "width": 0.05,
+        "depth": 0.2,
+        "role": "fins"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "edge:balconyRoof-S"
+      ]
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 1.0
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.4,
+        "gate": "slats"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "site:gate"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 2,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "id": "c1TravertineLantern",
+  "order": 10,
+  "kind": "concept",
+  "name": "C1 Travertine Lantern",
+  "description": "A quiet travertine house with one glowing bronze jaali spine running up the full height beside the balconies.",
+  "refs": [
+    2,
+    12,
+    6
+  ],
+  "hero": {
+    "element": "jaali",
+    "name": "Bronze jaali spine"
+  },
+  "supporting": [
+    {
+      "element": "pictureFrame",
+      "name": "Charcoal picture frame with planter"
+    },
+    {
+      "element": "cladding",
+      "name": "Dark fluted base"
+    }
+  ],
+  "crown": {
+    "element": "floatingRoof",
+    "name": "Floating roof, walnut soffit"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Travertine wall, charcoal band, slat gate, backlit nameplate"
+  },
+  "accentRoles": [
+    "jaali"
+  ],
+  "defaultPaletteId": "travertine",
+  "notes": {
+    "climate": "Travertine and bronze age well in dust; the jaali shades the recess from the south sun.",
+    "maintenance": "Seal travertine; bronze-finish aluminium jaali needs a wash, not paint.",
+    "relativeCost": "$$$"
+  },
+  "palettes": [
+    {
+      "id": "travertine",
+      "name": "Travertine & bronze",
+      "recommended": true,
+      "note": "From the study (images 2, 12, 6).",
+      "roles": {
+        "mainWall": {
+          "material": "stonePanels",
+          "color": "#D8CAB2"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#C9BBA2"
+        },
+        "featureWall": {
+          "material": "metalMatte",
+          "color": "#8A6A45"
+        },
+        "jaali": {
+          "material": "metalMatte",
+          "color": "#8A6A45"
+        },
+        "base": {
+          "material": "flutedWood",
+          "color": "#3A3936"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#262626"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#6E4B2F"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#2E2E2D"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3F4B50"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#7B5532"
+        },
+        "compoundWall": {
+          "material": "stonePanels",
+          "color": "#D8CAB2"
+        },
+        "gate": {
+          "material": "metalMatte",
+          "color": "#1F1F1F"
+        },
+        "paving": {
+          "material": "pavers",
+          "color": "#9A948A"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#4F6B3A"
+        },
+        "trim": {
+          "material": "stonePanels",
+          "color": "#D8CAB2"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "jaali": {
+      "enabled": true,
+      "slots": [
+        "wall:featureRecess"
+      ],
+      "params": {
+        "graded": true,
+        "backlight": true,
+        "cell": 0.2,
+        "bar": 0.045,
+        "depth": 0.12,
+        "offset": 0.15,
+        "role": "jaali"
+      }
+    },
+    "pictureFrame": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.5,
+        "depth": 0.55,
+        "u0": 5.39,
+        "u1": 10.36,
+        "from": 1,
+        "dz0": -0.45,
+        "to": 2,
+        "dz1": -0.25,
+        "faceWidth": 0.45,
+        "radius": 0,
+        "role": "windowSurround"
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S"
+      ]
+    },
+    "floatingRoof": {
+      "enabled": true,
+      "params": {
+        "overhangS": 1.2,
+        "overhangW": 0.45,
+        "overhangE": 0.45,
+        "fascia": 0.18
+      }
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTowerBase"
+      ],
+      "params": {
+        "role": "base"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.6,
+        "gate": "slats",
+        "bandRole": "windowSurround"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "site:gate"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 2,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "pivot"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

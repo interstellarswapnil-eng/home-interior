@@ -8,7 +8,7 @@ import skies from "../../../public/exterior/hdri/skies.json";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { buildElements } from "../model/elements";
-import { resolveElements, resolveRoles, type DesignState } from "../model/resolve";
+import { patternById, resolveElements, resolveRoles, type DesignState } from "../model/resolve";
 import { buildShell } from "../model/shell";
 import { BALCONY, CENTER, LOCATION, STILT_BAND, TOP, X_E, X_W, level } from "../model/building";
 import type { LabelPart, Part } from "../model/types";
@@ -25,7 +25,9 @@ import { CameraSync, Exporter, type SceneApi } from "./SceneTools";
 export type { SceneApi };
 
 export type { Quality };
-export type Sky = "clear" | "overcast" | "night";
+export type Sky = "clear" | "overcast" | "dusk" | "night";
+/** full = materials; grey = all grey (the "grey test"); massing = grey + the concept's accent colour */
+export type Look = "full" | "grey" | "massing";
 export type ViewState = {
   mode: "orbit" | "walk";
   autoRotate: boolean;
@@ -35,6 +37,7 @@ export type ViewState = {
   /** yyyy-mm-dd */
   date: string;
   context: ContextOptions;
+  look?: Look;
 };
 
 export type PhotoRequest = { id: number; samples: number } | null;
@@ -78,7 +81,11 @@ export function designParts(design: DesignState): Part[] {
 }
 
 // ---------------------------------------------------------------------------
-function Building({ design, showRoles, onPick, quality, night, context }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality"> & { night: boolean; context: ContextOptions }) {
+const GREY = "#BDBAB3";
+const KEEP: string[] = ["glass", "lightGlow", "interior", "road", "context", "greenery"];
+
+function Building({ design, showRoles, onPick, quality, night, context, look = "full" }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality"> & { night: boolean; context: ContextOptions; look?: Look }) {
+  const accent = useMemo(() => new Set<string>(look === "massing" ? (patternById(design.patternId).accentRoles ?? []) : []), [look, design.patternId]);
   const elements = useMemo(() => resolveElements(design), [design]);
   const sh = shellFor(design);
   const parts = useMemo(() => [...sh.parts, ...buildElements(elements, { openings: sh.openings }), ...contextParts(context)], [sh, elements, context]);
@@ -94,7 +101,8 @@ function Building({ design, showRoles, onPick, quality, night, context }: Pick<E
       mat = makeRoleMaterial(m.role);
       materials.set(m.role, mat);
     }
-    applyStyle(mat, m.role, roles[m.role], quality, showRoles ? roleDebugColor(m.role) : undefined, night);
+    const lookColor = look !== "full" && !KEEP.includes(m.role) && !accent.has(m.role) ? GREY : undefined;
+    applyStyle(mat, m.role, roles[m.role], quality, showRoles ? roleDebugColor(m.role) : lookColor, night);
     return mat;
   };
 
@@ -169,12 +177,12 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
   const low = THREE.MathUtils.clamp(1 - (alt - 3) / 25, 0, 1); // 1 near the horizon
   const sunColor = new THREE.Color("#FFF1DE").lerp(new THREE.Color("#FFA45C"), low);
   const size = quality === "high" ? 4096 : 2048;
-  const sky: SkyKey = view.sky === "night" ? "night" : view.sky === "overcast" ? "overcast" : alt < 15 ? "golden" : "day";
+  const sky: SkyKey = view.sky === "night" || view.sky === "dusk" ? "night" : view.sky === "overcast" ? "overcast" : alt < 15 ? "golden" : "day";
   // the sky image's sun goes where the real sun is (cloudy / night: its bright side towards the south-west)
   const rot = skyRotation(sky, view.sky === "clear" ? dir : new THREE.Vector3(...sunDirection({ altitude: 30, azimuth: 225 })));
-  const fog = view.sky === "night" ? "#0B111C" : view.sky === "overcast" ? "#C6CBCF" : "#C9D3DB";
+  const fog = view.sky === "night" ? "#0B111C" : view.sky === "dusk" ? "#4A587A" : view.sky === "overcast" ? "#C6CBCF" : "#C9D3DB";
   useEffect(() => {
-    scene.fog = new THREE.Fog(fog, 140, 420);
+    scene.fog = new THREE.Fog(fog, 260, 700);
     return () => {
       scene.fog = null;
     };
@@ -192,10 +200,21 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
     "shadow-bias": -0.0003,
     "shadow-normalBias": 0.03,
   };
-  const env = { clear: { env: 0.55 - 0.2 * low, bg: 0.9 }, overcast: { env: 0.95, bg: 1.0 }, night: { env: 0.08, bg: 0.18 } }[view.sky];
+  const env = { clear: { env: 0.55 - 0.2 * low, bg: 0.9 }, overcast: { env: 0.95, bg: 1.0 }, dusk: { env: 0.95, bg: 1 }, night: { env: 0.08, bg: 0.18 } }[view.sky];
   return (
     <>
-      <Environment files={HDRI(sky)} background environmentIntensity={env.env} backgroundIntensity={env.bg} environmentRotation={rot} backgroundRotation={rot} />
+      {view.sky === "dusk" ? (
+        <Environment map={duskSky()} background environmentIntensity={env.env} backgroundIntensity={env.bg} />
+      ) : (
+        <Environment files={HDRI(sky)} background environmentIntensity={env.env} backgroundIntensity={env.bg} environmentRotation={rot} backgroundRotation={rot} />
+      )}
+      {view.sky === "dusk" && (
+        <>
+          <hemisphereLight args={["#6F84B8", "#3A3128", 0.55]} />
+          {/* afterglow from the west: the sun is just below the horizon */}
+          <directionalLight position={toWorld(CENTER.x - 60, CENTER.y - 10, 6)} target={target} intensity={0.75} color="#FFB48A" {...shadowProps} />
+        </>
+      )}
       <primitive object={target} />
       {view.sky === "clear" && <directionalLight position={sunPos} target={target} intensity={1.75 * (0.35 + 0.65 * (1 - low))} color={sunColor} {...shadowProps} />}
       {view.sky === "overcast" && <directionalLight position={toWorld(CENTER.x - 5, CENTER.y - 8, 60)} target={target} intensity={0.3} color="#F4F4F2" {...shadowProps} shadow-radius={12} />}
@@ -262,6 +281,50 @@ function Effects({ quality, night }: { quality: Quality; night: boolean }) {
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
     </EffectComposer>
   );
+}
+
+/** Blue-hour sky: deep blue zenith, a warm afterglow low in the west, dark ground (equirect, made once). */
+let duskTex: THREE.Texture | null = null;
+function duskSky(): THREE.Texture {
+  if (duskTex) return duskTex;
+  const W = 1024;
+  const H = 512;
+  const cv = document.createElement("canvas");
+  cv.width = W;
+  cv.height = H;
+  const ctx = cv.getContext("2d")!;
+  const img = ctx.createImageData(W, H);
+  const mix = (a: number[], b: number[], t: number) => a.map((v, i) => v + (b[i] - v) * Math.max(0, Math.min(1, t)));
+  const zenith = [14, 26, 56];
+  const mid = [38, 62, 112];
+  const horizon = [110, 128, 168];
+  const glow = [236, 150, 104];
+  const ground = [24, 24, 30];
+  for (let y = 0; y < H; y++) {
+    const el = (0.5 - y / H) * Math.PI; // elevation: +π/2 at the top … −π/2 at the bottom
+    for (let x = 0; x < W; x++) {
+      // three.js equirect: u = atan2(z, x) / 2π + 0.5, so west (−x) sits at u = 0 / 1
+      const toWest = Math.cos((x / W) * 2 * Math.PI);
+      let c: number[];
+      if (el < 0) c = mix(horizon, ground, -el / 0.15);
+      else {
+        const t = el / (Math.PI / 2);
+        c = t < 0.25 ? mix(horizon, mid, t / 0.25) : mix(mid, zenith, (t - 0.25) / 0.75);
+        c = mix(c, glow, Math.max(0, toWest) ** 3 * Math.max(0, 1 - el / 0.35));
+      }
+      const i = (y * W + x) * 4;
+      img.data[i] = c[0];
+      img.data[i + 1] = c[1];
+      img.data[i + 2] = c[2];
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(cv);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  duskTex = t;
+  return t;
 }
 
 // ---------------------------------------------------------------------------
@@ -415,7 +478,8 @@ function Expose() {
 
 export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera, photo, onPhotoProgress, onPhotoDone, onApi, syncId }: ExteriorSceneProps) {
   const high = quality === "high";
-  const night = view.sky === "night";
+  // dusk counts as "lights on": facade lights, window glow and bloom
+  const night = view.sky === "night" || view.sky === "dusk";
   return (
     <Canvas
       shadows="soft"
@@ -426,7 +490,7 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
     >
       <Lighting view={view} quality={quality} />
       {night && <NightLights design={design} quality={quality} />}
-      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={view.context} />
+      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={view.context} look={view.look} />
       {view.mode === "orbit" ? (
         <>
           <OrbitControls makeDefault enableDamping dampingFactor={0.1} maxPolarAngle={Math.PI * 0.49} minDistance={2} maxDistance={160} autoRotate={view.autoRotate} autoRotateSpeed={0.7} />

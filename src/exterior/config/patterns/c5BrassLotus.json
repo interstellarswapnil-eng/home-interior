@@ -1,0 +1,235 @@
+{
+  "id": "c5BrassLotus",
+  "order": 14,
+  "kind": "concept",
+  "name": "C5 Brass and Lotus",
+  "description": "A calm cream house crowned by a thick portal frame and a teak pergola with brass lanterns; a lotus jaali gate and a brass Devanagari nameplate welcome you.",
+  "refs": [
+    1,
+    2
+  ],
+  "hero": {
+    "element": "portal",
+    "name": "Portal crown pergola"
+  },
+  "supporting": [
+    {
+      "element": "planters",
+      "name": "Cascading balcony plants"
+    },
+    {
+      "element": "cladding",
+      "name": "Dark teak entrance wall"
+    }
+  ],
+  "crown": {
+    "element": "pergolaCrown",
+    "name": "Teak pergola with brass lanterns"
+  },
+  "threshold": {
+    "element": "compoundWall",
+    "name": "Black granite-look wall, lotus jaali gate, brass nameplate"
+  },
+  "accentRoles": [
+    "pergola"
+  ],
+  "defaultPaletteId": "creamTeak",
+  "notes": {
+    "climate": "The pergola shades the terrace for evening use; cream reflects heat.",
+    "maintenance": "Teak-look HPL for the pergola outdoors; brass needs polishing or a lacquered finish.",
+    "relativeCost": "$$"
+  },
+  "palettes": [
+    {
+      "id": "creamTeak",
+      "name": "Cream, teak & brass",
+      "recommended": true,
+      "note": "From the study (images 1, 2). Only one sacred motif: the lotus on the gate.",
+      "roles": {
+        "mainWall": {
+          "material": "texturedPlaster",
+          "color": "#EDE3D0"
+        },
+        "secondSurface": {
+          "material": "plaster",
+          "color": "#DCCDB3"
+        },
+        "featureWall": {
+          "material": "woodLook",
+          "color": "#4A3424"
+        },
+        "base": {
+          "material": "stonePanels",
+          "color": "#2B2B2A"
+        },
+        "roofEdge": {
+          "material": "plaster",
+          "color": "#EDE3D0"
+        },
+        "soffit": {
+          "material": "woodLook",
+          "color": "#5A3E28"
+        },
+        "windowFrame": {
+          "material": "metalMatte",
+          "color": "#2A241F"
+        },
+        "windowSurround": {
+          "material": "plaster",
+          "color": "#F1E8D6"
+        },
+        "glass": {
+          "material": "glass",
+          "color": "#3F4A4C"
+        },
+        "railing": {
+          "material": "metalMatte",
+          "color": "#2A241F"
+        },
+        "mainDoor": {
+          "material": "woodLook",
+          "color": "#5A3E28"
+        },
+        "compoundWall": {
+          "material": "stonePanels",
+          "color": "#2B2B2A"
+        },
+        "gate": {
+          "material": "woodLook",
+          "color": "#6B4A2E"
+        },
+        "paving": {
+          "material": "stonePaving",
+          "color": "#8E8577"
+        },
+        "ground": {
+          "material": "grass",
+          "color": "#4F6B3A"
+        },
+        "pergola": {
+          "material": "woodLook",
+          "color": "#5A3E28"
+        }
+      }
+    }
+  ],
+  "elements": {
+    "portal": {
+      "enabled": true,
+      "params": {
+        "type": "frame",
+        "side": "S",
+        "back": -0.2,
+        "depth": 1.0,
+        "u0": -0.45,
+        "u1": 10.41,
+        "from": 3,
+        "dz0": -0.35,
+        "to": 4,
+        "dz1": 1.1,
+        "faceWidth": 0.7,
+        "radius": 0,
+        "role": "windowSurround"
+      }
+    },
+    "pergolaCrown": {
+      "enabled": true,
+      "params": {
+        "type": "floatingRoof",
+        "slatted": true,
+        "height": 15.75,
+        "overhangS": 0.3,
+        "overhangW": 0.0,
+        "overhangE": 0.0,
+        "overhangN": 0.0,
+        "slatSpacing": 0.22,
+        "x0": 5.79,
+        "x1": 10.46,
+        "y0": -0.8,
+        "y1": 9.6
+      }
+    },
+    "lanterns": {
+      "enabled": true,
+      "params": {
+        "count": 4,
+        "x0": 6.4,
+        "x1": 9.8,
+        "y": -0.35,
+        "zTop": 15.7
+      }
+    },
+    "planters": {
+      "enabled": true,
+      "slots": [
+        "balcony:S"
+      ]
+    },
+    "cladding": {
+      "enabled": true,
+      "slots": [
+        "wall:stairTowerBase"
+      ],
+      "params": {
+        "role": "featureWall"
+      }
+    },
+    "railings": {
+      "enabled": true,
+      "slots": [
+        "balcony:S",
+        "balcony:N"
+      ],
+      "params": {
+        "style": "glass"
+      }
+    },
+    "parapet": {
+      "enabled": true,
+      "params": {
+        "style": "thin"
+      }
+    },
+    "stoneBase": {
+      "enabled": true,
+      "params": {
+        "height": 0.6
+      }
+    },
+    "compoundWall": {
+      "enabled": true,
+      "params": {
+        "height": 1.6,
+        "gate": "jaali"
+      }
+    },
+    "lighting": {
+      "enabled": true,
+      "slots": [
+        "wall:frontName",
+        "site:gate"
+      ]
+    },
+    "landscaping": {
+      "enabled": true,
+      "params": {
+        "trees": 2,
+        "shrubs": true,
+        "steppingStones": false
+      }
+    },
+    "mainDoor": {
+      "enabled": true,
+      "params": {
+        "style": "wood"
+      }
+    },
+    "nameSign": {
+      "enabled": true,
+      "params": {
+        "text": "पसायदान",
+        "place": "compoundWall"
+      }
+    }
+  }
+}

@@ -33,7 +33,7 @@ export function designReducer(d: DesignState, a: DesignAction): DesignState {
   switch (a.type) {
     case "pattern": {
       const p = patternById(a.id);
-      return { ...d, name: d.name, patternId: p.id, paletteId: p.defaultPaletteId, overrides: { roles: lockedOnly(d.overrides.roles), elements: {} } };
+      return { ...d, name: d.name, patternId: p.id, paletteId: p.defaultPaletteId, overrides: { roles: lockedOnly(d.overrides.roles), elements: {} }, optional: { ...p.optional } };
     }
     case "palette":
       return { ...d, paletteId: a.id, overrides: { ...d.overrides, roles: lockedOnly(d.overrides.roles) } };

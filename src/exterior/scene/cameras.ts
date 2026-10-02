@@ -27,6 +27,8 @@ export const CAMERA_PRESETS = {
   top: { label: "Top (plan)", pos: [c.x, c.y - 0.01, 120], target: [c.x, c.y, 0], fov: 16 },
   bird: { label: "Bird's-eye", pos: [c.x - 16, c.y - 24, 24], target: [c.x, c.y, mid - 2], fov: 45 },
   street: { label: "Street level at the gate", pos: [gateX + 1.5, PLOT.y0 - 3.2, 1.6], target: [gateX + 2.5, c.y, level(2)], fov: 62 },
+  elevS: { label: "Elevation: road side (south)", pos: [c.x, c.y - 150, 7.8], target: [c.x, c.y, 7.8], fov: 9.5 },
+  elevW: { label: "Elevation: side road (west)", pos: [c.x - 150, c.y, 7.8], target: [c.x, c.y, 7.8], fov: 9.5 },
   entrance: { label: "Entrance close-up", pos: [1.9, Y_TOWER_S - 4.2, PLINTH + 1.6], target: [1.9, Y_TOWER_S, PLINTH + 1.3], fov: 60 },
 } satisfies Record<string, CamPreset>;
 

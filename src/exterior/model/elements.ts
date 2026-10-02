@@ -20,6 +20,7 @@ import { FLOORS, num, slotOpenings, str, type ElementConfig, type ElementCtx, ty
 import { canopy, parapet, pergola, roofOverhang, stoneBase } from "./roofElements";
 import { cladding, jaali, slats, sunshades } from "./wallElements";
 import { landscaping, lighting, mainDoor, softFrame, solar } from "./siteElements";
+import { bands, floatingRoof, frame, lanterns } from "./moves";
 import type { Part, SurfaceRole } from "./types";
 
 export type { ElementConfig, ElementCtx };
@@ -177,13 +178,16 @@ const compoundWall: Gen = (id, cfg) => {
   const out: Part[] = [];
   const H = num(cfg.params, "height", COMPOUND_H);
   const every = num(cfg.params, "pilasterEvery", 3.0);
-  const gateStyle = str<"verticalBars" | "slats" | "solid">(cfg.params, "gate", "verticalBars");
+  const gateStyle = str<"verticalBars" | "slats" | "solid" | "jaali">(cfg.params, "gate", "verticalBars");
+  const bandRole = str<SurfaceRole | "">(cfg.params, "bandRole", "");
   const P = PLOT;
   const T = 0.23;
   const meta = (slot: string) => ({ floor: -1, slot, element: id });
   const wall = (k: string, x0: number, y0: number, x1: number, y1: number, slot: string) => {
     out.push(box(`${id}-${k}`, "compoundWall", { x: x0, y: y0, w: x1 - x0, h: y1 - y0, z0: 0, z1: H }, meta(slot)));
     out.push(box(`${id}-${k}-cap`, "trim", { x: x0 - 0.02, y: y0 - 0.02, w: x1 - x0 + 0.04, h: y1 - y0 + 0.04, z0: H, z1: H + 0.06 }, { ...meta(slot), bevel: 0.01 }));
+    if (bandRole && slot === "site:compoundFront")
+      out.push(box(`${id}-${k}-band`, bandRole as SurfaceRole, { x: x0, y: y0 - 0.015, w: x1 - x0, h: y1 - y0 + 0.03, z0: H * 0.55, z1: H * 0.55 + 0.22 }, meta(slot)));
     const along = x1 - x0 > y1 - y0;
     const len = along ? x1 - x0 : y1 - y0;
     const n = Math.floor(len / every);
@@ -221,6 +225,17 @@ const compoundWall: Gen = (id, cfg) => {
       out.push(box(`${id}-gate-${k}-panel`, "gate", { x: a, y: y + 0.01, w: b - a, h: 0.03, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
       return;
     }
+    if (gateStyle === "jaali") {
+      // a perforated panel: frame + a diagonal-free square lattice (pattern simplified for massing)
+      const cell = 0.16;
+      out.push(box(`${id}-gate-${k}-l`, "gate", { x: a, y, w: 0.05, h: 0.05, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
+      out.push(box(`${id}-gate-${k}-r`, "gate", { x: b - 0.05, y, w: 0.05, h: 0.05, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
+      const nu = Math.floor((b - a) / cell);
+      const nz = Math.floor((gh - 0.2) / cell);
+      for (let i = 1; i < nu; i++) out.push(box(`${id}-gate-${k}-ju${i}`, "gate", { x: a + i * cell - 0.015, y: y + 0.01, w: 0.03, h: 0.03, z0: 0.12, z1: gh - 0.06 }, meta("site:gate")));
+      for (let j = 1; j < nz; j++) out.push(box(`${id}-gate-${k}-jz${j}`, "gate", { x: a, y: y + 0.01, w: b - a, h: 0.03, z0: 0.12 + j * cell - 0.015, z1: 0.12 + j * cell + 0.015 }, meta("site:gate")));
+      return;
+    }
     if (gateStyle === "slats") {
       // horizontal boards with narrow gaps
       const rows = Math.floor((gh - 0.18) / 0.13);
@@ -242,6 +257,14 @@ const compoundWall: Gen = (id, cfg) => {
 /** Building name plate on the road-facing wall. */
 const nameSign: Gen = (id, cfg, ctx) => {
   const text = str(cfg.params, "text", "पसायदान");
+  if (str(cfg.params, "place", "facade") === "compoundWall") {
+    // backlit nameplate on the front compound wall, west of the pedestrian gate
+    const x = GATES.pedestrian.a - 1.4;
+    return [
+      { id: `${id}-plate`, kind: "label", role: "featureWall", floor: -1, side: "S", slot: "site:compoundFront", element: id, text, x, y: PLOT.y0 - 0.045, z: COMPOUND_H * 0.62, width: 1.3, height: 0.42 },
+      box(`${id}-backlight`, "lightGlow", { x: x - 0.7, y: PLOT.y0 - 0.035, w: 1.4, h: 0.02, z0: COMPOUND_H * 0.62 - 0.25, z1: COMPOUND_H * 0.62 + 0.25 }, { floor: -1, slot: "site:compoundFront", element: id }),
+    ];
+  }
   // with the optional road-side window, the sign moves above the top-floor window
   const roadWindow = ctx.openings.some((o) => o.planId === "opt-win-master-s");
   return [
@@ -283,6 +306,11 @@ export const ELEMENT_GENERATORS: Record<string, Gen> = {
   mainDoor,
   landscaping,
   solar,
+  // v2 design moves
+  frame,
+  bands,
+  floatingRoof,
+  lanterns,
   // D12 is a modifier: it changes how boxFrames are drawn (see buildElements)
   roundedCorners: () => [],
 };
