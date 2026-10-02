@@ -3,6 +3,7 @@ import { ExteriorScene, type PhotoRequest, type Quality, type SceneApi, type Vie
 import { CAMERA_IDS, CAMERA_PRESETS, EXPORT_VIEWS, type CameraId } from "./scene/cameras";
 import { PATTERNS, defaultDesign, patternById } from "./model/resolve";
 import { approvalFlags, qualityGate } from "./model/approval";
+import { fixtureSummary, fixturesFromParts, lightingScheduleCsv } from "./model/fixtures";
 import { designParts } from "./scene/ExteriorScene";
 import type { Part, SurfaceRole } from "./model/types";
 import { designReducer, type DesignAction } from "./state/design";
@@ -18,6 +19,7 @@ import { ElementsTab } from "./ui/ElementsTab";
 import { ViewTab } from "./ui/ViewTab";
 import { PickCard } from "./ui/PickCard";
 import { PaintStrip } from "./ui/PaintStrip";
+import { LightPresetButtons } from "./ui/LightPresets";
 import { bakeThumbnails, cachedThumb } from "./ui/thumbnails";
 
 const params = new URLSearchParams(location.search);
@@ -73,7 +75,8 @@ export function ExteriorApp() {
   const [view, setViewState] = useState<ViewState>({
     mode: pick("mode", ["orbit", "walk"], "orbit"),
     autoRotate: params.get("spin") === "1",
-    sky: pick("sky", ["clear", "overcast", "dusk", "night"], "clear"),
+    // v2: concepts are reviewed at dusk with the facade lights on
+    sky: pick("sky", ["clear", "overcast", "dusk", "night"], "dusk"),
     hour: Number(params.get("hour") ?? 16),
     date: params.get("date") ?? new Date().toISOString().slice(0, 10),
     context: { neighbours: params.get("nb") === "1", car: params.get("ctx") !== "0", person: params.get("ctx") !== "0" },
@@ -142,6 +145,7 @@ export function ExteriorApp() {
         setBusy(null);
       }
     },
+    lighting: async () => lightingSchedule(),
     sheet: async () => {
       if (!api.current) return;
       setBusy("Preparing the design sheet…");
@@ -151,13 +155,19 @@ export function ExteriorApp() {
         const html = designSheetHtml(
           design,
           shots.map((sh) => ({ label: CAMERA_PRESETS[sh.id].label, url: sh.url })),
-          { date: new Date().toLocaleDateString(), viewNote: `Light: ${view.sky === "clear" ? `sunny, ${view.date}, ${view.hour.toFixed(1)} h` : view.sky}.` },
+          { flags: approvalFlags(design, designParts(design)), lights: fixtureSummary(fixturesFromParts(designParts(design))), date: new Date().toLocaleDateString(), viewNote: `Light: ${view.sky === "clear" ? `sunny, ${view.date}, ${view.hour.toFixed(1)} h` : view.sky === "dusk" ? "dusk, facade lights on" : view.sky}.` },
         );
         download(`${fileBase()}-design-sheet.html`, html, "text/html");
       } finally {
         setBusy(null);
       }
     },
+  };
+  const lightingSchedule = () => {
+    const pat = patternById(design.patternId);
+    const named = [pat.hero, ...(pat.supporting ?? []), pat.crown, pat.threshold];
+    const label = (el: string) => named.find((m) => m?.element === el)?.name ?? (el === "lighting" ? "Facade lighting" : el === "nameSign" ? "Nameplate" : el === "context" ? "Street" : el);
+    download(`${fileBase()}-lighting-schedule.csv`, lightingScheduleCsv(fixturesFromParts(designParts(design)), label), "text/csv");
   };
   const openElement = (id: string) => {
     setFocusElement(id);
@@ -299,13 +309,7 @@ export function ExteriorApp() {
             ))}
             <option value="walk">Walk around…</option>
           </select>
-          <div className="seg">
-            {(["clear", "overcast", "night"] as const).map((s) => (
-              <button key={s} className={view.sky === s ? "on" : ""} onClick={() => setView({ sky: s })}>
-                {s === "clear" ? "Sunny" : s === "overcast" ? "Cloudy" : "Night"}
-              </button>
-            ))}
-          </div>
+          <LightPresetButtons view={view} setView={setView} compact />
           <button className={view.autoRotate ? "on" : ""} onClick={() => setView({ autoRotate: !view.autoRotate, mode: "orbit" })} title="Turntable">
             ⟳ Turntable
           </button>

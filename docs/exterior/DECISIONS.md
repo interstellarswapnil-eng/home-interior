@@ -2,6 +2,25 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: v2 Step 2: all 7 concepts in full 3D ("build all 7")
+
+- **Dusk is the default view.** One switch for Day / Golden hour (sunset − 0.6 h) / Dusk / Night / Cloudy, in the quick bar and the View tab. Screenshots and tests that need sun ask for it explicitly.
+- **Light fixtures are real objects** (`model/fixtures.ts`). Every glowing part of a move becomes a fixture: downlight, linear LED / cove, backlight panel, lantern, uplight, sconce or nameplate, each with a position, size, facing and colour temperature (2700 K for points, 3000 K for linear). The same list:
+  - places the real light sources in 3D at dusk and at night, hero first. Normal quality caps it at 16 lights; High allows 40.
+  - exports as a **Lighting schedule (CSV)** from the Save tab
+  - feeds the lighting summary on the design sheet
+- **Each hero has its own light.** C7's slatted roof got an LED strip under its street-side and side-road fascias. Before that, it only passed gate item 8 through the general facade lights.
+- **Frames:** the radius slider now drives the rounded corners (`radii` marks which corners are rounded). C4's single big corner is 3.6 m (max 4.5). Frames can carry a soffit **lining** with downlights every 0.9 m.
+- **UI:**
+  - Style tab: concepts first, then the Architect's design, then earlier styles folded away; the moves, approval flags and quality gate below.
+  - The **grey test** runs in the app: 320×240 offscreen renders of this design against the other concepts and the Architect's design.
+  - Elements tab: Moves (Hero / Supporting / Crown / Threshold), then Details. When the hero also forms the crown (C2, C3, C4, C7), it is labelled "Hero move · also the crown".
+  - The edit card names the move a surface belongs to.
+  - View tab: "Show as" full colour / massing / grey.
+- **Design sheet:** adds "The concept" (its moves), the measured approval flags (replacing the v1 optional-changes list) and lighting by type.
+- **Board:** `npm run exterior:concepts3d` → `docs/exterior/v2/step2/concepts-3d.html` and `concepts-3d-board.jpg`.
+- **Next: Step 3**, 2–3 palette variants per concept on the same form.
+
 ## 2026-10-02: v2 brief (exteriorV2.md / exteriorV2study.md), Step 1: concept thumbnails
 
 - **Your answers:** the old styles stay as "Earlier styles" (saved designs keep working). Approval flags use the **assumed** margins until the real ones are known.

@@ -1,10 +1,10 @@
-import { ROLES, resolveElements, resolveRoles, type DesignState } from "../model/resolve";
+import { ROLES, patternById, resolveElements, resolveRoles, type DesignState } from "../model/resolve";
 import { floorName, slotById } from "../model/slots";
 import { sideName } from "../model/shell";
 import type { Part, SurfaceRole } from "../model/types";
 import type { DesignAction } from "../state/design";
 import { RoleEditor } from "./ColorsTab";
-import { CATALOGUE, ELEMENT_ORDER } from "./ElementsTab";
+import { CATALOGUE, ELEMENT_ORDER, entryFor } from "./ElementsTab";
 import { Tip } from "./Tip";
 
 /** Click-to-edit: what you clicked, in plain words, with its colour, material and the elements that can go there. */
@@ -22,6 +22,11 @@ export function PickCard({
   openElement: (id: string) => void;
 }) {
   const slot = slotById(part.slot);
+  // v2 moves are named in the concept ("Quarter arc frame"); details use the catalogue label
+  const pat = patternById(design.patternId);
+  const moveName = [pat.hero, ...(pat.supporting ?? []), pat.crown, pat.threshold].find((m) => m && m.element === part.element)?.name;
+  const entry = part.element ? entryFor(design, part.element) : undefined;
+  const partOf = moveName ?? entry?.label;
   const els = resolveElements(design);
   const here = part.slot ? ELEMENT_ORDER.filter((id) => CATALOGUE[id].slotOptions?.includes(part.slot!)) : [];
   const editable = !["interior", "context", "road"].includes(part.role);
@@ -40,12 +45,12 @@ export function PickCard({
       <div className="muted small">
         {floorName(part.floor)}
         {part.side && ["N", "S", "E", "W"].includes(part.side) ? ` · ${sideName(part.side)} face` : ""}
-        {part.element && CATALOGUE[part.element] ? ` · part of: ${CATALOGUE[part.element].label}` : ""}
+        {partOf ? ` · part of: ${partOf}${moveName && pat.hero?.element === part.element ? " (hero move)" : ""}` : ""}
       </div>
       {editable && <RoleEditor design={design} role={part.role as SurfaceRole} dispatch={dispatch} compact />}
-      {part.element && CATALOGUE[part.element] && (
+      {part.element && partOf && (
         <div className="row">
-          <button onClick={() => openElement(part.element!)}>Adjust {CATALOGUE[part.element].label.toLowerCase()}</button>
+          <button onClick={() => openElement(part.element!)}>Adjust {partOf.toLowerCase()}</button>
           <button onClick={() => dispatch({ type: "element", id: part.element!, patch: { enabled: false } })}>Remove</button>
         </div>
       )}

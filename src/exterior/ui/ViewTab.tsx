@@ -2,7 +2,8 @@ import { LOCATION } from "../model/building";
 import { ROLES } from "../model/resolve";
 import { SURFACE_ROLES } from "../model/types";
 import { CAMERA_IDS, CAMERA_PRESETS, type CameraId } from "../scene/cameras";
-import type { Quality, Sky, ViewState } from "../scene/ExteriorScene";
+import type { Look, Quality, ViewState } from "../scene/ExteriorScene";
+import { LightPresetButtons } from "./LightPresets";
 import { roleDebugColor } from "../scene/materials";
 import { dayOfYear, formatHour, sunTimes } from "../sun";
 import { Tip } from "./Tip";
@@ -64,14 +65,17 @@ export function ViewTab({ view, setView, camera, goCamera, quality, setQuality, 
       </section>
       <section>
         <h3>Light</h3>
-        <div className="seg wide">
-          {(["clear", "overcast", "night"] as Sky[]).map((s) => (
-            <button key={s} className={view.sky === s ? "on" : ""} onClick={() => setView({ sky: s })}>
-              {s === "clear" ? "Sunny" : s === "overcast" ? "Cloudy" : "Night"}
-            </button>
-          ))}
-        </div>
+        <LightPresetButtons view={view} setView={setView} />
         {view.sky === "overcast" && <p className="muted small">Soft, even light: the best way to judge colours.</p>}
+        {view.sky === "dusk" && <p className="muted small">Blue hour with the facade lights on (2700–3000 K): how the references are shown, and the default for comparing concepts.</p>}
+        <label className="row">
+          Show as
+          <select value={view.look ?? "full"} onChange={(e) => setView({ look: e.target.value as Look })}>
+            <option value="full">Full colour</option>
+            <option value="massing">Massing (grey + the concept's accent)</option>
+            <option value="grey">Grey test (shape only)</option>
+          </select>
+        </label>
         {view.sky === "clear" && (
           <>
             <label className="row slider">

@@ -121,3 +121,24 @@ input.text { font: inherit; padding: 4px 6px; border: 1px solid var(--line); bor
 .approval { font-size: 10px; text-transform: none; letter-spacing: 0; background: #fdf0d9; color: #8a5a12; border: 1px solid #f0d8a8; padding: 1px 6px; border-radius: 10px; }
 .optrow { align-items: flex-start; }
 @media (max-width: 760px) { .xview.split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+
+/* v2: concepts, moves, check panel */
+.herochip { align-self: flex-start; font-size: 10.5px; font-weight: 600; background: #2b2b2b; color: #fff; border-radius: 9px; padding: 1px 7px; }
+.moves { list-style: none; padding: 0; margin: 4px 0; }
+.moves li { margin: 4px 0; }
+.chip { display: inline-block; min-width: 74px; font-size: 10.5px; text-align: center; border: 1px solid var(--line); border-radius: 9px; padding: 1px 6px; color: var(--muted); }
+.chip.hero { background: #2b2b2b; color: #fff; border-color: #2b2b2b; }
+.flags { padding-left: 16px; margin: 4px 0; }
+.flags li { margin-bottom: 6px; }
+.gate { list-style: none; padding: 0; margin: 4px 0; }
+.gate li { margin: 3px 0; }
+.gate .ok { color: #2f6b3f; }
+.gate .bad { color: #b0352a; }
+.gate .eye { color: #8a5a12; }
+.greystrip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; }
+.greystrip figure { margin: 0; border: 2px solid transparent; border-radius: 5px; }
+.greystrip figure.mine { border-color: #2b2b2b; }
+.greystrip figure.near { border-color: #c98a2b; }
+.greystrip img { width: 100%; display: block; border-radius: 3px; }
+.greystrip figcaption { font-size: 9.5px; color: var(--muted); text-align: center; line-height: 1.15; }
+.movegroup { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 10px 0 2px; }

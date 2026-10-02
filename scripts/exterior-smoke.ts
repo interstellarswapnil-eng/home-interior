@@ -67,7 +67,14 @@ try {
     await clickText(page, ".pcard .pname", c);
     if (!(await text(page, "header .title")).includes(c)) fail(`pattern ${c} did not apply`);
   }
-  ok(`switched through ${cards.length} patterns`);
+  await clickText(page, ".xpanel button.linkish", "▸ Earlier styles");
+  const earlier = (await page.$$eval(".pcard .pname", (e) => e.map((x) => x.childNodes[0].textContent!.trim()))).filter((c) => !cards.includes(c));
+  for (const c of earlier) {
+    await clickText(page, ".pcard .pname", c);
+    if (!(await text(page, "header .title")).includes(c)) fail(`pattern ${c} did not apply`);
+  }
+  if (cards.filter((c) => /^C\d /.test(c)).length !== 7) fail(`expected 7 concepts first, saw: ${cards.join(", ")}`);
+  ok(`switched through ${cards.length} concepts + Architect's and ${earlier.length} earlier styles`);
   const pals = await page.$$eval(".palette", (e) => e.length);
   for (let i = 0; i < pals; i++) {
     await page.evaluate((k) => (document.querySelectorAll(".palette")[k] as HTMLElement).click(), i);
@@ -124,8 +131,8 @@ try {
     await frames(page, 4);
   }
   ok(`visited ${views.length} camera presets`);
-  for (const s of ["Cloudy", "Night", "Sunny"]) await clickText(page, ".xpanel .seg button", s);
-  ok("sunny / cloudy / night");
+  for (const s of ["Cloudy", "Night", "Golden hour", "Dusk", "Day"]) await clickText(page, ".xpanel .seg button", s);
+  ok("light presets: day / golden hour / dusk / night / cloudy");
   await page.$eval(".xpanel input[type=range]", (el) => {
     const i = el as HTMLInputElement;
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(i, "9");
@@ -186,8 +193,32 @@ try {
   if ((await text(page, "header .title")).includes("Brick")) fail("Ctrl+Z did not undo the pattern switch");
   else ok("Ctrl+Z undoes a pattern switch");
 
+  // v2: a concept's moves, approval flags, quality gate and grey test
+  await clickText(page, ".tabs button", "Style");
+  await clickText(page, ".pcard .pname", "C4 Quarter Arc");
+  await clickText(page, ".tabs button", "Elements");
+  const groups = await page.$$eval(".movegroup", (e) => e.map((x) => x.textContent!.trim()));
+  if (!groups.some((g) => g.startsWith("Hero move")) || !groups.some((g) => /crown/i.test(g))) fail(`moves panel groups: ${groups.join(", ")}`);
+  else ok(`moves panel: ${groups.join(" / ")}`);
+  await clickText(page, ".tabs button", "Style");
+  const flagsN = await page.$$eval(".flags li", (l) => l.length);
+  const gateN = await page.$$eval(".gate li", (l) => l.length);
+  if (gateN !== 10) fail(`quality gate shows ${gateN} items`);
+  else ok(`approval flags (${flagsN}) and quality gate (10 items) shown`);
+  await clickText(page, ".xpanel button", "Run the grey test");
+  await page.waitForSelector(".greystrip figure", { timeout: 120_000 });
+  const greyN = await page.$$eval(".greystrip figure", (f) => f.length);
+  const g10 = await page.$$eval(".gate li", (l) => l[9].className);
+  if (greyN !== 8 || g10 !== "ok") fail(`grey test: ${greyN} renders, gate item 10 = ${g10}`);
+  else ok("grey test: 8 grey renders, C4 is distinct");
+
   // Exports
   await clickText(page, ".tabs button", "Save");
+  await clickText(page, ".btngrid button", "Lighting schedule");
+  const csv = await waitFile(/lighting-schedule\.csv$/);
+  const rows = csv ? readFileSync(csv, "utf8").trim().split(/\r?\n/) : [];
+  if (rows.length < 5 || !rows[0].startsWith("Fixture,Type")) fail(`lighting schedule CSV has ${rows.length} rows`);
+  else ok(`lighting schedule CSV downloaded (${rows.length - 1} fixtures)`);
   await clickText(page, ".btngrid button", "Screenshot");
   const png = await waitFile(/\.png$/);
   if (!png || readFileSync(png).subarray(1, 4).toString() !== "PNG") fail("screenshot PNG not downloaded");
@@ -202,6 +233,8 @@ try {
   const imgs = (html.match(/<img /g) ?? []).length;
   if (!sheet || imgs < 8) fail(`design sheet missing or incomplete (${imgs} images)`);
   else ok(`design sheet downloaded (${imgs} images, ${(statSync(sheet).size / 1e6).toFixed(1)} MB)`);
+  if (!html.includes("The concept") || !html.includes("Lighting (")) fail("design sheet lacks the concept moves or the lighting summary");
+  else ok("design sheet lists the moves, approval flags and lights");
 } finally {
   await browser.close();
   await server.close();

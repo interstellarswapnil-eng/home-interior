@@ -140,7 +140,8 @@
           0,
           3.6
         ],
-        "role": "windowSurround"
+        "role": "windowSurround",
+        "radius": 3.6
       }
     },
     "cladding": {

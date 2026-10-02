@@ -7,6 +7,7 @@ export type ExportJobs = {
   screenshot: (scale: number) => Promise<void>;
   allViews: () => Promise<void>;
   sheet: () => Promise<void>;
+  lighting: () => Promise<void>;
   busy: string | null;
 };
 
@@ -172,6 +173,9 @@ export function SaveTab({
           </button>
           <button disabled={!!jobs.busy} onClick={() => jobs.sheet()}>
             Design sheet for the architect
+          </button>
+          <button disabled={!!jobs.busy} onClick={() => jobs.lighting()}>
+            Lighting schedule (CSV)
           </button>
         </div>
         {jobs.busy && <p className="small">{jobs.busy}</p>}

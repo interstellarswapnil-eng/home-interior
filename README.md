@@ -25,12 +25,12 @@ You can also click **Exterior** in the interior app's header. Chrome or Edge wor
 
 | Tab | |
 |---|---|
-| **Style** | 8 design patterns: Architect's design, Warm Minimal, Japandi, Dark Modern, Tropical Modern, Earthy Organic, Brick & Concrete, and Warm curves (built from your references). Each has 3 colour sets, with ★ marking the one recommended for Ahilyanagar's sun and dust, plus a "Good to know" note on climate, upkeep and cost. |
+| **Style** | **7 design concepts** (C1 Travertine Lantern … C7 Deccan Veranda). Each is built around one bold hero move, with a crown on top and a designed gate and compound wall. Next come the Architect's design for comparison and the 7 earlier styles (folded away). Below them: the concept's moves, its **approval flags** (what needs the architect's OK, measured from the geometry) and a **quality gate** of 10 checks, including a **grey test** that renders every concept all-grey to prove the form is distinct. Colour sets come with a "Good to know" note on climate, upkeep and cost. |
 | **Colors** | Pick any surface (or click it on the building), then change its colour (picker, hex, suggestions) or its material. **Lock** a colour to keep it when you switch pattern. **Reset** restores the pattern's colours. The flat paint colours always show at the top-left of the view. |
-| **Elements** | All 18 elements, each with on/off, size and spacing, and where it goes. **Bigger changes** that need the architect's approval (wider windows, a sliding balcony door, a road-side window, taller stair windows) are off by default and listed separately. |
-| **View** | 13 camera views. Walk around (W A S D + mouse), turntable, sun by time of day and date for Ahilyanagar, cloudy (best for judging colours) and night (lights on). Normal or High quality. **Photo-quality still** (path traced, about 1–4 minutes). Car, person and neighbour buildings for scale. |
+| **Elements** | For a concept: its **moves** first (hero, supporting, crown, threshold), each with depth, face width, corner radius and light. Then the smaller elements, each with on/off, size and spacing, and where it goes. **Bigger changes** that need the architect's approval (wider windows, a sliding balcony door, a road-side window, taller stair windows) are off by default and listed separately. |
+| **View** | 15 camera views, including flat road-side and side-road elevations. Light presets: Day, Golden hour, **Dusk (the default)**, Night and Cloudy (best for judging colours). Facade lights are real fixtures placed by each move. "Show as" full colour, massing or grey. Walk around (W A S D + mouse), turntable, and sun by time of day and date for Ahilyanagar. Normal or High quality. **Photo-quality still** (path traced, about 1–4 minutes). Car, person and neighbour buildings for scale. |
 | **Compare** | Your design (A) next to any pattern or saved design (B), side by side with one shared camera, or flipped in place with the **Space** key. |
-| **Save & export** | Named designs (save, load, rename, duplicate, delete). Undo/redo (Ctrl+Z / Ctrl+Y). Design file export and import (JSON). A screenshot at 2× or 3× resolution. **Export all views** as a ZIP of PNGs. A **design sheet** for the architect: one HTML page with every surface's material and hex, the elements, the changes needing approval and the views, with "Print / save as PDF". |
+| **Save & export** | Named designs (save, load, rename, duplicate, delete). Undo/redo (Ctrl+Z / Ctrl+Y). Design file export and import (JSON). A screenshot at 2× or 3× resolution. **Export all views** as a ZIP of PNGs. A **design sheet** for the architect: one HTML page with every surface's material and hex, the elements, the concept's moves, its approval flags, a lighting summary and the views, with "Print / save as PDF". A **lighting schedule (CSV)** lists every fixture with its type, position, height and colour temperature, for the electrician. |
 
 Clicking any surface shows what it is in plain words, for example "Window box frames · Master bedroom window · 2nd floor · west face". From there you can change its colour or material, or add slats, fins, jaali or sunshades at that spot.
 
@@ -73,10 +73,12 @@ More detail, including how to add a material and what does need code, is in [`do
 
 | Command | What it does |
 |---|---|
-| `npm test` | All tests, including 75 exterior tests: plan match, openings, no flicker, every pattern/palette, sun, locks, undo, walk, save files, zip, design sheet |
+| `npm test` | All tests, including 102 exterior tests (v2: concepts, flags, gate, fixtures): plan match, openings, no flicker, every pattern/palette, sun, locks, undo, walk, save files, zip, design sheet |
 | `npm run exterior:smoke` | Clicks through every tab, pattern, element, view, light mode, compare, save/undo and all three exports in headless Chrome/Edge |
 | `npm run exterior:perf` | Style-switch times and fps (Normal, High, night) |
 | `npm run exterior:shots` | Regenerates `docs/exterior/screenshots/` |
+| `npm run exterior:board` | v2 Step 1 board: grey + accent elevations of every concept, with flags, quality gate and grey test (`docs/exterior/v2/step1/`) |
+| `npm run exterior:concepts3d` | v2 Step 2 board: every concept in full 3D at dusk, by day, from the side road and at the gate (`docs/exterior/v2/step2/`) |
 | `npm run exterior:assets` / `exterior:hdri` | Re-download the CC0 textures / sky images (already committed) |
 
 ### Notes

@@ -81,7 +81,7 @@ try {
     page.on("pageerror", (e) => errors.push(`${s.file}: ${e}`));
     page.on("console", (m) => m.type() === "error" && errors.push(`${s.file}: ${m.text()}`));
     if (s.file.includes("mobile")) await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-    const extra = `${s.query.includes("thumbs=") ? "" : "&thumbs=0"}${s.query.includes("date=") ? "" : "&date=2026-10-01"}&instant=1`;
+    const extra = `${s.query.includes("thumbs=") ? "" : "&thumbs=0"}${s.query.includes("date=") ? "" : "&date=2026-10-01"}${s.query.includes("sky=") ? "" : "&sky=clear"}&instant=1`;
     await page.goto(`http://localhost:5198/exterior.html?${s.query}${extra}`, { waitUntil: "load", timeout: 90_000 });
     await page.waitForFunction("window.__extReady === true", { timeout: 120_000 });
     if (s.waitPhoto) await page.waitForSelector(".photobox img", { timeout: 600_000 });

@@ -110,13 +110,49 @@ function frameEdgeLight(idBase: string, side: Side, back: number, depth: number,
   return out;
 }
 
+/** Wood lining under the top of a frame (its soffit) with a row of downlights, like the references' frame ceilings. */
+function frameLining(
+  idBase: string,
+  side: Side,
+  back: number,
+  depth: number,
+  rect: { u0: number; u1: number; z0: number; z1: number },
+  w: number,
+  radii: [number, number, number, number],
+  sides: { l: boolean; r: boolean; t: boolean; b: boolean },
+  meta: Meta,
+): Part[] {
+  const lim = Math.min((rect.u1 - rect.u0) / 2, (rect.z1 - rect.z0) / 2);
+  const rtl = sides.l ? Math.min(radii[3], lim) : 0;
+  const rtr = sides.r ? Math.min(radii[2], lim) : 0;
+  const a0 = rect.u0 + Math.max(rtl, sides.l ? w : 0);
+  const a1 = rect.u1 - Math.max(rtr, sides.r ? w : 0);
+  if (a1 - a0 < 0.3) return [];
+  const o = side === "S" || side === "W" ? -1 : 1;
+  const d0 = back + o * 0.02;
+  const d1 = back + o * (depth - 0.02);
+  const zb = rect.z1 - w;
+  const ns = side === "S" || side === "N";
+  const at = (u0: number, u1: number, z0: number, z1: number, e0 = d0, e1 = d1) =>
+    ns ? { x: u0, w: u1 - u0, y: Math.min(e0, e1), h: Math.abs(e1 - e0), z0, z1 } : { y: u0, h: u1 - u0, x: Math.min(e0, e1), w: Math.abs(e1 - e0), z0, z1 };
+  const out: Part[] = [box(`${idBase}-lining`, "soffit", at(a0, a1, zb - 0.02, zb), meta)];
+  const mid = back + o * (depth / 2);
+  const n = Math.max(1, Math.floor((a1 - a0) / 0.9));
+  for (let i = 0; i < n; i++) {
+    const u = a0 + ((i + 0.5) * (a1 - a0)) / n;
+    out.push(box(`${idBase}-dl-${i}`, "lightGlow", at(u - 0.05, u + 0.05, zb - 0.03, zb - 0.02, mid - 0.05, mid + 0.05), meta));
+  }
+  return out;
+}
+
 const sidesOf = (s: unknown) => {
   const v = typeof s === "string" ? s : "lrtb";
   return { l: v.includes("l"), r: v.includes("r"), t: v.includes("t"), b: v.includes("b") };
 };
 const radiiOf = (p: Record<string, unknown> | undefined): [number, number, number, number] => {
   const r = p?.radii;
-  if (Array.isArray(r) && r.length === 4) return r.map(Number) as [number, number, number, number];
+  // `radii` marks which corners are rounded; `radius` (the slider) sets how much
+  if (Array.isArray(r) && r.length === 4) return r.map((v) => (Number(v) > 0 ? num(p, "radius", Number(v)) : 0)) as [number, number, number, number];
   const all = num(p, "radius", 0);
   return [all, all, all, all];
 };
@@ -134,8 +170,10 @@ export const frame: Gen = (id, cfg) => {
   const sides = sidesOf(p?.sides);
   const role = str<SurfaceRole>(p, "role", "featureWall");
   const meta: Meta = { floor: 1, slot: `move:${id}`, element: id, side };
-  const parts = framePieces(`${id}`, role, side, back, depth, rect, w, radiiOf(p), sides, meta);
+  const radii = radiiOf(p);
+  const parts = framePieces(`${id}`, role, side, back, depth, rect, w, radii, sides, meta);
   if (p?.edgeLight !== false) parts.push(...frameEdgeLight(id, side, back, depth, rect, w, sides, meta));
+  if (p?.lining !== false && sides.t) parts.push(...frameLining(id, side, back, depth, rect, w, radii, sides, meta));
   return parts;
 };
 
@@ -232,6 +270,10 @@ export const floatingRoof: Gen = (id, cfg) => {
     const spacing = num(p, "slatSpacing", 0.16);
     const n = Math.floor((x1 - x0 - 2 * fw) / spacing);
     for (let i = 1; i < n; i++) slab(`slat-${i}`, x0 + fw + i * spacing - 0.025, x0 + fw + i * spacing + 0.025, y0 + fw, y1 - fw, 0.14, "pergola");
+    // LED strip under the street-side and side-road fascias: the frame reads as a lit line at dusk
+    const ys = y0 + fw / 2;
+    out.push(box(`${id}-led-s`, "lightGlow", { x: x0 + 0.2, y: ys - 0.015, w: x1 - x0 - 0.4, h: 0.03, z0: zAt(ys) - 0.02, z1: zAt(ys) - 0.005 }, meta));
+    slab("led-w", x0 + fw / 2 - 0.015, x0 + fw / 2 + 0.015, y0 + fw, y1 - fw, -0.015, "lightGlow");
   } else {
     slab("slab", x0, x1, y0, y1, t, "roofEdge");
     slab("soffit", x0 + 0.04, x1 - 0.04, y0 + 0.04, y1 - 0.04, -0.02, "soffit");

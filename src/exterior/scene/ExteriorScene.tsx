@@ -14,6 +14,7 @@ import { BALCONY, CENTER, LOCATION, STILT_BAND, TOP, X_E, X_W, level } from "../
 import type { LabelPart, Part } from "../model/types";
 import { contextParts, lampHead, LAMP_H, STREET_LAMPS, type ContextOptions } from "../model/context";
 import { lightingSources, type LightSpec } from "../model/siteElements";
+import { fixturesFromParts } from "../model/fixtures";
 // the path tracer is only downloaded when a photo-quality still is requested
 const PhotoStill = lazy(() => import("./PhotoStill").then((m) => ({ default: m.PhotoStill })));
 import { dayOfYear, sunDirection, sunPosition } from "../sun";
@@ -122,6 +123,7 @@ function Building({ design, showRoles, onPick, quality, night, context, look = "
         <NameSign key={l.id} part={l} onPick={onPick} night={night} />
       ))}
       <WalkColliders parts={parts} />
+      {night && <NightLights design={design} quality={quality} parts={parts} />}
     </group>
   );
 }
@@ -229,16 +231,17 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
 }
 
 /** Real light sources for the facade lights and street lamps (night only). */
-function NightLights({ design, quality }: { design: DesignState; quality: Quality }) {
+function NightLights({ design, quality, parts }: { design: DesignState; quality: Quality; parts: Part[] }) {
   const els = useMemo(() => resolveElements(design), [design]);
   const lights: LightSpec[] = useMemo(() => {
     const l = els.lighting?.enabled ? lightingSources(els.lighting.slots ?? [], quality === "high") : [];
+    l.push(...moveLights(design, parts, quality));
     STREET_LAMPS.forEach((lamp, i) => {
       const [hx, hy] = lampHead(lamp);
       l.push({ kind: "spot", id: `street-${i}`, pos: [hx, hy, LAMP_H - 0.2], target: [hx, hy, 0], intensity: 60, angle: 0.95, distance: 22 });
     });
     return l;
-  }, [els, quality]);
+  }, [els, quality, design, parts]);
   const warm = "#FFC98A";
   return (
     <group>
@@ -250,6 +253,41 @@ function NightLights({ design, quality }: { design: DesignState; quality: Qualit
     </group>
   );
 }
+/** Real lights for the moves' fixtures (frame downlights, band LED lines, backlit jaali, lanterns, roof downlights, nameplate). */
+function moveLights(design: DesignState, parts: Part[], quality: Quality): LightSpec[] {
+  const pat = patternById(design.patternId);
+  const rank = (el: string) => (el === pat.hero?.element ? 0 : el === pat.crown?.element ? 1 : pat.supporting?.some((s) => s.element === el) ? 2 : 3);
+  const fx = fixturesFromParts(parts)
+    .filter((f) => f.element !== "lighting" && f.element !== "context")
+    .sort((a, b) => rank(a.element) - rank(b.element));
+  const cap = quality === "high" ? 40 : 16;
+  const perElementDownlights = quality === "high" ? 10 : 3;
+  const count = new Map<string, number>();
+  const out: LightSpec[] = [];
+  for (const f of fx) {
+    if (out.length >= cap) break;
+    const [x, y, z] = f.pos;
+    if (f.kind === "downlight") {
+      const n = (count.get(f.element) ?? 0) + 1;
+      count.set(f.element, n);
+      if (n > perElementDownlights) continue;
+      out.push({ kind: "spot", id: `mv-${f.id}`, pos: [x, y, z - 0.02], target: [x, y, z - 3], intensity: 5, angle: 0.55, distance: 5 });
+    } else if (f.kind === "lantern") {
+      out.push({ kind: "point", id: `mv-${f.id}`, pos: [x, y, z], intensity: 1.6, distance: 4 });
+    } else if (f.kind === "plate") {
+      out.push({ kind: "point", id: `mv-${f.id}`, pos: [x, y - 0.3, z], intensity: 0.8, distance: 2.5 });
+    } else {
+      const [sx, sy, sz] = f.dims;
+      const dir: Record<string, [number, number, number]> = { down: [0, 0, -1], up: [0, 0, 1], S: [0, -1, 0], N: [0, 1, 0], E: [1, 0, 0], W: [-1, 0, 0], all: [0, 0, -1] };
+      const d = dir[f.facing];
+      // rectangle size in the light's own plane: horizontal lights span plan x × y, wall-facing ones span the wall × height
+      const [w, h] = f.facing === "down" || f.facing === "up" ? [sx, sy] : f.facing === "S" || f.facing === "N" ? [sx, sz] : [sy, sz];
+      out.push({ kind: "rect", id: `mv-${f.id}`, pos: [x + d[0] * 0.02, y + d[1] * 0.02, z + d[2] * 0.02], target: [x + d[0], y + d[1], z + d[2]], width: w, height: h, intensity: f.kind === "panel" ? 7 : 12 });
+    }
+  }
+  return out;
+}
+
 function Spot({ spec, color }: { spec: Extract<LightSpec, { kind: "spot" }>; color: string }) {
   const t = useMemo(() => {
     const o = new THREE.Object3D();
@@ -489,7 +527,6 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
       onPointerMissed={() => onPick?.(null)}
     >
       <Lighting view={view} quality={quality} />
-      {night && <NightLights design={design} quality={quality} />}
       <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={view.context} look={view.look} />
       {view.mode === "orbit" ? (
         <>

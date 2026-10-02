@@ -19,7 +19,8 @@
     "exterior:perf": "tsx scripts/exterior-perf.ts",
     "exterior:smoke": "tsx scripts/exterior-smoke.ts",
     "exterior:hdri": "tsx scripts/exterior-fetch-hdri.ts",
-    "exterior:board": "tsx scripts/exterior-concepts-board.ts"
+    "exterior:board": "tsx scripts/exterior-concepts-board.ts",
+    "exterior:concepts3d": "tsx scripts/exterior-concepts-3d.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

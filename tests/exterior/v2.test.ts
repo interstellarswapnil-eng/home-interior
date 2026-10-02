@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { approvalFlags, qualityGate } from "../../src/exterior/model/approval";
 import { buildElements } from "../../src/exterior/model/elements";
+import { fixtureSummary, fixturesFromParts, lightingScheduleCsv } from "../../src/exterior/model/fixtures";
 import { PATTERNS, defaultDesign, resolveElements } from "../../src/exterior/model/resolve";
 import { buildShell } from "../../src/exterior/model/shell";
 
@@ -31,4 +32,32 @@ describe("v2 concepts", () => {
       const flags = approvalFlags(d, parts);
       console.log(`${c.name}: ${flags.length} flag(s) · ${flags.map((f) => f.title).join(" | ")}`);
     });
+});
+
+describe("v2 light fixtures", () => {
+  for (const c of concepts)
+    it(`${c.id}: the hero carries real fixtures with sensible positions`, () => {
+      const { parts } = partsFor(c.id);
+      const fx = fixturesFromParts(parts);
+      expect(fx.length, c.id).toBeGreaterThan(0);
+      expect(fx.some((f) => f.element === c.hero!.element), `${c.id} hero is lit`).toBe(true);
+      for (const f of fx) {
+        expect(f.pos.every(Number.isFinite), f.id).toBe(true);
+        expect(f.pos[2], f.id).toBeGreaterThanOrEqual(-0.1);
+        expect(f.pos[2], f.id).toBeLessThan(20);
+      }
+    });
+
+  it("the schedule CSV has a header and one row per fixture, quoted where needed", () => {
+    const { parts } = partsFor(concepts[0].id);
+    const fx = fixturesFromParts(parts);
+    const csv = lightingScheduleCsv(fx, (el) => `${el}, named`);
+    const lines = csv.trim().split("\r\n");
+    expect(lines[0]).toMatch(/^Fixture,Type,Part of/);
+    expect(lines).toHaveLength(fx.length + 1);
+    expect(lines[1]).toMatch(/^L001,/);
+    expect(lines[1]).toMatch(/,"[^"]+, named",/);
+    const sum = fixtureSummary(fx);
+    expect(Object.values(sum).reduce((a, b) => a + b, 0)).toBe(fx.length);
+  });
 });

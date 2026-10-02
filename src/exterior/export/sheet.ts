@@ -21,7 +21,16 @@ const SHEET_ROLES: SurfaceRole[] = [
 
 export type SheetImage = { label: string; url: string };
 
-export function designSheetHtml(design: DesignState, images: SheetImage[], extra: { date: string; viewNote: string }): string {
+export type SheetExtra = {
+  date: string;
+  viewNote: string;
+  /** v2: approval flags measured from the geometry (replaces the plain list of optional changes) */
+  flags?: { title: string; detail: string; rule: string }[];
+  /** v2: number of light fixtures by type */
+  lights?: Record<string, number>;
+};
+
+export function designSheetHtml(design: DesignState, images: SheetImage[], extra: SheetExtra): string {
   const pattern = patternById(design.patternId);
   const palette = pattern.palettes.find((p) => p.id === design.paletteId);
   const roles = resolveRoles(design);
@@ -47,9 +56,23 @@ export function designSheetHtml(design: DesignState, images: SheetImage[], extra
     })
     .join("");
 
-  const optRows = opts.length
-    ? opts.map(([id]) => `<li><b>${esc(OPT[id]?.label ?? id)}</b>: ${esc(OPT[id]?.detail ?? "")} <i>Why:</i> ${esc(OPT[id]?.why ?? "")}</li>`).join("")
-    : "<li>None. The building is exactly as designed: footprint, floors, window and door positions unchanged.</li>";
+  const optRows = extra.flags
+    ? extra.flags.length
+      ? extra.flags.map((f) => `<li><b>${esc(f.title)}</b>: ${esc(f.detail)} <i>(${esc(f.rule)})</i></li>`).join("")
+      : "<li>None. Nothing goes beyond the architect's building.</li>"
+    : opts.length
+      ? opts.map(([id]) => `<li><b>${esc(OPT[id]?.label ?? id)}</b>: ${esc(OPT[id]?.detail ?? "")} <i>Why:</i> ${esc(OPT[id]?.why ?? "")}</li>`).join("")
+      : "<li>None. The building is exactly as designed: footprint, floors, window and door positions unchanged.</li>";
+  const moves = pattern.kind === "concept"
+    ? `<h2>The concept</h2><table><tr><th>Role</th><th>Move</th></tr>
+      <tr><td><b>Hero</b></td><td><b>${esc(pattern.hero?.name ?? "")}</b></td></tr>
+      ${(pattern.supporting ?? []).map((m) => `<tr><td>Supporting</td><td>${esc(m.name)}</td></tr>`).join("")}
+      <tr><td>Crown</td><td>${esc(pattern.crown?.name ?? "")}</td></tr><tr><td>Threshold</td><td>${esc(pattern.threshold?.name ?? "")}</td></tr></table>`
+    : "";
+  const KIND: Record<string, string> = { downlight: "downlights", linear: "linear LEDs / coves", panel: "backlight panels", lantern: "lanterns", uplight: "uplights", sconce: "wall sconces", plate: "backlit nameplates" };
+  const lights = extra.lights
+    ? `<h2>Lighting (2700–3000 K)</h2><p>${Object.entries(extra.lights).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${KIND[k] ?? k}`).join(" · ") || "No facade lights."} <span class="muted">Full list with positions: "Lighting schedule (CSV)".</span></p>`
+    : "";
 
   const imgs = images.map((i) => `<figure><img src="${i.url}" alt="${esc(i.label)}"><figcaption>${esc(i.label)}</figcaption></figure>`).join("");
 
@@ -84,6 +107,7 @@ export function designSheetHtml(design: DesignState, images: SheetImage[], extra
   <p>${esc(pattern.description)}</p>
   <p><b>Good to know:</b> ${esc(pattern.notes.climate)} <span class="muted">Upkeep: ${esc(pattern.notes.maintenance)} Relative cost: ${esc(pattern.notes.relativeCost)}.</span></p>
 
+  ${moves}
   <h2>Surfaces: material and colour</h2>
   <table><tr><th></th><th>Surface</th><th>Material</th><th>Colour (hex, sRGB)</th><th></th></tr>${surfaceRows}</table>
   <p class="muted">Wood colours are meant as wood-look HPL / WPC / aluminium panels outdoors; real wood only under cover. Hex codes are the average tone; match paint brands to them on site under daylight.</p>
@@ -91,8 +115,9 @@ export function designSheetHtml(design: DesignState, images: SheetImage[], extra
   <h2>Elements</h2>
   <table><tr><th>Element</th><th>Where</th><th>Settings</th></tr>${elementRows}</table>
 
-  <h2>Changes that need architect approval</h2>
+  <h2>Needs architect approval</h2>
   <ul>${optRows}</ul>
+  ${lights}
 
   <h2>Views</h2>
   <div class="grid">${imgs}</div>
