@@ -25,7 +25,9 @@ How #28 maps onto the plan (confirmed against the openings): the **balcony face 
 |---|---|---|
 | Building type | Apartment block: stilt (parking) ground floor + 3 identical residential floors, **one 2BHK flat per floor**, no penthouse | [plan] + your answer |
 | Location | Ahilyanagar (Ahmednagar), Maharashtra. Lat **19.09° N**, long **74.74° E** | Section 0; coordinates [assumed: city centre] |
-| Front of the building faces | **South**: the road is on the south (confirmed). The arrow on the plan drawing is ignored | Section 0 + your answer |
+| Front of the building faces | **South**: the main road is on the south (confirmed). The arrow on the plan drawing is ignored | Section 0 + your answer |
+| Side road | **West** (the windows side): a second road perpendicular to the main road, so the plot is a **corner plot** | your request, 2026-10-02 |
+| Road widths | Both roads 7.5 m, each with a 2.0 m footpath along the plot; they meet at the south-west corner | [assumed] |
 | Plot size | **2 gunthas = 202.3 m² (2,178 sq ft)** [you]. Shape [assumed]: rectangle **13.0 m (E–W) × 15.56 m (N–S)**, giving margins of 1.32 m on the east and west, 1.40 m at the rear (north) and 2.53 m at the front (south, from the balcony face) | your answer + [assumed] |
 | Plot shape | The source drawing has a slanted line across the top (north), which may be a non-rectangular plot boundary. Modelled as a rectangle for now | [plan] drawing; [assumed] |
 
@@ -103,7 +105,7 @@ The **master bedroom's south wall has no window** [plan]. It's the obvious place
 
 ## Facing (resolved)
 
-The road is on the **south**. The street sees:
+The main road is on the **south** and a side road runs along the **west** (windows side), so the plot is a corner plot. From the side road you see the whole west face: the bedroom windows with their box frames, the staggered staircase windows, and the stair tower. The main road sees:
 - the master bedroom's blank south wall (name sign)
 - the 1.0 m recess with the full-height wood strip
 - the stacked south balconies

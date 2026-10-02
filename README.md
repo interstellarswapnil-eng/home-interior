@@ -8,7 +8,7 @@ An interactive 2D floor plan and 3D model of a typical 1st to 3rd floor 2BHK in 
 
 ## Exterior module
 
-A realistic 3D model of the outside of the building (Pasaydan, Ahilyanagar: stilt parking + 3 flats, road on the south) that you can restyle. You can switch design patterns, colour sets, materials and facade elements. The building itself stays as the architect designed it. The exterior reads the same floor plan as the interior (`plan/plan.ts`) and never changes it.
+A realistic 3D model of the outside of the building (Pasaydan, Ahilyanagar: stilt parking + 3 flats, corner plot with the main road on the south and a side road on the west) that you can restyle. You can switch design patterns, colour sets, materials and facade elements. The building itself stays as the architect designed it. The exterior reads the same floor plan as the interior (`plan/plan.ts`) and never changes it.
 
 ![Warm curves pattern](docs/exterior/screenshots/p4-photo-still.png)
 

@@ -1,5 +1,5 @@
 /** Walk mode physics (pure, testable): colliders from the model, ground height, sliding movement. */
-import { PAVING, PLINTH, PLOT } from "../model/building";
+import { PAVING, PLINTH, PLOT, SOUTH_FOOTPATH, WEST_FOOTPATH, WEST_ROAD } from "../model/building";
 import { FOOTPRINT_RECTS } from "../model/shell";
 import type { Part } from "../model/types";
 
@@ -24,7 +24,9 @@ export function walkColliders(parts: Part[]): Rect2[] {
 export function groundAt(x: number, y: number): number {
   if (FOOTPRINT_RECTS.some((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h)) return PLINTH;
   if (x >= PLOT.x0 && x <= PLOT.x1 && y >= PLOT.y0 && y <= PLOT.y1) return PAVING;
-  if (y >= PLOT.y0 - 2 && y < PLOT.y0) return 0.1;
+  const onWestRoad = x >= WEST_ROAD.x0 && x < WEST_ROAD.x1;
+  if (y >= SOUTH_FOOTPATH.y0 && y < SOUTH_FOOTPATH.y1 && !onWestRoad) return 0.1; // south footpath
+  if (x >= WEST_FOOTPATH.x0 && x < WEST_FOOTPATH.x1 && y >= SOUTH_FOOTPATH.y0) return 0.1; // west footpath
   return 0;
 }
 

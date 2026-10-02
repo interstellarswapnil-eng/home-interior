@@ -2,6 +2,13 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: side road on the west (windows side)
+
+- **The plot is now a corner plot.** A road runs along the west, on the windows side, perpendicular to the main road on the south. Both roads are 7.5 m wide with a 2 m footpath along the plot [assumed widths]. They meet at the south-west corner, where the south footpath stops and the road crosses. The layout constants are in `building.ts` (`SOUTH_ROAD`, `WEST_ROAD`, footpaths).
+- **Context:** the grey west neighbour (toggle) now stands across the side road. A third street lamp stands on the west footpath. All lamp arms now reach out over their road, with the night light under the lamp head.
+- **Walk mode:** the west footpath is 0.1 m high and the side road is at road level.
+- **Unchanged:** the compound wall on the west and both gates (south). Tell me if you want a gate or an entrance from the side road too.
+
 ## 2026-10-02: Phase 5 (compare, save, export) and shipping
 
 - **Compare (E):**

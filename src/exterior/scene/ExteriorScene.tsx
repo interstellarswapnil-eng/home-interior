@@ -12,7 +12,7 @@ import { resolveElements, resolveRoles, type DesignState } from "../model/resolv
 import { buildShell } from "../model/shell";
 import { BALCONY, CENTER, LOCATION, STILT_BAND, TOP, X_E, X_W, level } from "../model/building";
 import type { LabelPart, Part } from "../model/types";
-import { contextParts, LAMP_H, STREET_LAMPS, type ContextOptions } from "../model/context";
+import { contextParts, lampHead, LAMP_H, STREET_LAMPS, type ContextOptions } from "../model/context";
 import { lightingSources, type LightSpec } from "../model/siteElements";
 // the path tracer is only downloaded when a photo-quality still is requested
 const PhotoStill = lazy(() => import("./PhotoStill").then((m) => ({ default: m.PhotoStill })));
@@ -214,7 +214,10 @@ function NightLights({ design, quality }: { design: DesignState; quality: Qualit
   const els = useMemo(() => resolveElements(design), [design]);
   const lights: LightSpec[] = useMemo(() => {
     const l = els.lighting?.enabled ? lightingSources(els.lighting.slots ?? [], quality === "high") : [];
-    STREET_LAMPS.forEach(([x, y], i) => l.push({ kind: "spot", id: `street-${i}`, pos: [x, y + 1.25, LAMP_H - 0.2], target: [x, y + 2.5, 0], intensity: 60, angle: 0.95, distance: 22 }));
+    STREET_LAMPS.forEach((lamp, i) => {
+      const [hx, hy] = lampHead(lamp);
+      l.push({ kind: "spot", id: `street-${i}`, pos: [hx, hy, LAMP_H - 0.2], target: [hx, hy, 0], intensity: 60, angle: 0.95, distance: 22 });
+    });
     return l;
   }, [els, quality]);
   const warm = "#FFC98A";

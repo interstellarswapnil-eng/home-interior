@@ -119,6 +119,17 @@ export const BOUNDS = (() => {
 /** Building centre (plan) and a mid height — camera targets. */
 export const CENTER = { x: (X_W + X_E) / 2, y: (BALCONY.S.y + BALCONY.N.y1) / 2, z: TERRACE / 2 };
 
+/**
+ * Roads: the main road on the south (front) and a side road on the west (the windows side), so the plot is a
+ * corner plot. Each road is 7.5 m wide with a 2 m footpath along the plot. [side road: user, 2026-10-02; widths assumed]
+ */
+export const ROAD_W = 7.5;
+export const FOOTPATH_W = 2.0;
+export const SOUTH_FOOTPATH = { y0: PLOT.y0 - FOOTPATH_W, y1: PLOT.y0 };
+export const SOUTH_ROAD = { y0: SOUTH_FOOTPATH.y0 - ROAD_W, y1: SOUTH_FOOTPATH.y0 };
+export const WEST_FOOTPATH = { x0: PLOT.x0 - FOOTPATH_W, x1: PLOT.x0 };
+export const WEST_ROAD = { x0: WEST_FOOTPATH.x0 - ROAD_W, x1: WEST_FOOTPATH.x0 };
+
 export const COMPOUND_H = 1.5;
 /** Gates on the south compound wall (along plan x). [assumed] */
 export const GATES = {

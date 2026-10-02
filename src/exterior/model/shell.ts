@@ -4,6 +4,12 @@
  */
 import { CEILING_M, lobbyContext, openingBand, openings as planOpenings, rooms, stairContext } from "../../../plan/plan";
 import {
+  FOOTPATH_W,
+  ROAD_W,
+  SOUTH_FOOTPATH,
+  SOUTH_ROAD,
+  WEST_FOOTPATH,
+  WEST_ROAD,
   BALCONY,
   CORE_OUTLINE,
   EXT_WALL,
@@ -306,8 +312,14 @@ function siteParts(): Part[] {
   const out: Part[] = [];
   const P = PLOT;
   out.push(box("site-context", "context", { x: P.x0 - 400, y: P.y0 - 400, w: P.x1 - P.x0 + 800, h: P.y1 - P.y0 + 800, z0: -0.12, z1: -0.06 }, { slot: "site:surroundings" }));
-  out.push(box("site-road", "road", { x: P.x0 - 400, y: P.y0 - 9.5, w: P.x1 - P.x0 + 800, h: 7.5, z0: -0.07, z1: -0.02 }, { slot: "site:road" }));
-  out.push(box("site-footpath", "paving", { x: P.x0 - 400, y: P.y0 - 2.0, w: P.x1 - P.x0 + 800, h: 2.0, z0: -0.07, z1: 0.1 }, { slot: "site:road" }));
+  const far = 400;
+  // main road (south) and side road (west, the windows side) meeting at the south-west corner
+  out.push(box("site-road", "road", { x: P.x0 - far, y: SOUTH_ROAD.y0, w: P.x1 - P.x0 + 2 * far, h: ROAD_W, z0: -0.07, z1: -0.02 }, { slot: "site:road" }));
+  out.push(box("site-road-west", "road", { x: WEST_ROAD.x0, y: SOUTH_ROAD.y1, w: ROAD_W, h: P.y1 + far - SOUTH_ROAD.y1, z0: -0.07, z1: -0.02 }, { slot: "site:roadWest" }));
+  // footpaths along the plot; the south one stops where the side road crosses it
+  out.push(box("site-footpath", "paving", { x: WEST_FOOTPATH.x0, y: SOUTH_FOOTPATH.y0, w: P.x1 + far - WEST_FOOTPATH.x0, h: FOOTPATH_W, z0: -0.07, z1: 0.1 }, { slot: "site:road" }));
+  out.push(box("site-footpath-sw", "paving", { x: P.x0 - far, y: SOUTH_FOOTPATH.y0, w: WEST_ROAD.x0 - (P.x0 - far), h: FOOTPATH_W, z0: -0.07, z1: 0.1 }, { slot: "site:road" }));
+  out.push(box("site-footpath-west", "paving", { x: WEST_FOOTPATH.x0, y: P.y0, w: FOOTPATH_W, h: P.y1 + far - P.y0, z0: -0.07, z1: 0.1 }, { slot: "site:roadWest" }));
   out.push(box("site-paving", "paving", { x: P.x0, y: P.y0, w: P.x1 - P.x0, h: P.y1 - P.y0, z0: -0.07, z1: PAVING }, { slot: "site:driveway" }));
   // Garden strips on the sides and rear
   const g = (id: string, x0: number, y0: number, x1: number, y1: number) =>
