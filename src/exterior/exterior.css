@@ -142,3 +142,6 @@ input.text { font: inherit; padding: 4px 6px; border: 1px solid var(--line); bor
 .greystrip img { width: 100%; display: block; border-radius: 3px; }
 .greystrip figcaption { font-size: 9.5px; color: var(--muted); text-align: center; line-height: 1.15; }
 .movegroup { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 10px 0 2px; }
+
+/* compare with a site photo: over the 3D view and under the controls (page order), same height (vertical lens), never catching the mouse */
+.sitephoto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }

@@ -162,7 +162,7 @@
   },
   "neighbor": {
     "label": "Neighbour buildings",
-    "tip": "Plain grey blocks for scale (View tab)."
+    "tip": "Neighbour blocks and the concrete electricity pole (View tab)."
   },
   "carBody": {
     "label": "Car",
@@ -171,5 +171,25 @@
   "person": {
     "label": "Person",
     "tip": "A 1.7 m person for scale (View tab)."
+  },
+  "neighborBlue": {
+    "label": "Neighbour house (blue-grey)",
+    "tip": "The house across the side road, as in the site photos (View tab)."
+  },
+  "neighborCream": {
+    "label": "Neighbour building (cream)",
+    "tip": "The building next door and the house behind, as in the site photos (View tab)."
+  },
+  "neighborYellow": {
+    "label": "Neighbour building (yellow)",
+    "tip": "The yellow building across the main road, as in the site photos (View tab)."
+  },
+  "neighborRoof": {
+    "label": "Neighbour roof tiles",
+    "tip": "Clay-tile porch roof on the house across the side road (View tab)."
+  },
+  "utility": {
+    "label": "Pole and wires",
+    "tip": "Electricity pole cross-arm and overhead wires along the side road (View tab)."
   }
 }

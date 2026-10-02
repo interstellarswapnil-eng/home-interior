@@ -490,6 +490,16 @@ function Expose() {
   return null;
 }
 
+/** The flat elevation views look across a road: leave out the neighbour on the far side (stable object, so geometry is kept). */
+const ctxCache = new Map<string, ContextOptions>();
+function contextFor(c: ContextOptions, camera: CameraId): ContextOptions {
+  const clearView = camera === "elevS" ? "S" : camera === "elevW" ? "W" : undefined;
+  if (!clearView || !c.neighbours) return c;
+  const key = `${c.car}${c.person}${clearView}`;
+  if (!ctxCache.has(key)) ctxCache.set(key, { ...c, clearView });
+  return ctxCache.get(key)!;
+}
+
 export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera, photo, onPhotoProgress, onPhotoDone, onApi, syncId }: ExteriorSceneProps) {
   const high = quality === "high";
   // dusk counts as "lights on": facade lights, window glow and bloom
@@ -503,7 +513,7 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
       onPointerMissed={() => onPick?.(null)}
     >
       <Lighting view={view} quality={quality} />
-      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={view.context} look={view.look} />
+      <Building design={design} showRoles={showRoles} onPick={view.mode === "orbit" ? onPick : undefined} quality={quality} night={night} context={contextFor(view.context, camera)} look={view.look} />
       {view.mode === "orbit" ? (
         <>
           <OrbitControls makeDefault enableDamping dampingFactor={0.1} maxPolarAngle={Math.PI * 0.49} minDistance={2} maxDistance={160} autoRotate={view.autoRotate} autoRotateSpeed={0.7} />

@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { createServer } from "vite";
 import puppeteer, { type Page } from "puppeteer-core";
+import sharp from "sharp";
 import { executablePath, glArgs } from "./browser";
 
 const server = await createServer({ server: { port: 5196, strictPort: true }, logLevel: "error" });
@@ -155,6 +156,27 @@ try {
   await page.waitForSelector("#walk-start");
   ok("walk mode");
   await clickText(page, ".xpanel .seg button", "Rotate around");
+
+  // Compare with a site photo: a generated test image (never a real site photo), shown over the view, nothing uploaded
+  const testPhoto = path.join(mkdtempSync(path.join(tmpdir(), "ext-photo-")), "test-photo.png");
+  await sharp({ create: { width: 300, height: 400, channels: 3, background: "#7a8a99" } }).png().toFile(testPhoto);
+  const posts: string[] = [];
+  const onReq = (r: { method: () => string; url: () => string }) => r.method() !== "GET" && posts.push(r.url());
+  page.on("request", onReq);
+  await (await page.$('input[type=file][accept="image/*"]'))!.uploadFile(testPhoto);
+  const shown = await page.waitForSelector("img.sitephoto", { timeout: 5000 }).then(() => true, () => false);
+  await page.$eval('input[aria-label="Camera lens (field of view)"]', (el) => {
+    const i = el as HTMLInputElement;
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(i, "70");
+    i.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await frames(page);
+  const lens = await page.evaluate("Math.round(window.__ext.camera.fov)");
+  page.off("request", onReq);
+  if (!shown || lens !== 70 || posts.length) fail(`site photo overlay: shown ${shown}, lens ${lens}, uploads ${posts.length}`);
+  else ok("site photo: shown over the view, lens slider sets 70°, nothing uploaded");
+  await clickText(page, ".xpanel section button", "Remove");
+  if (await page.$("img.sitephoto")) fail("site photo still shown after Remove");
 
   // Click a surface → edit card
   await clickText(page, ".btngrid button", "Like image 28");

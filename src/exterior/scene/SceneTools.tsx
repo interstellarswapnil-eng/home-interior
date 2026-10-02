@@ -12,6 +12,9 @@ export type SceneApi = {
   capture: (scale?: number, type?: "image/png" | "image/jpeg") => Promise<string>;
   /** One image per preset view; the camera is put back afterwards. */
   captureViews: (ids: CameraId[], scale?: number, type?: "image/png" | "image/jpeg", onEach?: (i: number) => void) => Promise<{ id: CameraId; url: string }[]>;
+  /** Camera lens (vertical field of view, degrees): for lining the model up with a site photo. */
+  getFov: () => number;
+  setFov: (fov: number) => void;
 };
 
 const frames = (n: number) =>
@@ -75,7 +78,13 @@ export function Exporter({ onApi }: { onApi?: (api: SceneApi) => void }) {
       }
       return out;
     };
-    onApi({ capture, captureViews });
+    const cam = () => get().camera as THREE.PerspectiveCamera;
+    const getFov = () => Math.round(cam().fov);
+    const setFov = (fov: number) => {
+      cam().fov = fov;
+      cam().updateProjectionMatrix();
+    };
+    onApi({ capture, captureViews, getFov, setFov });
   }, [get, onApi]);
   return null;
 }

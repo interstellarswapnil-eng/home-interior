@@ -111,7 +111,7 @@ export function ViewTab({ view, setView, camera, goCamera, quality, setQuality, 
         <h3>Show for scale</h3>
         {(
           [
-            ["neighbours", "Neighbour buildings (plain grey)"],
+            ["neighbours", "Surroundings from the site photos (neighbours, palms, pole)"],
             ["car", "A parked car"],
             ["person", "A person (1.7 m)"],
           ] as const

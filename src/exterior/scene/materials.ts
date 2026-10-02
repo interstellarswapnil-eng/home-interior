@@ -13,7 +13,7 @@ import { SURFACE_ROLES, type SurfaceRole } from "../model/types";
 
 export type Quality = "normal" | "high";
 
-const NO_SHADOW: SurfaceRole[] = ["glass", "interior", "context", "road", "ground", "paving", "joint", "lightGlow"];
+const NO_SHADOW: SurfaceRole[] = ["glass", "interior", "context", "road", "ground", "paving", "joint", "lightGlow", "utility"];
 export const castsShadow = (role: SurfaceRole) => !NO_SHADOW.includes(role);
 
 /** Debug view: a distinct colour per role ("Colour each surface type"). */

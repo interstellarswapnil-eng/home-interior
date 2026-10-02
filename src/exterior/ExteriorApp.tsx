@@ -14,6 +14,7 @@ import { SaveTab } from "./ui/SaveTab";
 import { dataUrlToBytes, makeZip } from "./export/zip";
 import { designSheetHtml } from "./export/sheet";
 import { StyleTab } from "./ui/StyleTab";
+import { SitePhotoOverlay, SitePhotoPanel, type SitePhoto } from "./ui/SitePhoto";
 import { ColorsTab } from "./ui/ColorsTab";
 import { ElementsTab } from "./ui/ElementsTab";
 import { ViewTab } from "./ui/ViewTab";
@@ -65,6 +66,13 @@ export function ExteriorApp() {
   const setCmp = (c: Partial<CompareState>) => setCmpState((x) => ({ ...x, ...c }));
   const api = useRef<SceneApi | null>(null);
   const onApi = useCallback((a: SceneApi) => (api.current = a), []);
+  // compare with a site photo (kept in memory only)
+  const [sitePhoto, setSitePhoto] = useState<SitePhoto | null>(null);
+  const [fov, setFovState] = useState(50);
+  const setFov = (f: number) => {
+    setFovState(f);
+    api.current?.setFov(f);
+  };
   const [busy, setBusy] = useState<string | null>(null);
   const [camera, setCamera] = useState<CameraId>(pick("cam", CAMERA_IDS, "photo"));
   const [nonce, setNonce] = useState(0);
@@ -286,6 +294,7 @@ export function ExteriorApp() {
             </div>
           </div>
         )}
+        {!inCompare && <SitePhotoOverlay photo={sitePhoto} />}
         {inCompare && <div className="cmplabel">{flipB ? "B" : "A"}: {flipB ? bLabel : "Current design"}</div>}
         {!inCompare && !hideUi && <PaintStrip design={design} onSelect={selectRole} />}
         </div>
@@ -367,6 +376,17 @@ export function ExteriorApp() {
               setShowRoles={setShowRoles}
               takePhoto={takePhoto}
               photoBusy={!!photo}
+            />
+          )}
+          {tab === "view" && (
+            <SitePhotoPanel
+              photo={sitePhoto}
+              setPhoto={(p) => {
+                if (p && !sitePhoto) setFovState(api.current?.getFov() ?? fov);
+                setSitePhoto(p);
+              }}
+              fov={fov}
+              setFov={setFov}
             />
           )}
         </aside>

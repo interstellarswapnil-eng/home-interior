@@ -60,6 +60,26 @@
     "person": {
       "material": "plaster",
       "color": "#5E5A57"
+    },
+    "neighborBlue": {
+      "material": "plaster",
+      "color": "#B4C3CB"
+    },
+    "neighborCream": {
+      "material": "plaster",
+      "color": "#E4DACA"
+    },
+    "neighborYellow": {
+      "material": "plaster",
+      "color": "#EDE3A6"
+    },
+    "neighborRoof": {
+      "material": "plaster",
+      "color": "#8A4E3A"
+    },
+    "utility": {
+      "material": "metalMatte",
+      "color": "#2A2A2A"
     }
   }
 }

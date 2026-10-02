@@ -41,6 +41,20 @@ describe("realism layer", () => {
     expect(top - 0.3).toBeLessThan(1.8);
   });
 
+  it("the flat elevations leave out the neighbour across that road (and the side road's tree and pole)", () => {
+    const ids = (o: Parameters<typeof contextParts>[0]) => contextParts(o).map((p) => p.id);
+    const base = { neighbours: true, car: false, person: false };
+    const all = ids(base);
+    expect(all.some((i) => i.startsWith("ctx-nb-s"))).toBe(true);
+    expect(all.some((i) => i.startsWith("ctx-nb-w"))).toBe(true);
+    const s = ids({ ...base, clearView: "S" });
+    expect(s.some((i) => i.startsWith("ctx-nb-s"))).toBe(false);
+    expect(s.some((i) => i.startsWith("ctx-nb-w"))).toBe(true);
+    const w = ids({ ...base, clearView: "W" });
+    expect(w.some((i) => i.startsWith("ctx-nb-w") || i.startsWith("ctx-pole") || i.startsWith("ctx-t1"))).toBe(false);
+    expect(w.some((i) => i.startsWith("ctx-nb-s"))).toBe(true);
+  });
+
   it("night lights: High has more lights than Normal; every source is above ground", () => {
     const slots = ["wall:frontName", "wall:featureRecess", "balcony:S", "edge:stiltBand", "site:compoundFront", "site:gate"];
     const hi = lightingSources(slots, true);

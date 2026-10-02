@@ -2,6 +2,19 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: surroundings and photo comparison from the site photos (Phase C)
+
+- **Surroundings** (View tab, "Surroundings from the site photos"; off by default, `nb=1`) replace the plain grey blocks:
+  - across the side road, a blue-grey G+2 house with road-side balconies, a clay-tile porch roof and a solar frame
+  - next door (east), a cream G+3 building; behind, a cream G+2 house
+  - across the main road, a yellow G+2 building
+  - two coconut palms in the east neighbour's front yard
+  - a big tree, concrete electricity poles and three overhead wires on the side road
+  Positions and heights are estimated from the photos. New context-only roles (`neighborBlue`, `neighborCream`, `neighborYellow`, `neighborRoof`, `utility`) are hidden in the Colors tab and never count as design materials.
+- **Flat elevations stay clear:** the south and west elevation cameras leave out the neighbour across that road (and the side road's tree and pole).
+- **Compare with a site photo** (View tab): choose a photo from the computer; it lies over the 3D view with See-through and Lens sliders. Walk or rotate to stand where it was taken. The photo is only an in-memory object URL: it isn't uploaded, saved or put in a design file. The smoke test checks that no request is sent, using a generated image, never a site photo.
+- Not done: photo-matched camera presets. The photos are private, and the overlay plus walk mode covers it.
+
 ## 2026-10-02: structure corrected from site photos (Phase B)
 
 From 4 site photos (kept local in `site_photos/`, git-ignored) and your answers. Review: `docs/exterior/SITE_REVIEW.md`.
