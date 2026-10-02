@@ -687,15 +687,16 @@ export const furniture: Furniture[] = [
     note: "Auto-clean, tadka-capable (~1200 m³/h)",
   },
   {
-    id: "kit-wall-s",
+    // on the east wall beside the chimney: the south wall is now mostly the 1.8 m window (site, 2026-10-02)
+    id: "kit-wall-e",
     room: "kitchen",
     kind: "wallUnit",
-    x: kitchen.x + ft(7),
-    y: kitchen.y,
-    w: ft(3),
-    h: 0.35,
-    faces: "N",
-    note: "Wall unit, light laminate",
+    x: east - 0.35,
+    y: kitchen.y + ft(6) - 0.025 + 0.8 + 0.02,
+    w: 0.35,
+    h: 0.85,
+    faces: "W",
+    note: "Wall unit beside the chimney, light laminate",
   },
   {
     id: "fridge",

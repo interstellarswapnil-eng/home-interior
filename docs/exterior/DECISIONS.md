@@ -8,10 +8,10 @@ From 4 site photos (kept local in `site_photos/`, git-ignored) and your answers.
 - **SW corner:** one sloping, tapered blade column (`cornerColumn()` in `model/shell.ts`) replaces the slim corner column. Sizes are estimated from the photos.
 - **Stilt overhang:** the columns under the west and south faces stand back `STILT_SETBACK` = 0.75 m; the first floor overhangs them. The depth is estimated (the photos show the overhang, not its size).
 - **Stair tower:** one window per floor at the half landing, not two (you). The removed lower window `stair-a` is also gone from the slots and configs.
-- **Kitchen window** (south, onto the kitchen balcony): **1.80 m wide** in the **shared floor plan** (`plan/plan.ts`), approved by you. The interior has it too. **[open]** the interior's 3 ft wall cabinet on that wall (`kit-wall-s`, x 7.82–8.74) now overlaps the window. I didn't change it because the interior is yours to decide.
+- **Kitchen window** (south, onto the kitchen balcony): **1.80 m wide** in the **shared floor plan** (`plan/plan.ts`), approved by you. The interior has it too. The interior's wall cabinet that overlapped it moved to the east wall beside the chimney (`kit-wall-e`, 0.85 m), as you asked.
 - **Lift:** the brick room at the back of the stilt floor is the lift core, already modelled.
 - Heights stay as they are (no measurements available).
-- The interior `npm run smoke` 2D-export check is timing-flaky (fixed 2 s wait; the export takes 1.2–2.8 s with or without these changes).
+- The interior `npm run smoke` 2D-export check now waits for both files (up to 15 s) instead of a fixed 2 s; the export takes 1.2–2.8 s.
 
 ## 2026-10-02: fixes: Day view broke when rotating; slow concept switching
 

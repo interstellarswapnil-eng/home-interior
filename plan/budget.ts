@@ -17,7 +17,7 @@ export const budgetLines: BudgetLine[] = [
     id: "kitchen",
     head: "Modular kitchen (L-shape, pale artificial granite @ ~₹110/sqft, chimney, sink)",
     amountInr: 190_000,
-    visibleInModel: ["kit-counter-s", "kit-counter-e", "kit-wall-s", "hob", "sink", "fridge", "chimney"],
+    visibleInModel: ["kit-counter-s", "kit-counter-e", "kit-wall-e", "hob", "sink", "fridge", "chimney"],
   },
   {
     id: "wardrobes",

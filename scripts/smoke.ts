@@ -61,8 +61,10 @@ try {
   await dl.send("Browser.setDownloadBehavior", { behavior: "allowAndName", downloadPath: dlDir });
   await clickText("Export SVG");
   await clickText("Export PNG");
-  await new Promise((r) => setTimeout(r, 2000));
-  const downloads = readdirSync(dlDir).filter((f) => statSync(path.join(dlDir, f)).size > 1000).length;
+  // wait for both files (the PNG export takes 1–3 s), up to 15 s
+  const done = () => readdirSync(dlDir).filter((f) => statSync(path.join(dlDir, f)).size > 1000).length;
+  for (let t0 = Date.now(); done() < 2 && Date.now() - t0 < 15_000; ) await new Promise((r) => setTimeout(r, 200));
+  const downloads = done();
   console.log(`2D exports downloaded: ${downloads}/2`);
   if (downloads < 2) errors.push("2D export did not download both files");
   for (const p of ["Materials", "Checks", "Budget", "Hide panel", "Budget"]) await clickText(p);
