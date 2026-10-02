@@ -12,9 +12,9 @@ import { patternById, resolveElements, resolveRoles, type DesignState } from "..
 import { buildShell } from "../model/shell";
 import { BALCONY, CENTER, LOCATION, STILT_BAND, TOP, X_E, X_W, level } from "../model/building";
 import type { LabelPart, Part } from "../model/types";
-import { contextParts, lampHead, LAMP_H, STREET_LAMPS, type ContextOptions } from "../model/context";
-import { lightingSources, type LightSpec } from "../model/siteElements";
-import { fixturesFromParts } from "../model/fixtures";
+import { contextParts, type ContextOptions } from "../model/context";
+import type { LightSpec } from "../model/siteElements";
+import { nightLightSpecs, pooledNightLights } from "./nightLights";
 // the path tracer is only downloaded when a photo-quality still is requested
 const PhotoStill = lazy(() => import("./PhotoStill").then((m) => ({ default: m.PhotoStill })));
 import { dayOfYear, sunDirection, sunPosition } from "../sun";
@@ -230,18 +230,9 @@ function Lighting({ view, quality }: { view: ViewState; quality: Quality }) {
   );
 }
 
-/** Real light sources for the facade lights and street lamps (night only). */
+/** Real light sources for the facade lights, the moves and the street lamps (dusk and night), as a fixed pool (see nightLights.ts). */
 function NightLights({ design, quality, parts }: { design: DesignState; quality: Quality; parts: Part[] }) {
-  const els = useMemo(() => resolveElements(design), [design]);
-  const lights: LightSpec[] = useMemo(() => {
-    const l = els.lighting?.enabled ? lightingSources(els.lighting.slots ?? [], quality === "high") : [];
-    l.push(...moveLights(design, parts, quality));
-    STREET_LAMPS.forEach((lamp, i) => {
-      const [hx, hy] = lampHead(lamp);
-      l.push({ kind: "spot", id: `street-${i}`, pos: [hx, hy, LAMP_H - 0.2], target: [hx, hy, 0], intensity: 60, angle: 0.95, distance: 22 });
-    });
-    return l;
-  }, [els, quality, design, parts]);
+  const lights = useMemo(() => pooledNightLights(nightLightSpecs(design, parts, quality), quality), [design, parts, quality]);
   const warm = "#FFC98A";
   return (
     <group>
@@ -252,40 +243,6 @@ function NightLights({ design, quality, parts }: { design: DesignState; quality:
       })}
     </group>
   );
-}
-/** Real lights for the moves' fixtures (frame downlights, band LED lines, backlit jaali, lanterns, roof downlights, nameplate). */
-function moveLights(design: DesignState, parts: Part[], quality: Quality): LightSpec[] {
-  const pat = patternById(design.patternId);
-  const rank = (el: string) => (el === pat.hero?.element ? 0 : el === pat.crown?.element ? 1 : pat.supporting?.some((s) => s.element === el) ? 2 : 3);
-  const fx = fixturesFromParts(parts)
-    .filter((f) => f.element !== "lighting" && f.element !== "context")
-    .sort((a, b) => rank(a.element) - rank(b.element));
-  const cap = quality === "high" ? 40 : 16;
-  const perElementDownlights = quality === "high" ? 10 : 3;
-  const count = new Map<string, number>();
-  const out: LightSpec[] = [];
-  for (const f of fx) {
-    if (out.length >= cap) break;
-    const [x, y, z] = f.pos;
-    if (f.kind === "downlight") {
-      const n = (count.get(f.element) ?? 0) + 1;
-      count.set(f.element, n);
-      if (n > perElementDownlights) continue;
-      out.push({ kind: "spot", id: `mv-${f.id}`, pos: [x, y, z - 0.02], target: [x, y, z - 3], intensity: 5, angle: 0.55, distance: 5 });
-    } else if (f.kind === "lantern") {
-      out.push({ kind: "point", id: `mv-${f.id}`, pos: [x, y, z], intensity: 1.6, distance: 4 });
-    } else if (f.kind === "plate") {
-      out.push({ kind: "point", id: `mv-${f.id}`, pos: [x, y - 0.3, z], intensity: 0.8, distance: 2.5 });
-    } else {
-      const [sx, sy, sz] = f.dims;
-      const dir: Record<string, [number, number, number]> = { down: [0, 0, -1], up: [0, 0, 1], S: [0, -1, 0], N: [0, 1, 0], E: [1, 0, 0], W: [-1, 0, 0], all: [0, 0, -1] };
-      const d = dir[f.facing];
-      // rectangle size in the light's own plane: horizontal lights span plan x × y, wall-facing ones span the wall × height
-      const [w, h] = f.facing === "down" || f.facing === "up" ? [sx, sy] : f.facing === "S" || f.facing === "N" ? [sx, sz] : [sy, sz];
-      out.push({ kind: "rect", id: `mv-${f.id}`, pos: [x + d[0] * 0.02, y + d[1] * 0.02, z + d[2] * 0.02], target: [x + d[0], y + d[1], z + d[2]], width: w, height: h, intensity: f.kind === "panel" ? 7 : 12 });
-    }
-  }
-  return out;
 }
 
 function Spot({ spec, color }: { spec: Extract<LightSpec, { kind: "spot" }>; color: string }) {
@@ -312,13 +269,32 @@ function Effects({ quality, night }: { quality: Quality; night: boolean }) {
   const high = quality === "high";
   if (!high && !night) return null;
   return (
-    <EffectComposer multisampling={0} enableNormalPass={false}>
-      <>{high && <N8AO aoRadius={0.9} intensity={1.4} distanceFalloff={0.6} quality="medium" halfRes />}</>
-      <>{night && <Bloom mipmapBlur luminanceThreshold={1.0} luminanceSmoothing={0.2} intensity={0.9} />}</>
-      <>{high && <SMAA />}</>
-      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-    </EffectComposer>
+    <>
+      <RestoreAutoClear />
+      <EffectComposer multisampling={0} enableNormalPass={false}>
+        <>{high && <N8AO aoRadius={0.9} intensity={1.4} distanceFalloff={0.6} quality="medium" halfRes />}</>
+        <>{night && <Bloom mipmapBlur luminanceThreshold={1.0} luminanceSmoothing={0.2} intensity={0.9} />}</>
+        <>{high && <SMAA />}</>
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      </EffectComposer>
+    </>
   );
+}
+
+/**
+ * postprocessing's EffectComposer switches the renderer's autoClear off and never switches it back. When the composer
+ * goes away (Dusk / Night → Day in Normal quality) frames were drawn over the last one without clearing colour or
+ * depth: fine while still, smeared and see-through as soon as the camera moved.
+ */
+function RestoreAutoClear() {
+  const gl = useThree((s) => s.gl);
+  useEffect(
+    () => () => {
+      gl.autoClear = true;
+    },
+    [gl],
+  );
+  return null;
 }
 
 /** Blue-hour sky: deep blue zenith, a warm afterglow low in the west, dark ground (equirect, made once). */

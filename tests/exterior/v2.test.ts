@@ -4,6 +4,7 @@ import { buildElements } from "../../src/exterior/model/elements";
 import { fixtureSummary, fixturesFromParts, lightingScheduleCsv } from "../../src/exterior/model/fixtures";
 import { PATTERNS, defaultDesign, resolveElements } from "../../src/exterior/model/resolve";
 import { buildShell } from "../../src/exterior/model/shell";
+import { LIGHT_POOL, nightLightSpecs, pooledNightLights } from "../../src/exterior/scene/nightLights";
 
 const concepts = PATTERNS.filter((p) => p.kind === "concept");
 const partsFor = (id: string) => {
@@ -59,5 +60,37 @@ describe("v2 light fixtures", () => {
     expect(lines[1]).toMatch(/,"[^"]+, named",/);
     const sum = fixtureSummary(fx);
     expect(Object.values(sum).reduce((a, b) => a + b, 0)).toBe(fx.length);
+  });
+});
+
+describe("dusk / night lights come as a fixed pool", () => {
+  // three.js recompiles every material when the number of lights of a kind changes (6–18 s per concept switch)
+  it("every pattern and palette gives the same number of spot, point and rect lights, at both qualities", () => {
+    for (const q of ["normal", "high"] as const) {
+      const seen = new Set<string>();
+      for (const p of PATTERNS)
+        for (const pal of p.palettes) {
+          const d = { ...defaultDesign(p.id), paletteId: pal.id };
+          const sh = buildShell(d.optional ?? {});
+          const parts = [...sh.parts, ...buildElements(resolveElements(d), { openings: sh.openings })];
+          const lights = pooledNightLights(nightLightSpecs(d, parts, q), q);
+          const c = { spot: 0, point: 0, rect: 0 };
+          lights.forEach((l) => c[l.kind]++);
+          seen.add(JSON.stringify(c));
+          expect(c, `${q} ${p.id}`).toEqual(LIGHT_POOL[q]);
+        }
+      expect(seen.size).toBe(1);
+    }
+  });
+
+  it("the street lamps and the hero's lights are kept first when a design has more lights than the pool", () => {
+    const c = concepts.find((x) => x.id === "c6TaupeFlute")!;
+    const { d, parts } = partsFor(c.id);
+    const specs = nightLightSpecs(d, parts, "normal");
+    const lit = pooledNightLights(specs, "normal").filter((l) => l.intensity > 0);
+    expect(specs.filter((s) => s.kind === "spot").length).toBeGreaterThan(LIGHT_POOL.normal.spot);
+    expect(lit.filter((l) => l.kind === "spot").length).toBe(LIGHT_POOL.normal.spot);
+    const kept = new Set(lit.map((l) => JSON.stringify(l.pos)));
+    for (const s of specs.filter((x) => x.id.startsWith("street-"))) expect(kept.has(JSON.stringify(s.pos)), s.id).toBe(true);
   });
 });

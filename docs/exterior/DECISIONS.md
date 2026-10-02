@@ -2,6 +2,11 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: fixes: Day view broke when rotating; slow concept switching
+
+- **Rotating after Dusk → Day smeared the view** (surfaces showing through each other). The dusk/night bloom uses postprocessing's EffectComposer, which switches the renderer's `autoClear` off and never switches it back. Day, Golden hour and Cloudy in Normal quality don't use the composer, so after the switch frames were drawn without clearing colour or depth. A still view hid it; any camera move showed it. Since Step 2 made Dusk the default, everyone hit it. Fix: `RestoreAutoClear` turns clearing back on when the composer goes away. The smoke test now checks for this.
+- **Switching concepts at dusk took 6–18 s**: 98% of it was shader compilation. Each concept had a different number of real lights, and three.js builds the light count into every material's shader. The dusk/night lights are now a **fixed pool** per quality (Normal: 12 spot / 8 point / 12 rect; High: 24 / 12 / 14), with unused lights at zero intensity (`scene/nightLights.ts`). Street lamps come first, then the moves (hero first), then the facade slots, so if a design has more lights than the pool, the least important are dropped. Concept switches now take 0.1–0.2 s. Cost: the turntable at dusk runs 81–85 fps in Normal (was ~115) and 50–53 fps in High (was ~62).
+
 ## 2026-10-02: v2 Step 2: all 7 concepts in full 3D ("build all 7")
 
 - **Dusk is the default view.** One switch for Day / Golden hour (sunset − 0.6 h) / Dusk / Night / Cloudy, in the quick bar and the View tab. Screenshots and tests that need sun ask for it explicitly.

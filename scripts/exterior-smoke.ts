@@ -133,6 +133,14 @@ try {
   ok(`visited ${views.length} camera presets`);
   for (const s of ["Cloudy", "Night", "Golden hour", "Dusk", "Day"]) await clickText(page, ".xpanel .seg button", s);
   ok("light presets: day / golden hour / dusk / night / cloudy");
+  // leaving dusk/night removes the bloom composer, which had switched the renderer's clearing off:
+  // the view then smeared and showed surfaces through each other as soon as the camera moved
+  const cleared = await page.waitForFunction("window.__ext.gl.autoClear === true", { timeout: 3000 }).then(
+    () => true,
+    () => false,
+  );
+  if (!cleared) fail("after Dusk → Day the renderer no longer clears between frames");
+  else ok("Dusk → Day: renderer clears every frame again (no smearing when rotating)");
   await page.$eval(".xpanel input[type=range]", (el) => {
     const i = el as HTMLInputElement;
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(i, "9");
