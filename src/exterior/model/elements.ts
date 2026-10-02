@@ -240,8 +240,10 @@ const compoundWall: Gen = (id, cfg) => {
 };
 
 /** Building name plate on the road-facing wall. */
-const nameSign: Gen = (id, cfg) => {
+const nameSign: Gen = (id, cfg, ctx) => {
   const text = str(cfg.params, "text", "पसायदान");
+  // with the optional road-side window, the sign moves above the top-floor window
+  const roadWindow = ctx.openings.some((o) => o.planId === "opt-win-master-s");
   return [
     {
       id: `${id}-plate`,
@@ -254,7 +256,7 @@ const nameSign: Gen = (id, cfg) => {
       text,
       x: (X_W + X_NOTCH_W) / 2,
       y: Y_S_MASTER - 0.012,
-      z: level(2) + 1.4,
+      z: roadWindow ? level(3) + 2.62 : level(2) + 1.4,
       width: 1.9,
       height: 0.62,
     },

@@ -6,17 +6,93 @@ An interactive 2D floor plan and 3D model of a typical 1st to 3rd floor 2BHK in 
 
 ![2D plan](docs/screenshots/plan-2d.png)
 
-## Exterior module (in progress)
+## Exterior module
 
-The building's outside lives in a separate module: `src/exterior/`, opened from the **Interior | Exterior** switch in the header, or at http://localhost:5173/exterior.html. It reads the same floor plan (`plan/plan.ts`) and never changes it. The design notes are in `docs/exterior/`. Commands:
+A realistic 3D model of the outside of the building (Pasaydan, Ahilyanagar: stilt parking + 3 flats, road on the south) that you can restyle. You can switch design patterns, colour sets, materials and facade elements. The building itself stays as the architect designed it. The exterior reads the same floor plan as the interior (`plan/plan.ts`) and never changes it.
 
-- `npm run exterior:shots` saves views to `docs/exterior/screenshots/`.
-- `npm run exterior:smoke` clicks through every tab, pattern, element, view and light mode in headless Chrome/Edge.
-- `npm run exterior:perf` reports style-switch times and fps.
-- `npm run exterior:assets` re-downloads the CC0 facade textures.
-- `npm test` includes the exterior tests.
+![Warm curves pattern](docs/exterior/screenshots/p4-photo-still.png)
 
-How to add a pattern or palette: `docs/exterior/ADDING_STYLES.md`.
+### Run it
+
+```bash
+npm install
+npm run dev          # then open http://localhost:5173/exterior.html
+```
+
+You can also click **Exterior** in the interior app's header. Chrome or Edge work best.
+
+### What you can do
+
+| Tab | |
+|---|---|
+| **Style** | 8 design patterns: Architect's design, Warm Minimal, Japandi, Dark Modern, Tropical Modern, Earthy Organic, Brick & Concrete, and Warm curves (built from your references). Each has 3 colour sets, with ★ marking the one recommended for Ahilyanagar's sun and dust, plus a "Good to know" note on climate, upkeep and cost. |
+| **Colors** | Pick any surface (or click it on the building), then change its colour (picker, hex, suggestions) or its material. **Lock** a colour to keep it when you switch pattern. **Reset** restores the pattern's colours. The flat paint colours always show at the top-left of the view. |
+| **Elements** | All 18 elements, each with on/off, size and spacing, and where it goes. **Bigger changes** that need the architect's approval (wider windows, a sliding balcony door, a road-side window, taller stair windows) are off by default and listed separately. |
+| **View** | 13 camera views. Walk around (W A S D + mouse), turntable, sun by time of day and date for Ahilyanagar, cloudy (best for judging colours) and night (lights on). Normal or High quality. **Photo-quality still** (path traced, about 1–4 minutes). Car, person and neighbour buildings for scale. |
+| **Compare** | Your design (A) next to any pattern or saved design (B), side by side with one shared camera, or flipped in place with the **Space** key. |
+| **Save & export** | Named designs (save, load, rename, duplicate, delete). Undo/redo (Ctrl+Z / Ctrl+Y). Design file export and import (JSON). A screenshot at 2× or 3× resolution. **Export all views** as a ZIP of PNGs. A **design sheet** for the architect: one HTML page with every surface's material and hex, the elements, the changes needing approval and the views, with "Print / save as PDF". |
+
+Clicking any surface shows what it is in plain words, for example "Window box frames · Master bedroom window · 2nd floor · west face". From there you can change its colour or material, or add slats, fins, jaali or sunshades at that spot.
+
+### Add a pattern or a colour set (config only, no code)
+
+Everything style-related lives in `src/exterior/config/`. Every file in `patterns/` is picked up automatically.
+
+**Add a colour set to a pattern.** Add this to the pattern's `palettes` list in `src/exterior/config/patterns/<pattern>.json`:
+
+```json
+{
+  "id": "terracottaSand",
+  "name": "Terracotta & sand",
+  "note": "Shown under the swatches.",
+  "roles": {
+    "mainWall":      { "material": "plaster",     "color": "#E3D5BF" },
+    "secondSurface": { "material": "terracotta",  "color": "#B5654A" },
+    "featureWall":   { "material": "woodLook",    "color": "#7A5236" },
+    "windowFrame":   { "material": "metalMatte",  "color": "#2A2A2A" },
+    "railing":       { "material": "metalMatte",  "color": "#2A2A2A" },
+    "gate":          { "material": "metalMatte",  "color": "#2A2A2A" },
+    "base":          { "material": "stonePanels", "color": "#9C9080" },
+    "paving":        { "material": "stonePaving", "color": "#C9BCA4" }
+  }
+}
+```
+
+Surfaces you leave out follow sensible defaults: balcony ceilings use the feature wood, slab edges and the roof edge match the main walls, and box frames use the second colour. Add `"recommended": true` to make it the pattern's ★ pick (one per pattern).
+
+**Add a new pattern.**
+1. Copy `patterns/warmMinimal.json` to `patterns/<newId>.json`.
+2. Change `id`, `name`, `description`, `notes` and `palettes`, and set `defaultPaletteId`.
+3. Switch elements on or off under `elements`. The element ids and their settings are in `config/elements.json`.
+
+**Check your change.** Run `npm test`. It checks colours, materials, slots and geometry for every pattern and colour set.
+
+More detail, including how to add a material and what does need code, is in [`docs/exterior/ADDING_STYLES.md`](docs/exterior/ADDING_STYLES.md).
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `npm test` | All tests, including 75 exterior tests: plan match, openings, no flicker, every pattern/palette, sun, locks, undo, walk, save files, zip, design sheet |
+| `npm run exterior:smoke` | Clicks through every tab, pattern, element, view, light mode, compare, save/undo and all three exports in headless Chrome/Edge |
+| `npm run exterior:perf` | Style-switch times and fps (Normal, High, night) |
+| `npm run exterior:shots` | Regenerates `docs/exterior/screenshots/` |
+| `npm run exterior:assets` / `exterior:hdri` | Re-download the CC0 textures / sky images (already committed) |
+
+### Notes
+
+- **Docs:** `docs/exterior/`
+  - `BUILDING_FACTS.md`: every dimension and whether it comes from the plan, a render, or an assumption
+  - `REFERENCE_ANALYSIS.md`: your 29 reference images
+  - `DECISIONS.md`: the log of decisions
+  - `ASSET_CREDITS.md`: CC0 sources
+- **Assumptions to check:**
+  - plot shape: 2 gunthas as a 13.0 × 15.56 m rectangle
+  - floor heights
+  - column grid
+  - plan north = true north
+- **Speed on an integrated laptop GPU:** pattern switches take 10–150 ms. Frame rates: Normal ~140 fps, High ~100 fps, night with real lights ~65–125 fps.
+- **Walk mode** works on desktop only. On a phone or tablet the app loads in Normal quality and you can rotate the building and switch styles.
 
 ## Run it
 

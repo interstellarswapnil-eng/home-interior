@@ -1,9 +1,15 @@
-import { useEffect, useReducer, useState } from "react";
-import { ExteriorScene, type PhotoRequest, type Quality, type ViewState } from "./scene/ExteriorScene";
-import { CAMERA_IDS, CAMERA_PRESETS, type CameraId } from "./scene/cameras";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { ExteriorScene, type PhotoRequest, type Quality, type SceneApi, type ViewState } from "./scene/ExteriorScene";
+import { CAMERA_IDS, CAMERA_PRESETS, EXPORT_VIEWS, type CameraId } from "./scene/cameras";
 import { PATTERNS, defaultDesign, patternById } from "./model/resolve";
 import type { Part, SurfaceRole } from "./model/types";
-import { designReducer } from "./state/design";
+import { designReducer, type DesignAction } from "./state/design";
+import { historyReducer, initHistory } from "./state/history";
+import { designToJson, download, type SavedView } from "./state/saves";
+import { CompareTab, designB, type CompareState } from "./ui/CompareTab";
+import { SaveTab } from "./ui/SaveTab";
+import { dataUrlToBytes, makeZip } from "./export/zip";
+import { designSheetHtml } from "./export/sheet";
 import { StyleTab } from "./ui/StyleTab";
 import { ColorsTab } from "./ui/ColorsTab";
 import { ElementsTab } from "./ui/ElementsTab";
@@ -20,7 +26,6 @@ const pick = <T extends string>(key: string, allowed: readonly T[], def: T): T =
 const TABS = ["style", "colors", "elements", "view", "compare", "save"] as const;
 type Tab = (typeof TABS)[number];
 const TAB_LABEL: Record<Tab, string> = { style: "Style", colors: "Colors", elements: "Elements", view: "View", compare: "Compare", save: "Save & export" };
-const LATER: Tab[] = ["compare", "save"];
 
 function initialDesign() {
   let d = defaultDesign(params.get("pattern") ?? "architect");
@@ -28,11 +33,22 @@ function initialDesign() {
   if (pal && patternById(d.patternId).palettes.some((p) => p.id === pal)) d = { ...d, paletteId: pal };
   // scripts: ?on=solar,pergola switches elements on
   for (const id of params.get("on")?.split(",").filter(Boolean) ?? []) d = designReducer(d, { type: "element", id, patch: { enabled: true } });
+  // scripts: ?opt=widerBedroomWindows,masterRoadWindow switches optional changes on
+  for (const id of params.get("opt")?.split(",").filter(Boolean) ?? []) d = designReducer(d, { type: "optional", id, on: true });
   return d;
 }
 
 export function ExteriorApp() {
-  const [design, dispatch] = useReducer(designReducer, undefined, initialDesign);
+  const [hist, dispatchH] = useReducer(historyReducer, undefined, () => initHistory(initialDesign()));
+  const design = hist.present;
+  const dispatch = useCallback((a: DesignAction) => dispatchH(a), []);
+  const undo = () => dispatchH({ type: "undo" });
+  const redo = () => dispatchH({ type: "redo" });
+  const [cmp, setCmpState] = useState<CompareState>({ mode: "side", bId: "pattern:architect", showB: false });
+  const setCmp = (c: Partial<CompareState>) => setCmpState((x) => ({ ...x, ...c }));
+  const api = useRef<SceneApi | null>(null);
+  const onApi = useCallback((a: SceneApi) => (api.current = a), []);
+  const [busy, setBusy] = useState<string | null>(null);
   const [camera, setCamera] = useState<CameraId>(pick("cam", CAMERA_IDS, "photo"));
   const [nonce, setNonce] = useState(0);
   const [quality, setQuality] = useState<Quality>(pick<Quality>("quality", ["normal", "high"], "normal"));
@@ -55,6 +71,11 @@ export function ExteriorApp() {
   const [focusElement, setFocusElement] = useState<string | undefined>();
   const [thumbs, setThumbs] = useState<Record<string, string>>(() => Object.fromEntries(PATTERNS.map((p) => [p.id, cachedThumb(p) ?? ""]).filter(([, u]) => u)));
   const pattern = patternById(design.patternId);
+  const inCompare = tab === "compare";
+  const sideBySide = inCompare && cmp.mode === "side" && view.mode === "orbit";
+  const flipB = inCompare && cmp.mode === "flip" && cmp.showB;
+  const bDesign = designB(cmp.bId);
+  const bLabel = `${patternById(bDesign.patternId).name} · ${patternById(bDesign.patternId).palettes.find((p) => p.id === bDesign.paletteId)?.name ?? ""}`;
 
   const setView = (v: Partial<ViewState>) => setViewState((s) => ({ ...s, ...v }));
   const goCamera = (c: CameraId) => {
@@ -73,11 +94,79 @@ export function ExteriorApp() {
     setPhotoProgress(0);
     setPhoto({ id: Date.now(), samples });
   };
+  const savedView = (): SavedView => ({ camera, sky: view.sky, hour: view.hour, date: view.date });
+  const loadDesign = ({ design: d, view: v }: { design: typeof design; view?: SavedView }) => {
+    dispatch({ type: "load", design: d });
+    if (v) {
+      setView({ ...(v.sky ? { sky: v.sky as ViewState["sky"] } : {}), ...(v.hour ? { hour: v.hour } : {}), ...(v.date ? { date: v.date } : {}) });
+      if (v.camera && v.camera in CAMERA_PRESETS) goCamera(v.camera as CameraId);
+    }
+  };
+  const fileBase = () => `pasaydan-${(design.name || design.patternId).replace(/[^\w-]+/g, "-").toLowerCase()}`;
+  const jobs = {
+    busy,
+    screenshot: async (scale: number) => {
+      if (!api.current) return;
+      setBusy("Rendering the screenshot…");
+      try {
+        download(`${fileBase()}-${camera}.png`, await api.current.capture(scale));
+      } finally {
+        setBusy(null);
+      }
+    },
+    allViews: async () => {
+      if (!api.current) return;
+      setBusy(`Rendering view 1 of ${EXPORT_VIEWS.length}…`);
+      try {
+        const shots = await api.current.captureViews(EXPORT_VIEWS, 2, "image/png", (i) => setBusy(`Rendering view ${Math.min(i + 1, EXPORT_VIEWS.length)} of ${EXPORT_VIEWS.length}…`));
+        const files = shots.map((sh, i) => ({ name: `${String(i + 1).padStart(2, "0")}-${sh.id}.png`, data: dataUrlToBytes(sh.url) }));
+        files.push({ name: "design.pasaydan.json", data: new TextEncoder().encode(designToJson(design, savedView())) });
+        download(`${fileBase()}-all-views.zip`, makeZip(files), "application/zip");
+      } finally {
+        setBusy(null);
+      }
+    },
+    sheet: async () => {
+      if (!api.current) return;
+      setBusy("Preparing the design sheet…");
+      try {
+        const ids: CameraId[] = ["photo", "front", "cornerSW", "cornerSE", "left", "right", "bird", "street"];
+        const shots = await api.current.captureViews(ids, 1.5, "image/jpeg", (i) => setBusy(`Preparing the design sheet: view ${i} of ${ids.length}…`));
+        const html = designSheetHtml(
+          design,
+          shots.map((sh) => ({ label: CAMERA_PRESETS[sh.id].label, url: sh.url })),
+          { date: new Date().toLocaleDateString(), viewNote: `Light: ${view.sky === "clear" ? `sunny, ${view.date}, ${view.hour.toFixed(1)} h` : view.sky}.` },
+        );
+        download(`${fileBase()}-design-sheet.html`, html, "text/html");
+      } finally {
+        setBusy(null);
+      }
+    },
+  };
   const openElement = (id: string) => {
     setFocusElement(id);
     setTab("elements");
     setPanel(true);
   };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        dispatchH({ type: e.shiftKey ? "redo" : "undo" });
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        dispatchH({ type: "redo" });
+      } else if (e.code === "Space" && tab === "compare" && cmp.mode === "flip") {
+        e.preventDefault();
+        setCmpState((x) => ({ ...x, showB: !x.showB }));
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [tab, cmp.mode]);
 
   // scripts: ?photo=64 renders a photo-quality still as soon as the view is ready
   useEffect(() => {
@@ -123,9 +212,10 @@ export function ExteriorApp() {
         <button onClick={() => setPanel(!panel)}>{panel ? "Hide panel" : "Show panel"}</button>
       </header>
 
-      <main className="xview">
+      <main className={`xview ${sideBySide ? "split" : ""}`}>
+        <div className="scenepane">
         <ExteriorScene
-          design={design}
+          design={flipB ? bDesign : design}
           camera={camera}
           cameraNonce={nonce}
           quality={quality}
@@ -133,6 +223,8 @@ export function ExteriorApp() {
           showRoles={showRoles}
           onPick={(p) => setPicked(p)}
           instantCamera={params.get("instant") === "1"}
+          onApi={onApi}
+          syncId={sideBySide ? "A" : undefined}
           photo={photo}
           onPhotoProgress={setPhotoProgress}
           onPhotoDone={(url) => {
@@ -168,7 +260,15 @@ export function ExteriorApp() {
             </div>
           </div>
         )}
-        <PaintStrip design={design} onSelect={selectRole} />
+        {inCompare && <div className="cmplabel">{flipB ? "B" : "A"}: {flipB ? bLabel : "Current design"}</div>}
+        {!inCompare && <PaintStrip design={design} onSelect={selectRole} />}
+        </div>
+        {sideBySide && (
+          <div className="scenepane">
+            <ExteriorScene design={bDesign} camera={camera} cameraNonce={nonce} quality={quality} view={{ ...view, mode: "orbit" }} showRoles={showRoles} syncId="B" />
+            <div className="cmplabel">B: {bLabel}</div>
+          </div>
+        )}
         <div className="quickbar">
           <select
             value={view.mode === "walk" ? "walk" : camera}
@@ -198,7 +298,7 @@ export function ExteriorApp() {
             Click here to walk · W A S D to move · mouse to look · Esc to stop
           </button>
         )}
-        {picked && view.mode === "orbit" && <PickCard part={picked} design={design} dispatch={dispatch} onClose={() => setPicked(null)} openElement={openElement} />}
+        {picked && view.mode === "orbit" && !inCompare && <PickCard part={picked} design={design} dispatch={dispatch} onClose={() => setPicked(null)} openElement={openElement} />}
       </main>
 
       {panel && (
@@ -210,14 +310,26 @@ export function ExteriorApp() {
                 role="tab"
                 aria-selected={tab === t}
                 className={tab === t ? "on" : ""}
-                disabled={LATER.includes(t)}
-                title={LATER.includes(t) ? "Coming in Phase 5" : undefined}
                 onClick={() => setTab(t)}
               >
                 {TAB_LABEL[t]}
               </button>
             ))}
           </nav>
+          {tab === "compare" && <CompareTab design={design} cmp={cmp} setCmp={setCmp} />}
+          {tab === "save" && (
+            <SaveTab
+              design={design}
+              dispatch={dispatch}
+              view={savedView()}
+              onLoad={loadDesign}
+              canUndo={hist.past.length > 0}
+              canRedo={hist.future.length > 0}
+              undo={undo}
+              redo={redo}
+              jobs={jobs}
+            />
+          )}
           {tab === "style" && <StyleTab design={design} dispatch={dispatch} thumbs={thumbs} />}
           {tab === "colors" && <ColorsTab design={design} dispatch={dispatch} selected={role} onSelect={setRole} />}
           {tab === "elements" && <ElementsTab key={focusElement} design={design} dispatch={dispatch} focus={focusElement} />}

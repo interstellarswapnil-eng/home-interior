@@ -21,6 +21,8 @@ import { CAMERA_PRESETS, WALK_START, type CameraId } from "./cameras";
 import { buildRoleMeshes, partAtTriangle, toWorld, type RoleMesh } from "./geometry";
 import { applyStyle, castsShadow, makeRoleMaterial, roleDebugColor, texturesIdle, type Quality } from "./materials";
 import { EYE, groundAt, slide, walkColliders } from "./walk";
+import { CameraSync, Exporter, type SceneApi } from "./SceneTools";
+export type { SceneApi };
 
 export type { Quality };
 export type Sky = "clear" | "overcast" | "night";
@@ -51,24 +53,35 @@ export type ExteriorSceneProps = {
   photo?: PhotoRequest;
   onPhotoProgress?: (fraction: number) => void;
   onPhotoDone?: (url: string | null) => void;
+  /** receives capture / export functions for this view */
+  onApi?: (api: SceneApi) => void;
+  /** compare mode: keep this view's camera in sync with the other one */
+  syncId?: string;
 };
 
 RectAreaLightUniformsLib.init();
 
-export const shell = buildShell();
+const shells = new Map<string, ReturnType<typeof buildShell>>();
+/** The building shell for a design's optional changes (cached: there are only a few combinations). */
+export function shellFor(design: Pick<DesignState, "optional">) {
+  const key = JSON.stringify(Object.entries(design.optional ?? {}).filter(([, v]) => v).sort());
+  let s = shells.get(key);
+  if (!s) shells.set(key, (s = buildShell(design.optional ?? {})));
+  return s;
+}
+export const shell = shellFor({});
 
-/** Parts for a design: the fixed shell plus the design's elements. */
+/** Parts for a design: the shell plus the design's elements. */
 export function designParts(design: DesignState): Part[] {
-  return [...shell.parts, ...buildElements(resolveElements(design), { openings: shell.openings })];
+  const sh = shellFor(design);
+  return [...sh.parts, ...buildElements(resolveElements(design), { openings: sh.openings })];
 }
 
 // ---------------------------------------------------------------------------
 function Building({ design, showRoles, onPick, quality, night, context }: Pick<ExteriorSceneProps, "design" | "showRoles" | "onPick" | "quality"> & { night: boolean; context: ContextOptions }) {
   const elements = useMemo(() => resolveElements(design), [design]);
-  const parts = useMemo(
-    () => [...shell.parts, ...buildElements(elements, { openings: shell.openings }), ...contextParts(context)],
-    [elements, context],
-  );
+  const sh = shellFor(design);
+  const parts = useMemo(() => [...sh.parts, ...buildElements(elements, { openings: sh.openings }), ...contextParts(context)], [sh, elements, context]);
   const partById = useMemo(() => new Map(parts.map((p) => [p.id, p])), [parts]);
   const meshes = useMemo(() => buildRoleMeshes(parts), [parts]);
   useEffect(() => () => meshes.forEach((m) => m.geometry.dispose()), [meshes]);
@@ -397,7 +410,7 @@ function Expose() {
   return null;
 }
 
-export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera, photo, onPhotoProgress, onPhotoDone }: ExteriorSceneProps) {
+export function ExteriorScene({ design, camera, cameraNonce, quality, view, showRoles, onPick, instantCamera, photo, onPhotoProgress, onPhotoDone, onApi, syncId }: ExteriorSceneProps) {
   const high = quality === "high";
   const night = view.sky === "night";
   return (
@@ -416,6 +429,7 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
           <OrbitControls makeDefault enableDamping dampingFactor={0.1} maxPolarAngle={Math.PI * 0.49} minDistance={2} maxDistance={160} autoRotate={view.autoRotate} autoRotateSpeed={0.7} />
           <CameraRig id={camera} nonce={cameraNonce} instant={instantCamera} />
           <CameraLimits />
+          {syncId && <CameraSync id={syncId} />}
         </>
       ) : (
         <Walk />
@@ -429,6 +443,7 @@ export function ExteriorScene({ design, camera, cameraNonce, quality, view, show
       )}
       <ReadyFlag />
       <Expose />
+      <Exporter onApi={onApi} />
     </Canvas>
   );
 }

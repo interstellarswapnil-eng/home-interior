@@ -62,6 +62,10 @@ const shots: { file: string; query: string; click?: [number, number]; waitThumbs
   { file: "p4-details-high.png", query: "pattern=warmCurves&panel=0&quality=high&hour=10&cp=-3.2,-3.6,6.4&ct=1.5,0,5.3&fov=50" },
   { file: "p4-context-street.png", query: "cam=street&pattern=architect&panel=0&quality=high&hour=10" },
   { file: "p4-context-bird.png", query: "cam=bird&pattern=japandi&panel=0&quality=high&nb=1" },
+  // Phase 5: compare, save & export, optional changes
+  { file: "p5-compare-side.png", query: "cam=photo&pattern=warmCurves&tab=compare" },
+  { file: "p5-save-tab.png", query: "cam=photo&pattern=warmCurves&tab=save" },
+  { file: "p5-optional-changes.png", query: "cam=photo&pattern=warmCurves&tab=elements&opt=widerBedroomWindows,kitchenBalconySlider,masterRoadWindow,tallerStairWindows" },
   { file: "p4-photo-still.png", query: "cam=photo&pattern=warmCurves&panel=0&photo=96", waitPhoto: true },
 ];
 

@@ -69,6 +69,8 @@ export type DesignState = {
     roles: Partial<Record<SurfaceRole, RoleOverride>>;
     elements: Record<string, Partial<ElementConfig>>;
   };
+  /** Bigger changes that need the architect's approval (config/optional.json); off by default. */
+  optional?: Record<string, boolean>;
 };
 
 export type RoleInfo = { label: string; tip: string; fallback?: SurfaceRole };

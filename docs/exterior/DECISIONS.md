@@ -2,6 +2,30 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: Phase 5 (compare, save, export) and shipping
+
+- **Compare (E):**
+  - Side by side uses two canvases with one shared camera: the view under the mouse leads and the other follows. Light and time apply to both.
+  - Flip mode switches A ↔ B in one view with the Space key.
+  - B can be any pattern's recommended look, the Architect's design, or a saved design.
+- **Save (F):**
+  - Named designs are kept in browser storage (`ext-saves:v1`) and can be saved, loaded, renamed, duplicated and deleted.
+  - Undo/redo keeps up to 100 steps. Rapid repeats of the same edit (dragging a slider or the colour picker) merge into one step. Keys: Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z.
+  - JSON export/import uses the format `pasaydan-exterior-design` v1 and checks files with plain-language errors.
+- **Export (G):**
+  - Screenshot at 2× or 3× the screen resolution.
+  - "Export all views" makes 11 PNGs plus `design.pasaydan.json` in one ZIP (own small ZIP writer, no new library; about 70 MB at 2×).
+  - The design sheet is one self-contained HTML page with print styling, so "Print → Save as PDF" gives a PDF.
+- **Optional changes (H):** `config/optional.json`, all off by default, labelled "Needs architect approval", and listed on the design sheet:
+  - wider bedroom windows
+  - sliding kitchen-balcony door
+  - a road-side master window (the name sign moves up)
+  - taller stair windows
+
+  They only change openings; walls, frames and elements follow automatically.
+- **Photo-quality still:** `three-gpu-pathtracer` **0.0.24**. 0.0.25 needs three-mesh-bvh 0.9, which conflicts with drei's 0.7, so 0.0.24 shares drei's copy and the interior is unaffected. It's lazy-loaded (56 KB gz) and pre-bundled in `vite.config.ts` so the first click doesn't reload the dev page. About 1–4 minutes per still on an integrated GPU.
+- **Shipping:** the user asked to "ship everything once done": `feature/exterior` is merged into `main` and pushed to `origin`.
+
 ## 2026-10-01: Phase 3 (controls A–D)
 
 - **Tabs:** Style · Colors · Elements · View. Compare and Save & export are shown but disabled until Phase 5.

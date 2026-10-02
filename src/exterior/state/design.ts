@@ -22,6 +22,8 @@ export type DesignAction =
   | { type: "elementParam"; id: string; key: string; value: unknown }
   | { type: "elementSlot"; id: string; slot: string; on: boolean }
   | { type: "resetElements" }
+  | { type: "optional"; id: string; on: boolean }
+  | { type: "rename"; name: string }
   | { type: "load"; design: DesignState };
 
 const lockedOnly = (roles: DesignState["overrides"]["roles"]) =>
@@ -74,6 +76,10 @@ export function designReducer(d: DesignState, a: DesignAction): DesignState {
     }
     case "resetElements":
       return { ...d, overrides: { ...d.overrides, elements: {} } };
+    case "optional":
+      return { ...d, optional: { ...d.optional, [a.id]: a.on } };
+    case "rename":
+      return { ...d, name: a.name };
     case "load":
       return a.design;
   }

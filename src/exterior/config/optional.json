@@ -1,0 +1,23 @@
+{
+  "_comment": "Bigger changes that need the architect's approval. Off by default; listed in the design sheet when on.",
+  "widerBedroomWindows": {
+    "label": "Wider bedroom windows (west side)",
+    "detail": "Master and kids bedroom windows widened from 5′ (1.52 m) to 7′ (2.13 m), sill lowered to 0.6 m. More light and view; needs a longer lintel and a structural check of the wall below.",
+    "why": "Many of your references use large windows inside box frames; it reads more premium."
+  },
+  "kitchenBalconySlider": {
+    "label": "Sliding glass door to the kitchen balcony",
+    "detail": "Kitchen → balcony door widened from 0.91 m to 1.5 m as a glazed sliding door; kitchen window sill lowered from 1.05 m to 0.9 m.",
+    "why": "Opens the kitchen to the road-side balcony and brings in winter sun from the south."
+  },
+  "masterRoadWindow": {
+    "label": "New window on the road-side wall (master bedroom)",
+    "detail": "A 1.2 m wide window in the blank south wall of the master bedroom (sill 0.9 m, head 2.1 m), on every floor. Cross-ventilation with the west window; the name sign moves up.",
+    "why": "South light is the easiest to shade, and the blank wall becomes a lively front."
+  },
+  "tallerStairWindows": {
+    "label": "Taller staircase windows",
+    "detail": "Both staircase windows on each floor made 1.8 m tall instead of 1.2 m.",
+    "why": "Brighter stair hall and a stronger rhythm on the stair tower (images 1, 25, 28)."
+  }
+}

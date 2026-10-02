@@ -1,5 +1,6 @@
 import { useState } from "react";
 import catalogue from "../config/elements.json";
+import optional from "../config/optional.json";
 import { resolveElements, type DesignState } from "../model/resolve";
 import { slotById } from "../model/slots";
 import type { DesignAction } from "../state/design";
@@ -8,7 +9,8 @@ import { Tip } from "./Tip";
 type Param = { label: string; min?: number; max?: number; step?: number; default?: unknown; options?: string[]; type?: "boolean" };
 export type CatalogueEntry = { n: number; label: string; tip: string; status: string; slotOptions?: string[]; params: Record<string, Param> };
 export const CATALOGUE = Object.fromEntries(Object.entries(catalogue).filter(([k]) => !k.startsWith("_"))) as unknown as Record<string, CatalogueEntry>;
-export const ELEMENT_ORDER = Object.keys(CATALOGUE).sort((a, b) => (CATALOGUE[a].n || 99) - (CATALOGUE[b].n || 99));
+const OPTIONAL = Object.fromEntries(Object.entries(optional).filter(([k]) => !k.startsWith("_"))) as unknown as Record<string, { label: string; detail: string; why: string }>;
+export const ELEMENT_ORDER =Object.keys(CATALOGUE).sort((a, b) => (CATALOGUE[a].n || 99) - (CATALOGUE[b].n || 99));
 
 /** Plain words for option values. */
 const OPTION_LABEL: Record<string, string> = {
@@ -116,6 +118,18 @@ export function ElementsTab({ design, dispatch, focus }: { design: DesignState; 
       <div className="row" style={{ marginTop: 10 }}>
         <button onClick={() => dispatch({ type: "resetElements" })}>Reset to the pattern's elements</button>
       </div>
+      <h3 style={{ marginTop: 18 }}>
+        Bigger changes <span className="approval">Needs architect approval</span>
+      </h3>
+      <p className="muted small">These change window or door sizes, so they are off by default and listed separately on the design sheet.</p>
+      {Object.entries(OPTIONAL).map(([id, o]) => (
+        <label key={id} className="row optrow">
+          <input type="checkbox" checked={!!design.optional?.[id]} onChange={(e) => dispatch({ type: "optional", id, on: e.target.checked })} />
+          <span>
+            {o.label} <Tip text={`${o.detail} Why: ${o.why}`} />
+          </span>
+        </label>
+      ))}
     </section>
   );
 }

@@ -106,3 +106,18 @@
 .photobox { background: var(--card); border-radius: 12px; padding: 12px; max-width: min(1200px, 100%); max-height: 100%; overflow: auto; display: grid; gap: 10px; }
 .photobox img { max-width: 100%; max-height: 75vh; display: block; border-radius: 6px; }
 a.btn { font-size: 12px; border: 1px solid var(--ink); background: var(--ink); color: #fff; padding: 5px 12px; border-radius: 6px; text-decoration: none; }
+
+/* compare + save */
+.scenepane { position: relative; height: 100%; min-height: 0; }
+.xview.split { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #9aa3aa; }
+.xview.split .quickbar { left: 50%; }
+.cmplabel { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(43, 43, 43, 0.85); color: #fff; padding: 5px 12px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+.saves { list-style: none; padding: 0; margin: 8px 0; }
+.saves li { display: grid; grid-template-columns: 1fr auto; gap: 0 8px; padding: 5px 4px; border-bottom: 1px solid var(--line); }
+.saves li.on { background: #faf8f4; }
+.saves .sname { text-align: left; font-weight: 600; text-decoration: none; }
+.saves .sactions { grid-column: 1 / -1; display: flex; gap: 6px; }
+input.text { font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; flex: 1; min-width: 0; }
+.approval { font-size: 10px; text-transform: none; letter-spacing: 0; background: #fdf0d9; color: #8a5a12; border: 1px solid #f0d8a8; padding: 1px 6px; border-radius: 10px; }
+.optrow { align-items: flex-start; }
+@media (max-width: 760px) { .xview.split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }

@@ -1,7 +1,11 @@
 /**
  * `npm run exterior:smoke` — drives the exterior UI in headless Chrome/Edge like a user would and fails on any page error
- * or broken behaviour: tabs, patterns, palettes, colour edit + lock across a pattern switch, elements, views, light, walk.
+ * or broken behaviour: tabs, patterns, palettes, colour edit + lock across a pattern switch, elements, views, light, walk,
+ * compare, save / undo, and the three exports (files are downloaded to a temp folder and checked).
  */
+import { mkdtempSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { createServer } from "vite";
 import puppeteer, { type Page } from "puppeteer-core";
 import { executablePath, glArgs } from "./browser";
@@ -39,6 +43,18 @@ const text = (page: Page, sel: string) => page.$eval(sel, (e) => e.textContent ?
 
 try {
   const page = await browser.newPage();
+  const dl = mkdtempSync(path.join(tmpdir(), "ext-smoke-"));
+  const cdp = await page.createCDPSession();
+  await cdp.send("Browser.setDownloadBehavior", { behavior: "allow", downloadPath: dl });
+  const waitFile = async (re: RegExp, ms = 240_000) => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < ms) {
+      const f = readdirSync(dl).find((n) => re.test(n) && !n.endsWith(".crdownload"));
+      if (f && statSync(path.join(dl, f)).size > 0) return path.join(dl, f);
+      await new Promise((r) => setTimeout(r, 300));
+    }
+    return null;
+  };
   page.on("pageerror", (e) => fail(`page error: ${e}`));
   page.on("console", (m) => m.type() === "error" && fail(`console: ${m.text()}`));
   await page.goto("http://localhost:5196/exterior.html?thumbs=0&date=2026-10-01", { waitUntil: "load" });
@@ -133,6 +149,59 @@ try {
     () => ok("clicking a surface opens the edit card"),
     () => fail("no edit card after clicking the building"),
   );
+
+  // Compare: side by side = two canvases; flip with Space
+  await page.mouse.click(1590, 990); // close the edit card by clicking empty space
+  await clickText(page, ".tabs button", "Compare");
+  await frames(page, 10);
+  const canvases = await page.$$eval("main canvas", (c) => c.length);
+  if (canvases !== 2) fail(`side by side shows ${canvases} views`);
+  else ok("compare: side by side shows A and B");
+  await clickText(page, ".xpanel .seg button", "Flip");
+  const before = await text(page, ".cmplabel");
+  await page.keyboard.press("Space");
+  await frames(page, 4);
+  const after = await text(page, ".cmplabel");
+  if (before === after || !after.startsWith("B")) fail(`flip did not switch (${before} → ${after})`);
+  else ok(`compare: Space flips A → B (${after})`);
+
+  // Save, duplicate, undo
+  await clickText(page, ".tabs button", "Save");
+  await page.$eval("input.text", (el) => {
+    const i = el as HTMLInputElement;
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(i, "Smoke test design");
+    i.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await clickText(page, ".xpanel section button", "Save");
+  await clickText(page, ".saves .sactions button", "duplicate");
+  const saved = await page.$$eval(".saves li", (l) => l.length);
+  if (saved < 2) fail(`expected 2 saved designs, got ${saved}`);
+  else ok("saved a design and duplicated it");
+  await clickText(page, ".tabs button", "Style");
+  await clickText(page, ".pcard .pname", "Brick");
+  await page.keyboard.down("Control");
+  await page.keyboard.press("KeyZ");
+  await page.keyboard.up("Control");
+  await frames(page, 3);
+  if ((await text(page, "header .title")).includes("Brick")) fail("Ctrl+Z did not undo the pattern switch");
+  else ok("Ctrl+Z undoes a pattern switch");
+
+  // Exports
+  await clickText(page, ".tabs button", "Save");
+  await clickText(page, ".btngrid button", "Screenshot");
+  const png = await waitFile(/\.png$/);
+  if (!png || readFileSync(png).subarray(1, 4).toString() !== "PNG") fail("screenshot PNG not downloaded");
+  else ok(`screenshot downloaded (${(statSync(png).size / 1e6).toFixed(1)} MB)`);
+  await clickText(page, ".btngrid button", "Export all views");
+  const zip = await waitFile(/\.zip$/);
+  if (!zip || readFileSync(zip).readUInt32LE(0) !== 0x04034b50) fail("all-views ZIP not downloaded");
+  else ok(`all views ZIP downloaded (${(statSync(zip).size / 1e6).toFixed(1)} MB)`);
+  await clickText(page, ".btngrid button", "Design sheet");
+  const sheet = await waitFile(/design-sheet\.html$/);
+  const html = sheet ? readFileSync(sheet, "utf8") : "";
+  const imgs = (html.match(/<img /g) ?? []).length;
+  if (!sheet || imgs < 8) fail(`design sheet missing or incomplete (${imgs} images)`);
+  else ok(`design sheet downloaded (${imgs} images, ${(statSync(sheet).size / 1e6).toFixed(1)} MB)`);
 } finally {
   await browser.close();
   await server.close();

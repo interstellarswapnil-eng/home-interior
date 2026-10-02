@@ -77,6 +77,7 @@ const PLAIN_LABEL: Record<string, string> = {
   "stair-a": "Staircase window (lower)",
   "stair-b": "Staircase window (upper)",
   "lobby-door": "Building entrance door",
+  "opt-win-master-s": "Master bedroom window (road side)",
 };
 
 // ---------------------------------------------------------------------------
@@ -95,21 +96,37 @@ function sideAndFace(o: (typeof planOpenings)[number]): { side: "N" | "S" | "E" 
 }
 
 /** All facade openings: plan windows/doors on the outer walls × 3 floors, stair windows, ground entrance. */
-export function facadeOpenings(): FacadeOpening[] {
+/** Optional bigger changes (config/optional.json), all off unless switched on. */
+export type OptionalChanges = Partial<Record<"widerBedroomWindows" | "kitchenBalconySlider" | "masterRoadWindow" | "tallerStairWindows", boolean>>;
+
+export function facadeOpenings(opt: OptionalChanges = {}): FacadeOpening[] {
   const out: FacadeOpening[] = [];
   for (const o of planOpenings) {
     const sf = sideAndFace(o);
     if (!sf) continue;
-    const band = openingBand(o);
+    const band = { ...openingBand(o) };
+    let a = o.rotationDeg === 0 ? o.y : o.x;
+    let b = a + o.w;
+    let type: FacadeOpening["type"] = o.type === "window" ? "window" : o.type === "doubleDoor" ? "doubleDoor" : "door";
+    if (opt.widerBedroomWindows && (o.id === "win-master-w" || o.id === "win-kids-w")) {
+      const c = (a + b) / 2;
+      [a, b] = [c - 1.065, c + 1.065];
+      band.sill = 0.6;
+    }
+    if (opt.kitchenBalconySlider && o.id === "kitchen-balcony") {
+      b = a + 1.5;
+      type = "doubleDoor";
+    }
+    if (opt.kitchenBalconySlider && o.id === "win-kitchen-s") band.sill = 0.9;
     for (const f of FLAT_FLOORS) {
       out.push({
         id: `F${f}-${o.id}`,
         planId: o.id,
         floor: f,
-        type: o.type === "window" ? "window" : o.type === "doubleDoor" ? "doubleDoor" : "door",
+        type,
         side: sf.side,
-        a: o.rotationDeg === 0 ? o.y : o.x,
-        b: (o.rotationDeg === 0 ? o.y : o.x) + o.w,
+        a,
+        b,
         z0: level(f) + band.sill,
         z1: level(f) + band.head,
         face: sf.face,
@@ -125,9 +142,27 @@ export function facadeOpenings(): FacadeOpening[] {
     const half = (level(f + 1) - L) / 2;
     const add = (planId: string, a: number, b: number, z0: number, z1: number) =>
       out.push({ id: `F${f}-${planId}`, planId, floor: f, type: "window", side: "W", a, b, z0, z1, face: X_W, depth: E, label: PLAIN_LABEL[planId] });
-    add("stair-a", sy + 0.25, sy + 0.95, L + 1.0, L + 2.2);
-    add("stair-b", sy + 1.25, sy + 1.95, L + half + 0.9, L + half + 2.1);
+    const tall = opt.tallerStairWindows ? 0.6 : 0;
+    add("stair-a", sy + 0.25, sy + 0.95, L + 1.0 - tall / 2, L + 2.2 + tall / 2);
+    add("stair-b", sy + 1.25, sy + 1.95, L + half + 0.9 - tall / 2, L + half + 2.1 + tall / 2);
   }
+  // Optional: a window in the blank road-side wall of the master bedroom
+  if (opt.masterRoadWindow)
+    for (const f of FLAT_FLOORS)
+      out.push({
+        id: `F${f}-opt-win-master-s`,
+        planId: "opt-win-master-s",
+        floor: f,
+        type: "window",
+        side: "S",
+        a: 1.25,
+        b: 2.45,
+        z0: level(f) + 0.9,
+        z1: level(f) + 2.1,
+        face: Y_S_MASTER,
+        depth: E,
+        label: "Master bedroom window (road side)",
+      });
   // Ground-floor entrance into the stair / lift lobby, from the parking (south face of the tower)
   out.push({
     id: "F0-lobby-door",
@@ -326,8 +361,8 @@ function jointParts(): Part[] {
   return out;
 }
 
-export function buildShell(): Shell {
-  const openings = facadeOpenings();
+export function buildShell(opt: OptionalChanges = {}): Shell {
+  const openings = facadeOpenings(opt);
   const parts: Part[] = [];
   for (const w of facadeWalls()) parts.push(...splitWall(w, openings));
   for (const o of openings) parts.push(...openingParts(o));
