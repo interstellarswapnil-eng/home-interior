@@ -1,5 +1,6 @@
 /** Walk mode physics (pure, testable): colliders from the model, ground height, sliding movement. */
 import { PAVING, PLINTH, PLOT, SOUTH_FOOTPATH, WEST_FOOTPATH, WEST_ROAD } from "../model/building";
+import { partBounds } from "../model/approval";
 import { FOOTPRINT_RECTS } from "../model/shell";
 import type { Part } from "../model/types";
 
@@ -12,6 +13,11 @@ const NOT_SOLID = new Set(["gate", "paving", "ground", "road", "context", "light
 export function walkColliders(parts: Part[]): Rect2[] {
   const out: Rect2[] = [];
   for (const p of parts) {
+    if (p.kind === "prism" && p.role === "column") {
+      const b = partBounds(p);
+      if (b) out.push({ x0: b[0], y0: b[1], x1: b[2], y1: b[3] });
+      continue;
+    }
     if (p.kind !== "box" || NOT_SOLID.has(p.role)) continue;
     const b = p.box;
     if (b.z0 > 2.0 || b.z1 < 0.55) continue;

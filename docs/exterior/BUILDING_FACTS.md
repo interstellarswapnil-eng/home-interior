@@ -65,10 +65,10 @@ IDs follow the interior module so inside and outside stay linked. In 3D, each on
 | `win-master-w` | West | Master bedroom window | 1.52 m (5′) | 0.90 → 2.10 | y 0.70 → 2.22 | [plan] |
 | `win-mbath-w` | West | Master bath ventilator | 0.60 m | 1.60 → 2.10 | y 3.65 → 4.25 | [plan] |
 | `win-kids-w` | West | Kids bedroom window | 1.52 m (5′) | 0.90 → 2.10 | y 5.46 → 6.98 | [plan] |
-| `win-stair-w` | West | Staircase windows, 2 per floor, staggered at half-landing levels | ≈ 0.9 m each | staggered | y ≈ 8.3 → 9.9 | Drawn on the source plan but not dimensioned; [render] staggered boxes in #25/#28; sizes [assumed] |
+| `win-stair-w` | West | Staircase window, **1 per floor**, at the half landing | 0.70 m | half landing + 0.9 → 2.1 | y 9.27 → 9.97 | **[site]** one per floor (you, 2026-10-02); size [assumed] |
 | `win-gbath-s` | South | Guest bath ventilator (in the 1.0 m step-back) | 0.60 m | 1.60 → 2.10 | x 4.67 → 5.27 | [plan] |
 | `kitchen-balcony` | South | Kitchen → balcony door | 0.91 m | 0 → 2.10 | x 6.83 → 7.74 | [plan] |
-| `win-kitchen-s` | South | Kitchen window (onto the balcony) | 0.90 m | 1.05 → 2.10 | x 8.74 → 9.64 | [plan] |
+| `win-kitchen-s` | South | Kitchen window (onto the balcony) | **1.80 m** | 1.05 → 2.10 | x 7.95 → 9.75 | **[site]** about twice the door's width in the site photos, confirmed by you; the drawing showed 0.90 m. Changed in the shared plan, so the interior has it too |
 | `win-kitchen-e` | East | Kitchen window | 0.90 m | 1.05 → 2.10 | y 1.86 → 2.76 | [plan] |
 | `win-living-e` | East | Living window | 1.83 m (6′) | 0.90 → 2.10 | y 6.12 → 7.95 | [plan] |
 | `living-balcony` | North | Living → balcony double door | 1.83 m (6′) | 0 → 2.10 | x 6.91 → 8.74 | [plan] |
@@ -91,7 +91,9 @@ The **master bedroom's south wall has no window** [plan]. It's the obvious place
 | Lift | 1.52 m × 1.83 m car (5′ × 6′), NW core, east of the stair | [plan] |
 | Common lobby | Between stair and lift, north of the lift. Flat entry opens from it | [plan] |
 | Building entrance | Ground floor, under the NW core: an enclosed stair/lift lobby at stilt level, reached through the parking | [render] (enclosed left block at ground in #25/#28); [assumed] |
-| Stilt columns | About 230 × 450 mm RCC columns at the outer corners and main wall junctions, roughly 3–4.5 m apart | [render]; grid [assumed] |
+| Stilt columns | About 300 × 450 mm RCC columns, roughly 3–4.5 m apart. The ones under the west and south faces stand **0.75 m back**, so the first floor overhangs them | **[site]** overhang (photos 2026-10-02); depth and grid [assumed] |
+| SW corner column | One **sloping, tapered blade column**, 0.35 m thick: 0.4 m wide at its foot (set back 0.75 m behind the corner) widening to 1.0 m under the slab corner | **[site]** photos 2026-10-02; sizes estimated |
+| Lift ("escalator") core | Enclosed in brick at ground level, at the back of the stilt floor (already modelled as the ground core) | **[site]** confirmed by you |
 | Roof type | Flat RCC terrace with parapet. #25/#28 show a planter edge and a projecting slab over the top balcony | [render] |
 
 ## Site

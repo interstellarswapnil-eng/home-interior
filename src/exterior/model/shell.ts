@@ -46,11 +46,16 @@ const southOfTower = <T extends { x: number; y: number; h: number }>(w: T): T =>
   Math.abs(w.x - X_W) > 0.01 ? w : { ...w, h: Math.min(w.y + w.h, Y_TOWER_S) - w.y };
 const FLAT_FLOORS = Array.from({ length: FLATS }, (_, i) => i + 1);
 
-/** Stilt columns [assumed grid]: x, y, w (along x), h (along y). */
+/**
+ * How far the stilt columns stand back from the west and south faces: the first-floor slab overhangs them
+ * (site photos 2026-10-02; depth estimated, the photos show the overhang but not its size).
+ */
+export const STILT_SETBACK = 0.75;
+
+/** Stilt columns [assumed grid, west/south ones set back per the site]: x, y, w (along x), h (along y). The SW corner is the sloping column below. */
 export const COLUMNS: [number, number, number, number][] = [
-  [X_W, Y_S_MASTER, 0.3, 0.45],
-  [X_NOTCH_W - 0.3, Y_S_MASTER, 0.3, 0.45],
-  [X_W, 3.4, 0.3, 0.45],
+  [X_NOTCH_W - 0.3, Y_S_MASTER + STILT_SETBACK, 0.3, 0.45],
+  [X_W + STILT_SETBACK, 3.4, 0.3, 0.45],
   [X_NOTCH_W - 0.3, 3.4, 0.3, 0.45],
   [X_WING, Y_NOTCH, 0.3, 0.45],
   [7.7, Y_NOTCH, 0.3, 0.45],
@@ -62,6 +67,32 @@ export const COLUMNS: [number, number, number, number][] = [
 ];
 
 const inset = (r: { x: number; y: number; w: number; h: number }, d: number) => ({ x: r.x + d, y: r.y + d, w: r.w - 2 * d, h: r.h - 2 * d });
+
+/**
+ * The SW corner stands on one big sloping column (site photos 2026-10-02): a blade in the north–south plane, set back
+ * from the west face, narrow (0.4 m) at its foot behind the corner and widening to 1.0 m where it meets the slab corner.
+ */
+export function cornerColumn(): Part {
+  const z0 = PLINTH;
+  const z1 = level(1) - STILT_BAND;
+  const y = Y_S_MASTER;
+  return {
+    id: "F0-column-corner",
+    kind: "prism",
+    role: "column",
+    axis: "y",
+    at: X_W + 0.3,
+    thickness: 0.35,
+    profile: [
+      [y + STILT_SETBACK, z0],
+      [y + STILT_SETBACK + 0.4, z0],
+      [y + 1.05, z1],
+      [y + 0.05, z1],
+    ],
+    floor: 0,
+    slot: "wall:columns",
+  };
+}
 
 /** Footprint rectangles of the flats (no balconies). */
 export const FOOTPRINT_RECTS = [
@@ -80,8 +111,7 @@ const PLAIN_LABEL: Record<string, string> = {
   "win-gbath-s": "Guest bath ventilator",
   "kitchen-balcony": "Kitchen balcony door",
   "living-balcony": "Living balcony door",
-  "stair-a": "Staircase window (lower)",
-  "stair-b": "Staircase window (upper)",
+  "stair-b": "Staircase window (landing)",
   "lobby-door": "Building entrance door",
   "opt-win-master-s": "Master bedroom window (road side)",
 };
@@ -141,7 +171,7 @@ export function facadeOpenings(opt: OptionalChanges = {}): FacadeOpening[] {
       });
     }
   }
-  // Staircase: two staggered windows per floor on the west wall of the tower [assumed from #28]
+  // Staircase: one window per floor on the west wall of the tower, at the half landing (site photos 2026-10-02)
   const sy = stairContext.y;
   for (let f = 0; f <= FLATS; f++) {
     const L = level(f);
@@ -149,7 +179,6 @@ export function facadeOpenings(opt: OptionalChanges = {}): FacadeOpening[] {
     const add = (planId: string, a: number, b: number, z0: number, z1: number) =>
       out.push({ id: `F${f}-${planId}`, planId, floor: f, type: "window", side: "W", a, b, z0, z1, face: X_W, depth: E, label: PLAIN_LABEL[planId] });
     const tall = opt.tallerStairWindows ? 0.6 : 0;
-    add("stair-a", sy + 0.25, sy + 0.95, L + 1.0 - tall / 2, L + 2.2 + tall / 2);
     add("stair-b", sy + 1.25, sy + 1.95, L + half + 0.9 - tall / 2, L + half + 2.1 + tall / 2);
   }
   // Optional: a window in the blank road-side wall of the master bedroom
@@ -291,6 +320,7 @@ function slabParts(): Part[] {
 
   // Stilt columns; their base sleeves come from the `stoneBase` element
   COLUMNS.forEach(([x, y, w, h], i) => out.push(box(`F0-column-${i}`, "column", { x, y, w, h, z0: PLINTH, z1: level(1) - STILT_BAND }, { floor: 0, slot: "wall:columns", bevel: 0.02 })));
+  out.push(cornerColumn());
   return out;
 }
 

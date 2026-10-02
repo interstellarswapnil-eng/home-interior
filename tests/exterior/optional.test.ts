@@ -36,7 +36,7 @@ describe("optional bigger changes (need architect approval)", () => {
     expect(width(buildShell({ widerBedroomWindows: true }).openings, "F1-win-master-w")).toBeCloseTo(2.13, 2);
     expect(width(buildShell({ kitchenBalconySlider: true }).openings, "F1-kitchen-balcony")).toBeCloseTo(1.5, 2);
     expect(buildShell({ masterRoadWindow: true }).openings.filter((o) => o.planId === "opt-win-master-s")).toHaveLength(3);
-    const h = (os: typeof base) => os.find((o) => o.id === "F1-stair-a")!.z1 - os.find((o) => o.id === "F1-stair-a")!.z0;
+    const h = (os: typeof base) => os.find((o) => o.id === "F1-stair-b")!.z1 - os.find((o) => o.id === "F1-stair-b")!.z0;
     expect(h(buildShell({ tallerStairWindows: true }).openings) - h(base)).toBeCloseTo(0.6, 2);
     expect(base.length).toBeGreaterThan(0);
   });

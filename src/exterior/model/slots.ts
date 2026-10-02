@@ -62,8 +62,7 @@ export const SLOTS: Slot[] = [
   { id: "win:win-gbath-s", label: "Guest bath ventilator", side: "S", kind: "window", floors: FLOORS, openingPlanId: "win-gbath-s" },
   { id: "win:kitchen-balcony", label: "Kitchen balcony door", side: "S", kind: "window", floors: FLOORS, openingPlanId: "kitchen-balcony" },
   { id: "win:living-balcony", label: "Living balcony door", side: "N", kind: "window", floors: FLOORS, openingPlanId: "living-balcony" },
-  { id: "win:stair-a", label: "Staircase window (lower)", side: "W", kind: "window", floors: ALL, openingPlanId: "stair-a" },
-  { id: "win:stair-b", label: "Staircase window (upper)", side: "W", kind: "window", floors: ALL, openingPlanId: "stair-b" },
+  { id: "win:stair-b", label: "Staircase window (landing)", side: "W", kind: "window", floors: ALL, openingPlanId: "stair-b" },
   { id: "win:opt-win-master-s", label: "Master bedroom window, road side (needs approval)", side: "S", kind: "window", floors: FLOORS, openingPlanId: "opt-win-master-s" },
   { id: "win:lobby-door", label: "Building entrance door", side: "S", kind: "entrance", floors: [0], openingPlanId: "lobby-door" },
 ];

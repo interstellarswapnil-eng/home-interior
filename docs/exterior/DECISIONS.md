@@ -2,6 +2,17 @@
 
 Newest first. **[open]** = waiting on your answer.
 
+## 2026-10-02: structure corrected from site photos (Phase B)
+
+From 4 site photos (kept local in `site_photos/`, git-ignored) and your answers. Review: `docs/exterior/SITE_REVIEW.md`.
+- **SW corner:** one sloping, tapered blade column (`cornerColumn()` in `model/shell.ts`) replaces the slim corner column. Sizes are estimated from the photos.
+- **Stilt overhang:** the columns under the west and south faces stand back `STILT_SETBACK` = 0.75 m; the first floor overhangs them. The depth is estimated (the photos show the overhang, not its size).
+- **Stair tower:** one window per floor at the half landing, not two (you). The removed lower window `stair-a` is also gone from the slots and configs.
+- **Kitchen window** (south, onto the kitchen balcony): **1.80 m wide** in the **shared floor plan** (`plan/plan.ts`), approved by you. The interior has it too. **[open]** the interior's 3 ft wall cabinet on that wall (`kit-wall-s`, x 7.82–8.74) now overlaps the window. I didn't change it because the interior is yours to decide.
+- **Lift:** the brick room at the back of the stilt floor is the lift core, already modelled.
+- Heights stay as they are (no measurements available).
+- The interior `npm run smoke` 2D-export check is timing-flaky (fixed 2 s wait; the export takes 1.2–2.8 s with or without these changes).
+
 ## 2026-10-02: fixes: Day view broke when rotating; slow concept switching
 
 - **Rotating after Dusk → Day smeared the view** (surfaces showing through each other). The dusk/night bloom uses postprocessing's EffectComposer, which switches the renderer's `autoClear` off and never switches it back. Day, Golden hour and Cloudy in Normal quality don't use the composer, so after the switch frames were drawn without clearing colour or depth. A still view hid it; any camera move showed it. Since Step 2 made Dusk the default, everyone hit it. Fix: `RestoreAutoClear` turns clearing back on when the composer goes away. The smoke test now checks for this.

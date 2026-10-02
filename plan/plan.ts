@@ -512,11 +512,12 @@ export const openings: Opening[] = [
     builder: true,
   },
   {
+    // 1.8 m as built (site photos 2026-10-02; the drawing showed 0.9 m), centred between the door and the east wall
     id: "win-kitchen-s",
     type: "window",
-    x: kitchen.x + ft(10),
+    x: kitchen.x + kitchen.w - 0.21 - 1.8,
     y: kitchen.y,
-    w: 0.9,
+    w: 1.8,
     h: E,
     rotationDeg: 90,
     fromRoom: "kitchen",

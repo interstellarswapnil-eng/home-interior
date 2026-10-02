@@ -5,3 +5,6 @@ dist
 interior-design-claude-pack.tar.gz
 .smoke-downloads
 recordings
+
+# real site photographs (may show people): kept local, never committed
+site_photos/

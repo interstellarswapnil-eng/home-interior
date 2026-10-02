@@ -101,14 +101,12 @@
       "slots": [
         "win:win-master-w",
         "win:win-kids-w",
-        "win:stair-a",
         "win:stair-b"
       ],
       "params": {
         "depth": 0.32,
         "width": 0.2,
         "roleBySlot": {
-          "win:stair-a": "trim",
           "win:stair-b": "trim"
         }
       }
